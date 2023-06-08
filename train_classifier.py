@@ -26,8 +26,8 @@ print(embeddings)
 
 # decoder (attention) - take 10 of 40 units
 num_units = 10
-attention_units = model.model.layers
-latents = attention_units.__getitem__(slice(num_units))
+attention_units = model.model.layers.__getitem__(slice(num_units))
+latents = attention_units(embeddings)
 print(latents)
 
 # i think i need some attention to get more info than just these lookup embeddings
