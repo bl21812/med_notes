@@ -8,7 +8,7 @@ model = AutoModelForCausalLM.from_pretrained("medalpaca/medalpaca-13b", device_m
 print(tokenizer)
 print(model)
 
-test_input = ['The patient has bronchitis', 'This patient has a malignant tumour']
+test_input = ['The patient has bronchitis']
 
 embed = model.model.embed_tokens
 
@@ -17,8 +17,8 @@ print(embed)
 tokens = tokenizer(test_input)
 print(tokens)
 
-input_ids = torch.tensor(tokens['input_ids'])
-attention_mask = torch.tensor(tokens['attention_mask'])
+input_ids = torch.unsqueeze(torch.tensor(tokens['input_ids']), 0)
+attention_mask = torch.unsqueeze(torch.tensor(tokens['attention_mask']), 0)
 
 output = model(input_ids=input_ids, attention_mask=attention_mask)
 print(output)
