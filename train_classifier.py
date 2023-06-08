@@ -17,8 +17,8 @@ print(embed)
 tokens = tokenizer(test_input)
 print(tokens)
 
-input_ids = torch.unsqueeze(torch.tensor(tokens['input_ids']), 0)
-attention_mask = torch.unsqueeze(torch.tensor(tokens['attention_mask']), 0)
+input_ids = torch.tensor(tokens['input_ids']), 0
+attention_mask = torch.tensor(tokens['attention_mask']), 0
 
 output = model(input_ids=input_ids, attention_mask=attention_mask)
 print(output)
