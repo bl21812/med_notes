@@ -14,6 +14,10 @@ embed = model.model.embed_tokens
 print(embed)
 
 tokens = tokenizer(test_sent)
-latents = embed(tokens)
+print(tokens)
 
+output = model(tokens)
+print(output)
+
+latents = embed(tokens)
 print(latents)
