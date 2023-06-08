@@ -18,10 +18,9 @@ tokens = tokenizer(test_input)
 print(tokens)
 
 input_ids = torch.tensor(tokens['input_ids'])
-attention_mask = torch.tensor(tokens['attention_mask'])
+# attention_mask = torch.tensor(tokens['attention_mask'])
 
-output = model(input_ids=input_ids, attention_mask=attention_mask)
-print(output)
-
-latents = embed(input_ids=input_ids, attention_mask=attention_mask)
+latents = embed(input_ids)
 print(latents)
+
+# i think i need some attention to get more info than just these lookup embeddings
