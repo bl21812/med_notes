@@ -20,7 +20,13 @@ print(tokens)
 input_ids = torch.tensor(tokens['input_ids'])
 # attention_mask = torch.tensor(tokens['attention_mask'])
 
-latents = embed(input_ids)
-print(latents)
+# Project tokens to latent space
+embeddings = embed(input_ids)
+print(embeddings)
+
+# decoder (attention)
+layers = model.model.layers
+for layer in layers._modules:
+    print(layer)
 
 # i think i need some attention to get more info than just these lookup embeddings
