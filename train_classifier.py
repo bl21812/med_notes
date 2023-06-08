@@ -25,8 +25,10 @@ embeddings = embed(input_ids)
 print(embeddings)
 
 # decoder (attention) - take 10 of 40 units
-attention_units = model.model.layers._modules[:10]
-latents = attention_units(embeddings)
+attention_units = model.model.layers
+latents = embeddings
+for unit in attention_units._modules:
+    latents = unit(latents)
 print(latents)
 
 # i think i need some attention to get more info than just these lookup embeddings
