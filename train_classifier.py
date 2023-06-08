@@ -24,9 +24,9 @@ input_ids = torch.tensor(tokens['input_ids'])
 embeddings = embed(input_ids)
 print(embeddings)
 
-# decoder (attention)
-layers = model.model.layers
-for layer in layers._modules:
-    print(layer)
+# decoder (attention) - take 10 of 40 units
+attention_units = model.model.layers._modules[:10]
+latents = attention_units(embeddings)
+print(latents)
 
 # i think i need some attention to get more info than just these lookup embeddings
