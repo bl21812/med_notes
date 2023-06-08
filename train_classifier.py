@@ -16,8 +16,8 @@ print(embed)
 tokens = tokenizer(test_sent)
 print(tokens)
 
-output = model(**tokens)
+output = model(input_ids=tokens['input_ids'], attention_mask=tokens['attention_mask'])
 print(output)
 
-latents = embed(**tokens)
+latents = embed(input_ids=tokens['input_ids'], attention_mask=tokens['attention_mask'])
 print(latents)
