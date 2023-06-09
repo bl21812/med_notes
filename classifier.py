@@ -44,9 +44,12 @@ class Classifier(torch.nn.Module):
 
             latents = embeddings
             for unit in self.attention_units:
+                print(latents)
+                print(latents.size())
                 latents = unit(latents)
-                print('done once')
 
         output = self.fc_layers(latents)
 
         return output
+
+# subsequent passes in the attentions don't work :/
