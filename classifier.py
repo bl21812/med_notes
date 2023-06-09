@@ -21,14 +21,14 @@ class Classifier(torch.nn.Module):
         for i in range(fc_layers-1):
             in_features = hidden_dims
             if i == 0:
-                in_features = 5120  # output dims of LLM attention units
+                in_features = 14 * 5120  # output dims of LLM attention units (flattened)
             self.fc_layers.append(torch.nn.Linear(in_features=in_features, out_features=hidden_dims, device='cuda:1'))
             self.fc_layers.append(torch.nn.ReLU())  # relu
         
         # output FC
         in_features = hidden_dims
         if not self.fc_layers:
-            in_features = 5120
+            in_features = 14 * 5120  # output dims of LLM attention units (flattened)
         self.fc_layers.append(torch.nn.Linear(in_features=in_features, out_features=num_classes, device='cuda:1'))
         self.fc_layers.append(torch.nn.Softmax())  # softmax
 
