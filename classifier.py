@@ -44,11 +44,9 @@ class Classifier(torch.nn.Module):
 
             latents = embeddings
             for unit in self.attention_units:
-                if isinstance(latents, tuple):
-                    latents = latents[0]
                 print(latents)
                 print(latents.size())
-                latents = unit(latents)
+                latents = unit(latents)[0]  # because the output is a tuple
 
         output = self.fc_layers(latents)
 
