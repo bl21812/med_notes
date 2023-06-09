@@ -1,12 +1,8 @@
-from transformers import AutoTokenizer, AutoModelForCausalLM
-import torch
-
 from classifier import Classifier
 
-tokenizer = AutoTokenizer.from_pretrained("medalpaca/medalpaca-13b", device_map="auto")
-alpaca = AutoModelForCausalLM.from_pretrained("medalpaca/medalpaca-13b", device_map="auto")
+llm_vers = "medalpaca/medalpaca-13b"
 
-classifier = Classifier(tokenizer, alpaca)
+classifier = Classifier(llm_vers)
 
 test_input = 'hi guys i am a doctor and this is a renal issue'
 

@@ -1,11 +1,17 @@
 import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
 
 class Classifier(torch.nn.Module):
 
-    def __init__(self, tokenizer, alpaca, num_units=10, fc_layers=1, hidden_dims=1024, num_classes=5):
+    def __init__(self, llm_vers, num_units=10, fc_layers=1, hidden_dims=1024, num_classes=5):
+
+        super().__init__()
 
         # pre-trained LLM
+        tokenizer = AutoTokenizer.from_pretrained(llm_vers, device_map="auto")
+        alpaca = AutoModelForCausalLM.from_pretrained(llm_vers, device_map="auto")
+        
         self.tokenizer = tokenizer
         self.embed = alpaca.model.embed_tokens
         self.attention_units = alpaca.model.layers.__getitem__(slice(num_units))
