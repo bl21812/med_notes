@@ -30,7 +30,7 @@ class Classifier(torch.nn.Module):
         if not self.fc_layers:
             in_features = 5120
         self.fc_layers.append(torch.nn.Linear(in_features=in_features, out_features=num_classes, device='cuda:1'))
-        self.fc_layers.append(torch.nn.Softmax(dim=1))  # softmax
+        self.fc_layers.append(torch.nn.Softmax())  # softmax
 
     def forward(self, x):
         
@@ -44,12 +44,8 @@ class Classifier(torch.nn.Module):
 
             latents = embeddings
             for unit in self.attention_units:
-                print(latents)
-                print(latents.size())
                 latents = unit(latents)[0]  # because the output is a tuple
 
         output = self.fc_layers(latents)
 
         return output
-
-# why are fc layers on different devices ?
