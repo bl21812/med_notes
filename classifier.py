@@ -11,7 +11,7 @@ class Classifier(torch.nn.Module):
         # pre-trained LLM
         tokenizer = AutoTokenizer.from_pretrained(llm_vers, device_map="auto")
         alpaca = AutoModelForCausalLM.from_pretrained(llm_vers, device_map="auto")
-        
+
         self.tokenizer = tokenizer
         self.embed = alpaca.model.embed_tokens
         self.attention_units = alpaca.model.layers.__getitem__(slice(num_units))
@@ -32,25 +32,19 @@ class Classifier(torch.nn.Module):
         self.fc_layers.append(torch.nn.Linear(in_features=in_features, out_features=num_classes))
         self.fc_layers.append(torch.nn.Softmax(dim=1))  # softmax
 
-        # don't fine-tune LLM layers
-        for param in self.tokenizer.params:
-            param.requires_grad = False
-        for param in self.embed.params:
-            param.requires_grad = False
-        for unit in self.attention_units:
-            for param in unit.params:
-                param.requires_grad = False
-
     def forward(self, x):
         
-        tokens = self.tokenizer(x)
-        input_ids = torch.tensor(tokens['input_ids'])
+        # no fine-tuning for LLM layers
+        with torch.no_grad():
 
-        embeddings = self.embed(input_ids)
+            tokens = self.tokenizer(x)
+            input_ids = torch.tensor(tokens['input_ids'])
 
-        latents = embeddings
-        for unit in self.attention_units:
-            latents = unit(latents)
+            embeddings = self.embed(input_ids)
+
+            latents = embeddings
+            for unit in self.attention_units:
+                latents = unit(latents)
 
         output = self.fc_layers(latents)
 
