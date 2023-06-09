@@ -8,4 +8,11 @@ alpaca = AutoModelForCausalLM.from_pretrained("medalpaca/medalpaca-13b", device_
 
 classifier = Classifier(tokenizer, alpaca)
 
-# LOAD DATA AND TRAIN LOOP
+test_input = 'hi guys i am a doctor and this is a renal issue'
+
+output = classifier(test_input)
+print(output)
+
+# Load data 
+
+# Train loop
