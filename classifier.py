@@ -18,6 +18,7 @@ class Classifier(torch.nn.Module):
 
         # MLP
         self.fc_layers = torch.nn.Sequential()
+        self.fc_layers.append()  # flatten in some way
         for i in range(fc_layers-1):
             in_features = hidden_dims
             if i == 0:
@@ -46,6 +47,7 @@ class Classifier(torch.nn.Module):
             for unit in self.attention_units:
                 latents = unit(latents)[0]  # because the output is a tuple
 
+        latents = torch.flatten(latents, start_dim=1)  # keep batch dim
         output = self.fc_layers(latents)
 
         return output
