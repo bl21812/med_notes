@@ -18,7 +18,6 @@ class Classifier(torch.nn.Module):
 
         # MLP
         self.fc_layers = torch.nn.Sequential()
-        self.fc_layers.append()  # flatten in some way
         for i in range(fc_layers-1):
             in_features = hidden_dims
             if i == 0:
