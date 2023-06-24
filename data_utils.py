@@ -1,5 +1,6 @@
 # NOTE: I might have to change the [D:] and [P:] speaker indicators to 
     # become special tokens for finetuning
+# NOTE: not sure if the truncation actually works
 def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128):
     '''
     Tokenize question(s) and context(s) for a QA task
@@ -22,7 +23,7 @@ def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128):
             stride=doc_stride
         )
     else:
-        tokenized = tokenizer(x1)
+        tokenized = [tokenizer(x) for x in x1]
 
     # extract token ids
     # TODO: is this how it works for batches ?

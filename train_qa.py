@@ -53,6 +53,11 @@ else:
 
 tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 
+# JUST FOR testing
+print(ds_train[0]['instruction'])
+print(ds_train[0]['input'])
+print(ds_train[0]['output'])
+
 # NOTE: row names are only for mediQA rn
 ds_train_tokenized = ds_train.map(lambda row: {
     'input_tokens': tokenize_qa(row['instruction'], row['input']), 
@@ -74,6 +79,8 @@ if ds_test:
 # TEMP FOR testing
 print(ds_train_tokenized)
 print(ds_train_tokenized[0])
+print(ds_val_tokenized)
+print(ds_val_tokenized[0])
 quit()
 
 # TODO: Load in model
