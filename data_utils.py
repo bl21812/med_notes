@@ -1,6 +1,5 @@
 # NOTE: I might have to change the [D:] and [P:] speaker indicators to 
     # become special tokens for finetuning
-# NOTE: this is not batched
 def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128, pad_length=32001):
     '''
     Tokenize question(s) and context(s) for a QA task
@@ -14,6 +13,11 @@ def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128, pad
     :return: List of input ids (tokens)
         or list of lists of input ids if len(x) > max_seq_length
     '''
+
+    print(len(x1))
+    if x2:
+        print(len(x2))
+    exit()
 
     if x2:
         tokenized = tokenizer(
