@@ -13,6 +13,8 @@ def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128):
         or list of lists of input ids if len(x) > max_seq_length
     '''
 
+    print(len(x1), len(x2))
+
     if x2:
         tokenized = tokenizer(
             x1, 
@@ -29,8 +31,6 @@ def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128):
             truncation=True,
             stride=0
         )
-
-    print('done')
 
     # extract token ids
     # TODO: is this how it works for batches ?
