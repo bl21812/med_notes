@@ -1,3 +1,4 @@
 transformers[sentencepiece]
+datasets
 accelerate
 torch

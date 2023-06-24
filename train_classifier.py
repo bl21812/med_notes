@@ -1,3 +1,5 @@
+import torch
+
 from classifier import Classifier
 
 llm_vers = "medalpaca/medalpaca-13b"
@@ -11,4 +13,9 @@ print(output)
 
 # Load data 
 
+# Train setup
+loss = torch.nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(classifier.parameters())  # lr, weight_decay
+
 # Train loop
+
