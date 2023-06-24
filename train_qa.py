@@ -83,10 +83,11 @@ if ds_test:
     }, batched=True, remove_columns=ds_test.column_names)
 
 # TEMP FOR testing
-print(ds_train_tokenized)
-print(ds_train_tokenized[0])
-print(ds_val_tokenized)
-print(ds_val_tokenized[0])
+print(ds_train_tokenized[0].keys())
+print(len(ds_train_tokenized[0]['input_tokens']))
+print(len(ds_train_tokenized[0]['input_tokens'][0]))
+print(len(ds_train_tokenized[0]['output_tokens']))
+print(len(ds_train_tokenized[0]['output_tokens'][0]))
 quit()
 
 '''
