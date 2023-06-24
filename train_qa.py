@@ -62,6 +62,8 @@ edit qa model to work from embeddings only (just linear units and head)
 write demo: embed max length seqs, then concat embeddings to feed into MLP
 '''
 
+# TOKENIZE TARGETS SEPARATELY - otherwise number of rows doesn't match up
+
 # NOTE: row names are only for mediQA rn
 ds_train_tokenized = ds_train.map(lambda row: {
     'input_tokens': tokenize_qa(tokenizer, row['instruction'], row['input']), 

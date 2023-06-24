@@ -1,19 +1,19 @@
 # NOTE: I might have to change the [D:] and [P:] speaker indicators to 
     # become special tokens for finetuning
 # NOTE: this is not batched
-def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128):
+def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128, pad_length=32001):
     '''
     Tokenize question(s) and context(s) for a QA task
     :param x1: question or output
     :param x2: if passed, context
     :param max_seq_length: Max length of tokenized sequences
     :param doc_stride: Length of overlap between sequences from x
+    :param pad_length: Pad output to this length
+        only used when only x1 given (for output)
 
     :return: List of input ids (tokens)
         or list of lists of input ids if len(x) > max_seq_length
     '''
-
-    print(len(x1), len(x2))
 
     if x2:
         tokenized = tokenizer(
@@ -34,6 +34,6 @@ def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128):
 
     # extract token ids
     # TODO: is this how it works for batches ?
-    ids = [[token_seq for token_seq in token_seq_list] for token_seq_list in tokenized['input_ids']]
+    ids = [[[token_seq for token_seq in token_seq_list] for token_seq_list in tokenized['input_ids']]]
 
     return ids
