@@ -23,7 +23,7 @@ def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128):
             stride=doc_stride
         )
     else:
-        tokenized = [tokenizer(x) for x in x1]
+        tokenized = tokenizer(x1)
 
     # extract token ids
     # TODO: is this how it works for batches ?

@@ -53,27 +53,22 @@ else:
 
 tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 
-# JUST FOR testing
-print(ds_train[0]['instruction'])
-print(ds_train[0]['input'])
-print(ds_train[0]['output'])
-
 # NOTE: row names are only for mediQA rn
 ds_train_tokenized = ds_train.map(lambda row: {
-    'input_tokens': tokenize_qa(row['instruction'], row['input']), 
-    'output_tokens': tokenize_qa(row['output'])
+    'input_tokens': tokenize_qa(tokenizer, row['instruction'], row['input']), 
+    'output_tokens': tokenize_qa(tokenizer, row['output'])
 }, batched=True, remove_columns=ds_train.column_names)
 
 ds_val_tokenized = ds_val.map(lambda row: {
-    'input_tokens': tokenize_qa(row['instruction'], row['input']), 
-    'output_tokens': tokenize_qa(row['output'])
+    'input_tokens': tokenize_qa(tokenizer, row['instruction'], row['input']), 
+    'output_tokens': tokenize_qa(tokenizer, row['output'])
 }, batched=True, remove_columns=ds_val.column_names)
 
 ds_test_tokenized = None
 if ds_test:
     ds_test_tokenized = ds_test.map(lambda row: {
-        'input_tokens': tokenize_qa(row['instruction'], row['input']), 
-        'output_tokens': tokenize_qa(row['output'])
+        'input_tokens': tokenize_qa(tokenizer, row['instruction'], row['input']), 
+        'output_tokens': tokenize_qa(tokenizer, row['output'])
     }, batched=True, remove_columns=ds_test.column_names)
 
 # TEMP FOR testing
