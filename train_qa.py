@@ -17,6 +17,7 @@ from datasets import Dataset, load_dataset
 from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data_collator
 
 from qa_model import QA_Model
+from embedder import Embedder
 from data_utils import tokenize_qa
 
 tokenizer_source = "medalpaca/medalpaca-13b"
@@ -53,6 +54,14 @@ else:
 
 tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 
+'''
+TODO
+
+edit single-item tokenization so it doesn't overflow
+edit qa model to work from embeddings only (just linear units and head)
+write demo: embed max length seqs, then concat embeddings to feed into MLP
+'''
+
 # NOTE: row names are only for mediQA rn
 ds_train_tokenized = ds_train.map(lambda row: {
     'input_tokens': tokenize_qa(tokenizer, row['instruction'], row['input']), 
@@ -77,6 +86,11 @@ print(ds_train_tokenized[0])
 print(ds_val_tokenized)
 print(ds_val_tokenized[0])
 quit()
+
+'''
+DEMO
+Run this to show some inference results
+'''
 
 # TODO: Load in model
 if os.path.exists(model_source):
