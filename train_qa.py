@@ -89,7 +89,7 @@ print(len(ds_train_tokenized[0]['input_tokens'][0]))
 print(len(ds_train_tokenized[0]['output_tokens']))
 print(len(ds_train_tokenized[0]['output_tokens'][0]))
 
-for tokens in ds_train_tokenized[0]['output_tokens']:
+for tokens in ds_train_tokenized[0]['input_tokens']:
     print(tokenizer.decode(tokens))
 
 quit()
