@@ -144,6 +144,7 @@ for epoch in range(epochs):
         latents = torch.cat(latents, padding)  # pad to length
         latents = latents[None, :]  # add batch dim
         print(latents)
+        quit()
         preds = head(latents)
         print(preds)
 
