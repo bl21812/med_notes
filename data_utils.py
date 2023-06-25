@@ -26,7 +26,7 @@ def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128):
     else:
         tokenized = tokenizer(
             x1,
-            max_length=int(max_seq_length/4),
+            max_length=max_seq_length,
             truncation=True,
             stride=0
         )

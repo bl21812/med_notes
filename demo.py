@@ -11,12 +11,14 @@ import pandas as pd
 
 from datasets import Dataset, load_dataset
 from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data_collator, AutoModelForCausalLM, AutoConfig, \
-    AutoModelForQuestionAnswering, pipeline, LlamaForCausalLM
+    AutoModelForQuestionAnswering, pipeline, LlamaForCausalLM, GenerationConfig
 
 from accelerate import init_empty_weights, load_checkpoint_and_dispatch, infer_auto_device_map
 
 from data_utils import tokenize_qa
+from medalpaca_prompt_handler import DataHandler
 
+prompt_template = "medalpaca/prompt_templates/medalpaca.json"
 tokenizer_source = "medalpaca/medalpaca-13b"
 model_source = "medalpaca/medalpaca-13b"
 data_source = "medalpaca/medical_meadow_mediqa"
@@ -75,10 +77,17 @@ if use_default_pipeline:
 
 tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 
+data_handler = DataHandler(tokenizer, prompt_template=prompt_template, model_max_length=seq_max_length, train_on_inputs=False)
+
 # NOTE: row names are only for mediQA rn
 ds_tokenized = ds.map(lambda row: {
-    'input_tokens': tokenize_qa(tokenizer, row['instruction'], row['input'], max_seq_length=seq_max_length, doc_stride=seq_doc_stride)
-})
+    'input_tokens': tokenize_qa(
+        tokenizer, 
+        data_handler.generate_prompt(instruction=row['instruction'], input=row['input']),  # pass output ??
+        max_seq_length=seq_max_length, 
+        doc_stride=seq_doc_stride
+    )
+})  # Custom tokenization
 
 '''
 INFO: 
@@ -108,20 +117,19 @@ Each DS is:
 if os.path.exists(model_source):
     model = None
 else:
-    # config = AutoConfig.from_pretrained(model_source)
-    # with init_empty_weights():
-        # model = LlamaForCausalLM._from_config(config)
-    # model.tie_weights()
-    # max_memory = {0: "0GIB", 1: "0GIB", 2: "0GIB", 3: "8GIB"}  # only last GPU
-    # device_map = infer_auto_device_map(model, max_memory=max_memory)
-    device_map = {"": 0}  # from medalpaca inferer class
+    config = AutoConfig.from_pretrained(model_source)
+    with init_empty_weights():
+        model = LlamaForCausalLM._from_config(config)
+    model.tie_weights()
+    max_memory = {0: "0GIB", 1: "0GIB", 2: "0GIB", 3: "8GIB"}  # only last GPU
+    device_map = infer_auto_device_map(model, max_memory=max_memory)
+    # device_map = {"": 0}  # from medalpaca inferer class
     model = LlamaForCausalLM.from_pretrained(
         model_source, 
-        load_in_8bit=True,
         device_map=device_map, 
         offload_folder='offload', 
         torch_dtype=torch.float16
-    )
+    )  # ideally load in 8bit but doesn't seem to be working on server
     model.eval()
     '''model = load_checkpoint_and_dispatch(
         model,
@@ -135,7 +143,7 @@ idx = 0
 while True:
 
     item = ds_tokenized[idx]
-    inputs = item['input_tokens'][0]  # NOTE: ignore batch dim for now
+    inputs = item['input_tokens']
     true_output = item['output']
     instruction = item['instruction']
     context = item['input']
@@ -150,13 +158,15 @@ while True:
     print()
 
     # Get model prediction
-    generate_ids = model.generate(torch.tensor([inputs]).to('cuda'), max_new_tokens=500)  # need a max length ?
-    print(generate_ids)
-    print()
-    pred = tokenizer.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
-    print('---------- PREDICTED OUTPUT ----------')
-    print(pred)
-    print()
+    generation_config = GenerationConfig(max_new_tokens=512)
+    with torch.no_grad():
+        generate_ids = model.generate(torch.tensor(inputs).to('cuda'), generation_config=generation_config)  # need a max length ?
+        print(generate_ids)
+        print()
+        pred = tokenizer.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
+        print('---------- PREDICTED OUTPUT ----------')
+        print(pred)
+        print()
 
     inp = input()
     if not (inp == ''):
