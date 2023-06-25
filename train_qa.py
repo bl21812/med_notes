@@ -88,7 +88,7 @@ if ds_test:
 # print(len(ds_train_tokenized[0]['output_tokens'][0]))
 
 for i in range(1000):
-    for batch in ds_train_tokenized[0]['input_tokens']:
+    for batch in ds_train_tokenized[i]['input_tokens']:
         if len(batch[0]) > 1:
             for tokens in batch:
                 print(tokenizer.decode(tokens))
@@ -104,7 +104,7 @@ Each DS is:
             [
                 [
                     [token_seq_1],
-                    [token_seq_2],
+                    ...
                 ]
             ]
         ], 
