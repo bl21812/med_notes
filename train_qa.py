@@ -30,8 +30,9 @@ data_source = "medalpaca/medical_meadow_mediqa"
 seq_max_length = 2048  # llama max sequence length
 seq_doc_stride = 128  # NOTE: may need to be changed
 
-latent_dims = 5120 * 5
+num_attention_units = 15
 fc_layers = 1
+latent_dims = 5120 * 5
 
 val_prop = 0.1
 test_prop = 0
@@ -108,7 +109,7 @@ Each DS is:
 '''
 
 # TODO: Load in model
-embedder = Embedder(llm_version)
+embedder = Embedder(llm_version, num_units=num_attention_units)
 if os.path.exists(model_source):
     head = None
 else:

@@ -7,7 +7,7 @@ from transformers import AutoModelForCausalLM
 
 class Embedder(torch.nn.Module):
 
-    def __init__(self, llm_vers, num_units=20):
+    def __init__(self, llm_vers, num_units=15):
         super().__init__()
         base_lm = AutoModelForCausalLM.from_pretrained(llm_vers, device_map="auto")
         self.embed = base_lm.model.embed_tokens
