@@ -30,7 +30,7 @@ data_source = "medalpaca/medical_meadow_mediqa"
 seq_max_length = 2048  # llama max sequence length
 seq_doc_stride = 128  # NOTE: may need to be changed
 
-num_attention_units = 15
+num_attention_units = 10
 fc_layers = 1
 latent_dims = 5120 * 5
 
