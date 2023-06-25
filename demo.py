@@ -82,14 +82,18 @@ while True:
 
     item = ds_tokenized[idx]
     inputs = item['input_tokens'][0]  # NOTE: ignore batch dim for now
-    outputs = item['output_tokens'][0]
+    true_output = item['output'][0]
     print('---------- INPUT ----------')
     print(inputs)
+    print()
+    print('---------- EXPECTED OUTPUT ----------')
+    print(true_output)
+    print()
 
     # Get model prediction
     generate_ids = model.generate(inputs)  # need a max length ?
     pred = tokenizer.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
-    print('---------- OUTPUT ----------')
+    print('---------- PREDICTED OUTPUT ----------')
     print(pred)
 
     inp = input()
