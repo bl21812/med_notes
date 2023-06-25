@@ -68,19 +68,19 @@ write demo: embed max length seqs, then concat embeddings to feed into MLP
 ds_train_tokenized = ds_train.map(lambda row: {
     'input_tokens': tokenize_qa(tokenizer, row['instruction'], row['input']), 
     'output_tokens': tokenize_qa(tokenizer, row['output'])
-}, batched=True, remove_columns=ds_train.column_names)
+}, remove_columns=ds_train.column_names)
 
 ds_val_tokenized = ds_val.map(lambda row: {
     'input_tokens': tokenize_qa(tokenizer, row['instruction'], row['input']), 
     'output_tokens': tokenize_qa(tokenizer, row['output'])
-}, batched=True, remove_columns=ds_val.column_names)
+}, remove_columns=ds_val.column_names)
 
 ds_test_tokenized = None
 if ds_test:
     ds_test_tokenized = ds_test.map(lambda row: {
         'input_tokens': tokenize_qa(tokenizer, row['instruction'], row['input']), 
         'output_tokens': tokenize_qa(tokenizer, row['output'])
-    }, batched=True, remove_columns=ds_test.column_names)
+    }, remove_columns=ds_test.column_names)
 
 # TEMP FOR testing
 print(ds_train_tokenized[0].keys())
