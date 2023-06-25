@@ -30,7 +30,7 @@ data_source = "medalpaca/medical_meadow_mediqa"
 seq_max_length = 2048  # llama max sequence length
 seq_doc_stride = 128  # NOTE: may need to be changed
 
-num_attention_units = 20
+num_attention_units = 40
 fc_layers = 1
 latent_dims = 5000000  # each embedding is about 1.2 million features
 
@@ -134,6 +134,8 @@ for epoch in range(epochs):
         latents = None
         for input in inputs:
             l = embedder(torch.tensor([input]))[0]
+            print(l)
+            print(l.size())
             if not latents:
                 latents = l  # add batch dim for model input
             else:
