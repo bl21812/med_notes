@@ -19,7 +19,7 @@ class QA_Head(torch.nn.Module):
 
         # Output head
         # set bias to false to match llama mlp head
-        self.fc_layers.append(torch.nn.Linear(in_features=input_dims, out_features=output_dims, device='cuda:3', bias=False))
+        self.fc_layers.append(torch.nn.Linear(in_features=input_dims, out_features=output_dims, device='cuda:0', bias=False))
 
     
     def forward(self, x):
