@@ -95,7 +95,7 @@ while True:
     print()
 
     # Get model prediction
-    generate_ids = model.generate(torch.tensor([inputs]))  # need a max length ?
+    generate_ids = model.generate(torch.tensor([inputs]).to('cuda'), max_new_tokens=500)  # need a max length ?
     pred = tokenizer.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
     print('---------- PREDICTED OUTPUT ----------')
     print(pred)
