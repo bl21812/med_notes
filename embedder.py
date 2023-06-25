@@ -23,7 +23,7 @@ class Embedder(torch.nn.Module):
             latents = embeddings
             for unit in self.attention_units:
                 print(latents)
-                latents = unit(latents)[0]  # because the output is a tuple
+                latents = unit(latents)
 
             latents = self.norm(latents)
 
