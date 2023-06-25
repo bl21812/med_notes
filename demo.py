@@ -11,7 +11,7 @@ import pandas as pd
 
 from datasets import Dataset, load_dataset
 from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data_collator, AutoModelForCausalLM, AutoConfig, \
-    AutoModelForQuestionAnswering, pipeline
+    AutoModelForQuestionAnswering, pipeline, LlamaForCausalLM
 
 from accelerate import init_empty_weights, load_checkpoint_and_dispatch, infer_auto_device_map
 
@@ -32,18 +32,9 @@ if os.path.exists(data_source):
 else:
     ds = load_dataset(data_source, split='train')
 
-# Preprocessing (including tokenization)
-
-tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
-
+# THIS DIDNT WORK FOR SOME REASON LOL
 '''
-TODO
-
-edit qa model to work from embeddings only (just linear units and head)
-write demo: embed max length seqs, then concat embeddings to feed into MLP
-'''
-
-use_default_pipeline = True
+use_default_pipeline = False
 if use_default_pipeline:
 
     qa_pipeline = pipeline('question-answering', model=model_source, tokenizer=model_source)
@@ -76,6 +67,13 @@ if use_default_pipeline:
         if not (inp == ''):
             break
         idx += 1
+
+    quit()
+'''
+    
+# Preprocessing (including tokenization)
+
+tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 
 # NOTE: row names are only for mediQA rn
 ds_tokenized = ds.map(lambda row: {
@@ -112,11 +110,17 @@ if os.path.exists(model_source):
 else:
     config = AutoConfig.from_pretrained(model_source)
     with init_empty_weights():
-        model = AutoModelForQuestionAnswering.from_config(config)
+        model = LlamaForCausalLM.from_config(config)
     model.tie_weights()
     max_memory = {0: "0GIB", 1: "0GIB", 2: "0GIB", 3: "8GIB"}  # only last GPU
     device_map = infer_auto_device_map(model, max_memory=max_memory)
-    model = AutoModelForQuestionAnswering.from_pretrained(model_source, device_map=device_map, offload_folder='offload', torch_dtype=torch.float16)
+    # device_map = {"": 0}  # from medalpaca inferer class
+    model = LlamaForCausalLM.from_pretrained(
+        model_source, 
+        device_map=device_map, 
+        offload_folder='offload', 
+        torch_dtype=torch.float16
+    )
     '''model = load_checkpoint_and_dispatch(
         model,
         "medalpaca-13b",
@@ -145,9 +149,12 @@ while True:
 
     # Get model prediction
     generate_ids = model.generate(torch.tensor([inputs]).to('cuda'), max_new_tokens=500)  # need a max length ?
+    print(generate_ids)
+    print()
     pred = tokenizer.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
     print('---------- PREDICTED OUTPUT ----------')
     print(pred)
+    print()
 
     inp = input()
     if not (inp == ''):
