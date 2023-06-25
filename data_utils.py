@@ -1,6 +1,6 @@
 # NOTE: I might have to change the [D:] and [P:] speaker indicators to 
     # become special tokens for finetuning
-def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128, pad_length=32001):
+def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128):
     '''
     Tokenize question(s) and context(s) for a QA task
     :param x1: batch of [questions] or batch of [outputs]

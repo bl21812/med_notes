@@ -1,15 +1,6 @@
 '''
-Notes
-
-Medical meadow mediQA dataset has 2208 entries
-columns are 'input', 'instruction', and 'output'
-and is by default one train split only
-
-long sequences are currently split - but to train with those we need
-    SOAP for each split section !! (i split first then u label)
-
-CURRENTLY USING THE WHOLE DECODER
-    just tacking on a custom MLP head
+Script to run inference using a given model and dataset
+and view outputs step by step
 '''
 
 import numpy as np
@@ -19,33 +10,16 @@ import torch
 import pandas as pd
 
 from datasets import Dataset, load_dataset
-from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data_collator
+from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data_collator, AutoModelForCausalLM
 
-from qa_model import QA_Head
-from embedder import Embedder
 from data_utils import tokenize_qa
 
-llm_version = "medalpaca/medalpaca-13b"  # always taken for embeddings
 tokenizer_source = "medalpaca/medalpaca-13b"
 model_source = "medalpaca/medalpaca-13b"
 data_source = "medalpaca/medical_meadow_mediqa"
 
-seq_max_length = 2048  # llama max sequence length
+seq_max_length = 32001  # llama max sequence length  # ORIGINAL 2048
 seq_doc_stride = 128  # NOTE: may need to be changed
-
-num_attention_units = 40
-fc_layers = 1
-latent_dims = 5120  # each embedding is about 1.2 million features
-
-val_prop = 0.1
-test_prop = 0
-
-batch_size = 1
-lr = 2e-5  # NOTE: may need to be increased
-epochs = 3  # NOTE: may need to be increased
-decay = 0.01  # NOTE: idk what val
-
-model_save_name = 'mediQA_finetuned'
 
 # Load data 
 # TODO: Add splits for custom loading
@@ -53,11 +27,7 @@ if os.path.exists(data_source):
     df = pd.read_csv(data_source)
     ds = Dataset.from_pandas(df)
 else:
-    ds_train = load_dataset(data_source, split='train[:{}%]'.format(int(100 * (1 - val_prop - test_prop))))
-    ds_val = load_dataset(data_source, split='train[{}%:{}%]'.format(int(100 * (1 - val_prop - test_prop)), int(100 * (1 - test_prop))))
-    ds_test = None
-    if test_prop:
-        ds_test = load_dataset(data_source, split='train[{}%:]'.format(int(100 * (1 - test_prop))))
+    ds = load_dataset(data_source, split='train')
 
 # Preprocessing (including tokenization)
 
@@ -70,25 +40,11 @@ edit qa model to work from embeddings only (just linear units and head)
 write demo: embed max length seqs, then concat embeddings to feed into MLP
 '''
 
-# OUTPUT SHOULD BE TRUNCATED WITHOUT ANY DOC STRIDE - since it's considered one thing
-
 # NOTE: row names are only for mediQA rn
-ds_train_tokenized = ds_train.map(lambda row: {
+ds_tokenized = ds.map(lambda row: {
     'input_tokens': tokenize_qa(tokenizer, row['instruction'], row['input'], max_seq_length=seq_max_length, doc_stride=seq_doc_stride), 
-    'output_tokens': tokenize_qa(tokenizer, row['output'])
-}, remove_columns=ds_train.column_names)
-
-ds_val_tokenized = ds_val.map(lambda row: {
-    'input_tokens': tokenize_qa(tokenizer, row['instruction'], row['input'], max_seq_length=seq_max_length, doc_stride=seq_doc_stride), 
-    'output_tokens': tokenize_qa(tokenizer, row['output'])
-}, remove_columns=ds_val.column_names)
-
-ds_test_tokenized = None
-if ds_test:
-    ds_test_tokenized = ds_test.map(lambda row: {
-        'input_tokens': tokenize_qa(tokenizer, row['instruction'], row['input'], max_seq_length=seq_max_length, doc_stride=seq_doc_stride), 
-        'output_tokens': tokenize_qa(tokenizer, row['output'])
-    }, remove_columns=ds_test.column_names)
+    'output': row['output']
+}, remove_columns=ds.column_names)
 
 '''
 INFO: 
@@ -115,15 +71,38 @@ Each DS is:
 # Load in model
 # TODO: Add code for locally saved model
 if os.path.exists(model_source):
-    head = None
+    model = None
 else:
-    head = QA_Head(fc_layers=fc_layers, input_dims=latent_dims)
+    model = AutoModelForCausalLM.from_pretrained(model_source, device_map="auto")  # JUST TAKE THE MODEL FROM HUGGINGFACE
 
-# if we load this in first it takes up all the memory
-embedder = Embedder(llm_version, num_units=num_attention_units)
 
-loss_func = None
-optimizer = None
+inp = ''
+idx = 0
+while True:
+
+    item = ds_tokenized[idx]
+    inputs = item['input_tokens'][0]  # NOTE: ignore batch dim for now
+    outputs = item['output_tokens'][0]
+    print('---------- INPUT ----------')
+    print(inputs)
+
+    # Get model prediction
+    generate_ids = model.generate(inputs)  # need a max length ?
+    pred = tokenizer.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
+    print('---------- OUTPUT ----------')
+    print(pred)
+
+    inp = input()
+    if not (inp == ''):
+        break
+    idx += 1
+
+
+'''
+EVERYTHING UNDER IS OLD
+'''
+
+quit()
 
 # NOTE: PAUSE
 # why don't i just try using the full model (like as is from huggingface)
