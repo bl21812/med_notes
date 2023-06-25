@@ -10,7 +10,9 @@ import torch
 import pandas as pd
 
 from datasets import Dataset, load_dataset
-from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data_collator, AutoModelForCausalLM
+from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data_collator, AutoModelForCausalLM, AutoConfig
+
+from accelerate import init_empty_weights, load_checkpoint_and_dispatch, infer_auto_device_map
 
 from data_utils import tokenize_qa
 
@@ -68,11 +70,23 @@ Each DS is:
 '''
 
 # Load in model
+
 # TODO: Add code for locally saved model
 if os.path.exists(model_source):
     model = None
 else:
-    model = AutoModelForCausalLM.from_pretrained(model_source, device_map="auto")  # JUST TAKE THE MODEL FROM HUGGINGFACE
+    config = AutoConfig.from_pretrained(model_source)
+    with init_empty_weights():
+        model = AutoModelForCausalLM.from_config(config)
+    model.tie_weights()
+    max_memory = {0: "0GIB", 1: "0GIB", 2: "8GIB", 3: "8GIB"}  # only use GPU 2 and 3
+    device_map = infer_auto_device_map(model, max_memory=max_memory)
+    model = AutoModelForCausalLM.from_pretrained(model_source, device_map="auto")
+    '''model = load_checkpoint_and_dispatch(
+        model,
+        "",  # where are the checkpoint files ?
+        device_map=device_map
+    )'''
 
 
 inp = ''
