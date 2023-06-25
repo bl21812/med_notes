@@ -133,7 +133,7 @@ for epoch in range(epochs):
         # Forward pass
         latents = []
         for input in inputs:
-            latents += embedder(torch.tensor(input))
+            latents += embedder(torch.tensor([input]))  # add batch dim
             print(latents)
         latents += ([0] * (latent_dims - len(latents)))  # pad to length
         latents = torch.tensor(latents)  # NOTE: have to send to device ???
