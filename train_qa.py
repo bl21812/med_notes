@@ -9,6 +9,8 @@ long sequences are currently split - but to train with those we need
     SOAP for each split section !! (i split first then u label)
 '''
 
+import numpy as np
+
 import os
 import torch
 import pandas as pd
@@ -89,9 +91,10 @@ if ds_test:
 
 for i in range(1000):
     for batch in ds_train_tokenized[i]['input_tokens']:
-        if len(batch[0]) > 1:
+        print(np.array(batch).shape)
+        '''if len(batch) > 1:
             for tokens in batch:
-                print(tokenizer.decode(tokens))
+                print(tokenizer.decode(tokens))'''
 
 quit()
 
