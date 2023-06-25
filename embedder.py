@@ -24,9 +24,10 @@ class Embedder(torch.nn.Module):
             for unit in self.attention_units:
                 if isinstance(latents, tuple):
                     latents = latents[0]
-                latents = unit(latents)
                 print(latents.size())
+                latents = unit(latents)
 
+            print(latents.size())
             if isinstance(latents, tuple):
                 latents = latents[0]
             latents = self.norm(latents)
