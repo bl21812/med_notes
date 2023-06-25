@@ -90,8 +90,12 @@ if ds_test:
 # print(len(ds_train_tokenized[0]['output_tokens'][0]))
 
 for i in range(len(ds_train_tokenized)):
-    for batch in ds_train_tokenized[i]['output_tokens']:
-        print(np.array(batch).shape)
+    for batch in ds_train_tokenized[i]['input_tokens']:
+        if len(batch) > 1:
+            print('next one')
+            for item in batch:
+                print(np.array(item).shape)
+        # print(np.array(batch).shape)
         '''if len(batch) > 1:
             for tokens in batch:
                 print(tokenizer.decode(tokens))'''
