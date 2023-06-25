@@ -140,6 +140,8 @@ for epoch in epochs:
         quit()
 
         # Compute loss
+        # concat outputs with each other if applicable
+        # and compute loss
         loss = None
 
         # Update network
