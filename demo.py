@@ -10,7 +10,7 @@ import torch
 import pandas as pd
 
 from datasets import Dataset, load_dataset
-from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data_collator, AutoModelForCausalLM, AutoConfig
+from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data_collator, AutoModelForCausalLM, AutoConfig, AutoModelForQuestionAnswering
 
 from accelerate import init_empty_weights, load_checkpoint_and_dispatch, infer_auto_device_map
 
@@ -81,7 +81,7 @@ else:
     model.tie_weights()
     max_memory = {0: "0GIB", 1: "0GIB", 2: "0GIB", 3: "8GIB"}  # only last GPU
     device_map = infer_auto_device_map(model, max_memory=max_memory)
-    model = AutoModelForCausalLM.from_pretrained(model_source, device_map=device_map, offload_folder='offload', torch_dtype=torch.float16)
+    model = AutoModelForQuestionAnswering.from_pretrained(model_source, device_map=device_map, offload_folder='offload', torch_dtype=torch.float16)
     '''model = load_checkpoint_and_dispatch(
         model,
         "medalpaca-13b",
