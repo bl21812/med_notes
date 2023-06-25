@@ -10,7 +10,8 @@ import torch
 import pandas as pd
 
 from datasets import Dataset, load_dataset
-from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data_collator, AutoModelForCausalLM, AutoConfig, AutoModelForQuestionAnswering
+from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data_collator, AutoModelForCausalLM, AutoConfig, \
+    AutoModelForQuestionAnswering, pipeline
 
 from accelerate import init_empty_weights, load_checkpoint_and_dispatch, infer_auto_device_map
 
@@ -41,6 +42,40 @@ TODO
 edit qa model to work from embeddings only (just linear units and head)
 write demo: embed max length seqs, then concat embeddings to feed into MLP
 '''
+
+use_default_pipeline = True
+if use_default_pipeline:
+
+    qa_pipeline = pipeline('question-answering', model=model_source, tokenizer=model_source)
+
+    inp = ''
+    idx = 0
+
+    while True:
+
+        item = ds[idx]
+        true_output = item['output']
+        instruction = item['instruction']
+        context = item['input']
+        print('---------- INSTRUCTION ----------')
+        print(instruction)
+        print()
+        print('---------- CONTEXT ----------')
+        print(context)
+        print()
+        print('---------- EXPECTED OUTPUT ----------')
+        print(true_output)
+        print()
+
+        # Get model prediction
+        pred = qa_pipeline({'question': instruction, 'context': context})
+        print('---------- PREDICTED OUTPUT ----------')
+        print(pred)
+
+        inp = input()
+        if not (inp == ''):
+            break
+        idx += 1
 
 # NOTE: row names are only for mediQA rn
 ds_tokenized = ds.map(lambda row: {
