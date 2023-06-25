@@ -22,6 +22,8 @@ class Embedder(torch.nn.Module):
 
             latents = embeddings
             for unit in self.attention_units:
+                if isinstance(latents, tuple):
+                    latents = latents[0]
                 print(latents)
                 latents = unit(latents)
 
