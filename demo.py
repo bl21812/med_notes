@@ -82,6 +82,7 @@ while True:
 
     item = ds_tokenized[idx]
     inputs = item['input_tokens'][0]  # NOTE: ignore batch dim for now
+    inputs = inputs[0]  # assume there isn't any overflow
     true_output = item['output'][0]
     print('---------- INPUT ----------')
     print(inputs)
