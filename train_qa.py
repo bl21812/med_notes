@@ -18,16 +18,20 @@ import pandas as pd
 from datasets import Dataset, load_dataset
 from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data_collator
 
-from qa_model import QA_Model
+from qa_model import QA_Head
 from embedder import Embedder
 from data_utils import tokenize_qa
 
+llm_version = "medalpaca/medalpaca-13b"  # always taken for embeddings
 tokenizer_source = "medalpaca/medalpaca-13b"
 model_source = "medalpaca/medalpaca-13b"
 data_source = "medalpaca/medical_meadow_mediqa"
 
 seq_max_length = 2048  # llama max sequence length
 seq_doc_stride = 128  # NOTE: may need to be changed
+
+latent_dims = 5120 * 5
+fc_layers = 1
 
 val_prop = 0.1
 test_prop = 0
@@ -59,7 +63,6 @@ tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 '''
 TODO
 
-edit single-item tokenization so it doesn't overflow
 edit qa model to work from embeddings only (just linear units and head)
 write demo: embed max length seqs, then concat embeddings to feed into MLP
 '''
@@ -82,26 +85,6 @@ if ds_test:
         'output_tokens': tokenize_qa(tokenizer, row['output'])
     }, remove_columns=ds_test.column_names)
 
-# TEMP FOR testing
-# print(ds_train_tokenized[0].keys())
-# print(len(ds_train_tokenized[0]['input_tokens']))
-# print(len(ds_train_tokenized[0]['input_tokens'][0]))
-# print(len(ds_train_tokenized[0]['output_tokens']))
-# print(len(ds_train_tokenized[0]['output_tokens'][0]))
-
-for i in range(len(ds_train_tokenized)):
-    for batch in ds_train_tokenized[i]['input_tokens']:
-        if len(batch) > 1:
-            print('next one')
-            for item in batch:
-                print(np.array(item).shape)
-        # print(np.array(batch).shape)
-        '''if len(batch) > 1:
-            for tokens in batch:
-                print(tokenizer.decode(tokens))'''
-
-quit()
-
 '''
 INFO: 
 Each DS is: 
@@ -109,10 +92,8 @@ Each DS is:
     {
         'input_tokens': [
             [
-                [
-                    [token_seq_1],
-                    ...
-                ]
+                [token_seq_1],
+                ...
             ]
         ], 
         'output_tokens': [
@@ -121,21 +102,50 @@ Each DS is:
                 ...
             ]
         ],
-    }
+    }, 
+    ... (next item)
 ]
 '''
 
-'''
-DEMO
-Run this to show some inference results
-'''
-
 # TODO: Load in model
+embedder = Embedder(llm_version)
 if os.path.exists(model_source):
-    model = None
+    head = None
 else:
-    model = QA_Model(model_source)
+    head = QA_Head(fc_layers=fc_layers, input_dims=latent_dims)
 
+loss_func = None
+optimizer = None
+
+# train loop
+for epoch in epochs:
+
+    for i in range(len(ds_train_tokenized)):
+
+        item = ds_train_tokenized[i]
+        inputs = item['input_tokens'][0]  # NOTE: ignore batch dim for now
+        outputs = item['output_tokens'][0]
+
+        # Forward pass
+        latents = []
+        for input in inputs:
+            latents += embedder(input)
+        latents += ([0] * (latent_dims - len(latents)))  # pad to length
+        latents = torch.tensor(latents)  # NOTE: have to send to device ???
+        preds = head(latents)
+
+        # Compute loss
+        loss = None
+
+        # Update network
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+    for i in range(len(ds_val_tokenized)):
+        print()
+
+# NO TO THE BELOW
 args = TrainingArguments(
     model_save_name,
     evaluation_strategy = "epoch",
