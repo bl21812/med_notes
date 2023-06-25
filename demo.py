@@ -110,7 +110,7 @@ if os.path.exists(model_source):
 else:
     config = AutoConfig.from_pretrained(model_source)
     with init_empty_weights():
-        model = LlamaForCausalLM.from_config(config)
+        model = LlamaForCausalLM._from_config(config)
     model.tie_weights()
     max_memory = {0: "0GIB", 1: "0GIB", 2: "0GIB", 3: "8GIB"}  # only last GPU
     device_map = infer_auto_device_map(model, max_memory=max_memory)
