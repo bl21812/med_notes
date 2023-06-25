@@ -30,4 +30,6 @@ class Embedder(torch.nn.Module):
                 latents = latents[0]
             latents = self.norm(latents)
 
+            latents = [torch.flatten(latents) for l in latents]
+
         return latents
