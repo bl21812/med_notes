@@ -89,8 +89,7 @@ if ds_test:
 
 for i in range(1000):
     for batch in ds_train_tokenized[0]['input_tokens']:
-        print(len(batch))
-        if len(batch) > 1:
+        if len(batch[0]) > 1:
             for tokens in batch:
                 print(tokenizer.decode(tokens))
 
