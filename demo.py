@@ -108,19 +108,21 @@ Each DS is:
 if os.path.exists(model_source):
     model = None
 else:
-    config = AutoConfig.from_pretrained(model_source)
-    with init_empty_weights():
-        model = LlamaForCausalLM._from_config(config)
-    model.tie_weights()
-    max_memory = {0: "0GIB", 1: "0GIB", 2: "0GIB", 3: "8GIB"}  # only last GPU
-    device_map = infer_auto_device_map(model, max_memory=max_memory)
-    # device_map = {"": 0}  # from medalpaca inferer class
+    # config = AutoConfig.from_pretrained(model_source)
+    # with init_empty_weights():
+        # model = LlamaForCausalLM._from_config(config)
+    # model.tie_weights()
+    # max_memory = {0: "0GIB", 1: "0GIB", 2: "0GIB", 3: "8GIB"}  # only last GPU
+    # device_map = infer_auto_device_map(model, max_memory=max_memory)
+    device_map = {"": 0}  # from medalpaca inferer class
     model = LlamaForCausalLM.from_pretrained(
         model_source, 
+        load_in_8bit=True,
         device_map=device_map, 
         offload_folder='offload', 
         torch_dtype=torch.float16
     )
+    model.eval()
     '''model = load_checkpoint_and_dispatch(
         model,
         "medalpaca-13b",
