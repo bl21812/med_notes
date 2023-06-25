@@ -85,6 +85,7 @@ if ds_test:
 # TEMP FOR testing
 print(ds_train_tokenized[0].keys())
 print(len(ds_train_tokenized[0]['input_tokens']))
+print(ds_train_tokenized[0]['input_tokens'])
 print(len(ds_train_tokenized[0]['input_tokens'][0]))
 print(len(ds_train_tokenized[0]['output_tokens']))
 print(len(ds_train_tokenized[0]['output_tokens'][0]))
