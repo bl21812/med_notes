@@ -138,7 +138,6 @@ for epoch in range(epochs):
                 latents = l  # add batch dim for model input
             else:
                 latents = torch.cat(latents, l)
-            print(latents)
             print(latents.size())
         quit()
         latents += ([0] * (latent_dims - len(latents)))  # pad to length
