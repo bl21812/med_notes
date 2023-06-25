@@ -79,7 +79,7 @@ else:
     with init_empty_weights():
         model = AutoModelForCausalLM.from_config(config)
     model.tie_weights()
-    max_memory = {0: "0GIB", 1: "0GIB", 2: "8GIB", 3: "8GIB"}  # only use GPU 2 and 3
+    max_memory = {0: "0GIB", 1: "6GIB", 2: "6GIB", 3: "6GIB"}  # avoid GPU 0
     device_map = infer_auto_device_map(model, max_memory=max_memory)
     model = AutoModelForCausalLM.from_pretrained(model_source, device_map="auto")
     '''model = load_checkpoint_and_dispatch(
