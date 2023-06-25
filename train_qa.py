@@ -125,14 +125,19 @@ for epoch in epochs:
         item = ds_train_tokenized[i]
         inputs = item['input_tokens'][0]  # NOTE: ignore batch dim for now
         outputs = item['output_tokens'][0]
+        print(inputs)
 
         # Forward pass
         latents = []
         for input in inputs:
             latents += embedder(input)
+            print(latents)
         latents += ([0] * (latent_dims - len(latents)))  # pad to length
         latents = torch.tensor(latents)  # NOTE: have to send to device ???
         preds = head(latents)
+        print(preds)
+
+        quit()
 
         # Compute loss
         loss = None
