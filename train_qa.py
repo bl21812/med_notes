@@ -121,7 +121,7 @@ loss_func = None
 optimizer = None
 
 # train loop
-for epoch in epochs:
+for epoch in range(epochs):
 
     for i in range(len(ds_train_tokenized)):
 
