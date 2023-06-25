@@ -18,7 +18,7 @@ from accelerate import init_empty_weights, load_checkpoint_and_dispatch, infer_a
 from data_utils import tokenize_qa
 from medalpaca_prompt_handler import DataHandler
 
-prompt_template = "medalpaca/prompt_templates/medalpaca.json"
+prompt_template = "prompt_template.json"
 tokenizer_source = "medalpaca/medalpaca-13b"
 model_source = "medalpaca/medalpaca-13b"
 data_source = "medalpaca/medical_meadow_mediqa"
