@@ -42,9 +42,8 @@ write demo: embed max length seqs, then concat embeddings to feed into MLP
 
 # NOTE: row names are only for mediQA rn
 ds_tokenized = ds.map(lambda row: {
-    'input_tokens': tokenize_qa(tokenizer, row['instruction'], row['input'], max_seq_length=seq_max_length, doc_stride=seq_doc_stride), 
-    'output': row['output']
-}, remove_columns=ds.column_names)
+    'input_tokens': tokenize_qa(tokenizer, row['instruction'], row['input'], max_seq_length=seq_max_length, doc_stride=seq_doc_stride)
+})
 
 '''
 INFO: 
@@ -82,17 +81,21 @@ while True:
 
     item = ds_tokenized[idx]
     inputs = item['input_tokens'][0]  # NOTE: ignore batch dim for now
-    inputs = inputs[0]  # assume there isn't any overflow
-    true_output = item['output'][0]
-    print('---------- INPUT ----------')
-    print(inputs)
+    true_output = item['output']
+    instruction = item['instruction']
+    context = item['input']
+    print('---------- INSTRUCTION ----------')
+    print(instruction)
+    print()
+    print('---------- CONTEXT ----------')
+    print(context)
     print()
     print('---------- EXPECTED OUTPUT ----------')
     print(true_output)
     print()
 
     # Get model prediction
-    generate_ids = model.generate(inputs)  # need a max length ?
+    generate_ids = model.generate(torch.tensor([inputs]))  # need a max length ?
     pred = tokenizer.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
     print('---------- PREDICTED OUTPUT ----------')
     print(pred)
