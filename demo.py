@@ -81,7 +81,7 @@ else:
     model.tie_weights()
     max_memory = {0: "0GIB", 1: "8GIB", 2: "8GIB", 3: "8GIB"}  # avoid GPU 0
     device_map = infer_auto_device_map(model, max_memory=max_memory)
-    model = AutoModelForCausalLM.from_pretrained(model_source, device_map=device_map)
+    model = AutoModelForCausalLM.from_pretrained(model_source, device_map=device_map, offload='offload')
     '''model = load_checkpoint_and_dispatch(
         model,
         "medalpaca-13b",
