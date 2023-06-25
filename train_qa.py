@@ -32,7 +32,7 @@ seq_doc_stride = 128  # NOTE: may need to be changed
 
 num_attention_units = 40
 fc_layers = 1
-latent_dims = 5000000  # each embedding is about 1.2 million features
+latent_dims = 5120  # each embedding is about 1.2 million features
 
 val_prop = 0.1
 test_prop = 0
