@@ -126,18 +126,18 @@ else:
     device_map = infer_auto_device_map(model, max_memory=max_memory)
     # device_map = {"": 0}  # from medalpaca inferer class
     model = LlamaForCausalLM.from_pretrained(
-        base_model_source, 
+        model_source,  # change to base_model_source if using peft
         device_map=device_map, 
         offload_folder='offload', 
         torch_dtype=torch.float16
     )  # ideally load in 8bit but doesn't seem to be working on server
-    model = PeftModel.from_pretrained(
+    '''model = PeftModel.from_pretrained(
         model,
         model_id=model_source,
         torch_dtype=torch.float16,
         device_map=device_map,
-    )
-    model.half()  # if not using 8-bit
+    )'''
+    model.half()
     model.eval()
     '''model = load_checkpoint_and_dispatch(
         model,
