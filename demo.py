@@ -186,7 +186,7 @@ while True:
             max_new_tokens=10000
         )
         print(generate_ids)
-        pred = tokenizer.decode(generate_ids[0], skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
+        pred = tokenizer.batch_decode(torch.squeeze(generate_ids), skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
         print('---------- PREDICTED OUTPUT ----------')
         print(pred)
         print()
