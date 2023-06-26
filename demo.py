@@ -5,6 +5,7 @@ and view outputs step by step
 
 import os
 import torch
+import random
 import pandas as pd
 import numpy as np
 
@@ -159,7 +160,9 @@ for item in tests:
 '''
 
 inp = ''
-idx = 1
+idx = random.randint(0, len(ds_tokenized) - 1)
+seen_idx = [idx]
+
 while True:
 
     item = ds_tokenized[idx]
@@ -194,7 +197,10 @@ while True:
     inp = input()
     if not (inp == ''):
         break
-    idx += 1
+
+    while idx in seen_idx:
+        idx = random.randint(0, len(ds_tokenized) - 1)
+    seen_idx.append(idx)
 
 
 '''
