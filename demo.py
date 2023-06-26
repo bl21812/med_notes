@@ -170,6 +170,12 @@ while True:
     true_output = item['output']
     instruction = item['instruction']
     context = item['input']
+
+    if len(context) > 1500:  # don't have enough memory for huge samples lol
+        while idx in seen_idx:
+            idx = random.randint(0, len(ds_tokenized) - 1)
+        continue
+
     print('---------- INSTRUCTION ----------')
     print(instruction)
     print()
