@@ -159,7 +159,7 @@ for item in tests:
 '''
 
 inp = ''
-idx = 0
+idx = 1
 while True:
 
     item = ds_tokenized[idx]
