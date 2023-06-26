@@ -81,10 +81,11 @@ tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 data_handler = DataHandler(tokenizer, prompt_template=prompt_template, model_max_length=seq_max_length, train_on_inputs=False)
 
 # NOTE: row names are only for mediQA rn
+# NOTE: flipped input and instruction cause maybe that's weird ?
 ds_tokenized = ds.map(lambda row: {
     'input_tokens': tokenize_qa(
         tokenizer, 
-        data_handler.generate_prompt(instruction=row['instruction'], input=row['input']),  # pass output ??
+        data_handler.generate_prompt(instruction=row['input'], input=row['instruction']),  # pass output ??
         max_seq_length=seq_max_length, 
         doc_stride=seq_doc_stride
     )
@@ -145,6 +146,17 @@ else:
         device_map=device_map
     )'''
 
+
+'''
+# Test a few examples
+tests = [
+    'what are the side effects of radiation therapy?',
+    'what are the symptoms of a common cold?'
+]
+
+for item in tests:
+    x = tokenizer(data_handler.generate_prompt(item))
+'''
 
 inp = ''
 idx = 0
