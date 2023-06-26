@@ -166,18 +166,14 @@ while True:
     print()
 
     # Get model prediction
-    generation_config = GenerationConfig(max_new_tokens=512)
+    generation_config = GenerationConfig(max_new_tokens=10000)
     with torch.no_grad():
-        generate_output = model.generate(
+        generate_ids = model.generate(
             torch.tensor([inputs]).to('cuda'), 
             generation_config=generation_config,
-            return_dict_in_generate=True,
-            output_scores=True,
-            max_new_tokens=512
+            max_new_tokens=10000
         )
-        pred = tokenizer.decode(generate_output.sequences[0])
-        split = f'{data_handler.prompt_template["output"]}'
-        response = pred.split(split)[-1].strip()
+        pred = tokenizer.decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
         print('---------- PREDICTED OUTPUT ----------')
         print(pred)
         print()
