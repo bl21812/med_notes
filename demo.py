@@ -8,7 +8,7 @@ import torch
 import pandas as pd
 import numpy as np
 
-from peft import PeftModel
+# from peft import PeftModel
 from datasets import Dataset, load_dataset
 from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data_collator, AutoModelForCausalLM, AutoConfig, \
     AutoModelForQuestionAnswering, pipeline, LlamaForCausalLM, GenerationConfig
