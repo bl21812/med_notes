@@ -3,12 +3,12 @@ Script to run inference using a given model and dataset
 and view outputs step by step
 '''
 
-import numpy as np
-
 import os
 import torch
 import pandas as pd
+import numpy as np
 
+from peft import PeftModel
 from datasets import Dataset, load_dataset
 from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data_collator, AutoModelForCausalLM, AutoConfig, \
     AutoModelForQuestionAnswering, pipeline, LlamaForCausalLM, GenerationConfig
@@ -21,6 +21,7 @@ from medalpaca_prompt_handler import DataHandler
 prompt_template = "prompt_template.json"
 tokenizer_source = "medalpaca/medalpaca-13b"
 model_source = "medalpaca/medalpaca-13b"
+base_model_source = "decapoda-research/llama-13b-hf"
 data_source = "medalpaca/medical_meadow_mediqa"
 
 seq_max_length = 32001  # llama max sequence length  # ORIGINAL 2048
@@ -125,11 +126,18 @@ else:
     device_map = infer_auto_device_map(model, max_memory=max_memory)
     # device_map = {"": 0}  # from medalpaca inferer class
     model = LlamaForCausalLM.from_pretrained(
-        model_source, 
+        base_model_source, 
         device_map=device_map, 
         offload_folder='offload', 
         torch_dtype=torch.float16
     )  # ideally load in 8bit but doesn't seem to be working on server
+    model = PeftModel.from_pretrained(
+        model,
+        model_id=model_source,
+        torch_dtype=torch.float16,
+        device_map=device_map,
+    )
+    model.half()  # if not using 8-bit
     model.eval()
     '''model = load_checkpoint_and_dispatch(
         model,
@@ -160,10 +168,16 @@ while True:
     # Get model prediction
     generation_config = GenerationConfig(max_new_tokens=512)
     with torch.no_grad():
-        generate_ids = model.generate(torch.tensor([inputs]).to('cuda'), generation_config=generation_config)  # need a max length ?
-        print(generate_ids)
-        print()
-        pred = tokenizer.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
+        generate_output = model.generate(
+            torch.tensor([inputs]).to('cuda'), 
+            generation_config=generation_config,
+            return_dict_in_generate=True,
+            output_scores=True,
+            max_new_tokens=512
+        )
+        pred = tokenizer.decode(generate_output.sequences[0])
+        split = f'{data_handler.prompt_template["output"]}'
+        response = pred.split(split)[-1].strip()
         print('---------- PREDICTED OUTPUT ----------')
         print(pred)
         print()

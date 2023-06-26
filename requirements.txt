@@ -4,3 +4,4 @@ accelerate
 torch
 pandas
 bitsandbytes
+peft
