@@ -160,7 +160,7 @@ while True:
     # Get model prediction
     generation_config = GenerationConfig(max_new_tokens=512)
     with torch.no_grad():
-        generate_ids = model.generate(torch.tensor(inputs).to('cuda'), generation_config=generation_config)  # need a max length ?
+        generate_ids = model.generate(torch.tensor([inputs]).to('cuda'), generation_config=generation_config)  # need a max length ?
         print(generate_ids)
         print()
         pred = tokenizer.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
