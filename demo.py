@@ -196,7 +196,7 @@ while True:
     # print('---------- CONTEXT ----------')
     # print(context)
     print('---------- TRANSCRIPT ----------')
-    print(transcript)
+    print(repr(transcript))
     print()
     print('---------- EXPECTED OUTPUT ----------')
     print(true_output)
