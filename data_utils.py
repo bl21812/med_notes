@@ -46,6 +46,6 @@ def preprocess_text(text):
     Any preprocessing needed for our read-in text data
     e.g. removing newline characters
     '''
-    text = text.replace('\\n', '')
-    text = text.replace('\\r', '')
+    text = text.replace('\\n', ' ')
+    text = text.replace('\\r', ' ')
     return text

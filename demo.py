@@ -81,6 +81,7 @@ if use_default_pipeline:
 # Preprocessing (including tokenization)
 
 tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
+print('Tokenizer loaded!')
 
 data_handler = DataHandler(tokenizer, prompt_template=prompt_template, model_max_length=seq_max_length, train_on_inputs=False)
 
@@ -182,12 +183,12 @@ while True:
     # instruction = item['instruction']
     # context = item['input']
 
-    if len(transcript) > 1500:  # don't have enough memory for huge samples lol
+    '''if len(transcript) > 1500:  # don't have enough memory for huge samples lol
         if idx not in seen_idx:
             seen_idx.append(idx)
         while idx in seen_idx:
             idx = random.randint(0, len(ds_tokenized) - 1)
-        continue
+        continue'''
 
     # print('---------- INSTRUCTION ----------')
     # print(instruction)
