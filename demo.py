@@ -32,7 +32,9 @@ seq_doc_stride = 128  # NOTE: may need to be changed
 tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 print('Tokenizer loaded!')
 
-inp = 'Hello, how are you doing today? [SEP] Good, how are you? [SEP] Pneumonia halitosis cardiac arrest. [SEP] Agreed, I do have those.'
+print(tokenizer.post_processor)
+
+inp = 'Hello, how are you doing today? Good, how are you? Pneumonia halitosis cardiac arrest. Agreed, I do have those.'
 tokenized = tokenizer(inp, add_special_tokens=True)
 print(tokenized)
 
