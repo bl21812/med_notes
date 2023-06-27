@@ -32,11 +32,20 @@ seq_doc_stride = 128  # NOTE: may need to be changed
 tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 print('Tokenizer loaded!')
 
-print(tokenizer.get_post_processor())
+# print(tokenizer.get_post_processor())
 
-'''tokenizer.post_processor = TemplateProcessing(
+tokenizer.add_special_tokens({
+    'additional_special_tokens': ['[CLS]', '[SEP]']
+})
 
-)'''
+tokenizer.post_processor = TemplateProcessing(
+    single="[CLS] $A [SEP]",
+    pair="[CLS] $A [SEP] $B:1 [SEP]:1",
+    special_tokens=[
+        ("[CLS]", tokenizer.token_to_id("[CLS]")),
+        ("[SEP]", tokenizer.token_to_id("[SEP]")),
+    ],
+)
 
 inp = 'Hello, how are you doing today? Good, how are you? Pneumonia halitosis cardiac arrest. Agreed, I do have those.'
 tokenized = tokenizer(inp, add_special_tokens=True)
