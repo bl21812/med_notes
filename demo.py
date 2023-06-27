@@ -38,12 +38,15 @@ tokenizer.add_special_tokens({
     'additional_special_tokens': ['[CLS]', '[SEP]']
 })
 
+print(tokenizer.get_vocab()["[CLS]"])
+print(tokenizer.get_vocab()["[SEP]"])
+
 tokenizer.post_processor = TemplateProcessing(
     single="[CLS] $A [SEP]",
     pair="[CLS] $A [SEP] $B:1 [SEP]:1",
     special_tokens=[
-        ("[CLS]", tokenizer.token_to_id("[CLS]")),
-        ("[SEP]", tokenizer.token_to_id("[SEP]")),
+        ("[CLS]", tokenizer.get_vocab()["[CLS]"]),
+        ("[SEP]", tokenizer.get_vocab()["[SEP]"]),
     ],
 )
 
