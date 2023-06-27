@@ -5,3 +5,4 @@ torch
 pandas
 bitsandbytes
 peft
+tokenizers

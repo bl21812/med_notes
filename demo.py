@@ -13,7 +13,7 @@ import numpy as np
 from datasets import Dataset, load_dataset
 from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data_collator, AutoModelForCausalLM, AutoConfig, \
     AutoModelForQuestionAnswering, pipeline, LlamaForCausalLM, GenerationConfig
-
+from tokenizers.processors import TemplateProcessing
 from accelerate import init_empty_weights, load_checkpoint_and_dispatch, infer_auto_device_map
 
 from data_utils import tokenize_qa, preprocess_text
@@ -32,7 +32,7 @@ seq_doc_stride = 128  # NOTE: may need to be changed
 tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 print('Tokenizer loaded!')
 
-inp = 'Hello, how are you doing today? \n Good, how are you? \n Pneumonia halitosis cardiac arrest. \n Agreed, I do have those.'
+inp = 'Hello, how are you doing today? [SEP] Good, how are you? [SEP] Pneumonia halitosis cardiac arrest. [SEP] Agreed, I do have those.'
 tokenized = tokenizer(inp, add_special_tokens=True)
 print(tokenized)
 
