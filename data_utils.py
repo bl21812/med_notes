@@ -45,7 +45,10 @@ def preprocess_text(text):
     '''
     Any preprocessing needed for our read-in text data
     e.g. removing newline characters
+    e.g. removing speaker indications (D:, P:)
     '''
     text = text.replace('\\n', ' ')
     text = text.replace('\\r', ' ')
+    text = text.replace('D:', '')
+    text = text.replace('P:', '')
     return text
