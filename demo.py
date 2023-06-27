@@ -50,7 +50,7 @@ tokenizer.post_processor = TemplateProcessing(
     ],
 )
 
-inp = 'Hello, how are you doing today? Good, how are you? Pneumonia halitosis cardiac arrest. Agreed, I do have those.'
+inp = 'Hello, how are you doing today? [SEP] Good, how are you? [SEP] Pneumonia halitosis cardiac arrest. [SEP] Agreed, I do have those.'
 tokenized = tokenizer(inp, add_special_tokens=True)
 print(tokenized)
 
