@@ -49,6 +49,7 @@ def preprocess_text(text):
     '''
     text = repr(text).replace('\\n', ' ')
     text = repr(text).replace('\\r', ' ')
+    text = repr(text).replace('\\', '')
     text = text.replace('D:', '')
     text = text.replace('P:', '')
     return text
