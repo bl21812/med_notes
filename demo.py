@@ -201,6 +201,8 @@ while True:
     print('---------- EXPECTED OUTPUT ----------')
     print(true_output)
     print()
+    print('Number of tokens in transcript: {}'.format(len(inputs)))
+    print()
 
     # Get model prediction
     generation_config = GenerationConfig(max_new_tokens=10000)
