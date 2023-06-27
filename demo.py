@@ -16,14 +16,15 @@ from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data
 
 from accelerate import init_empty_weights, load_checkpoint_and_dispatch, infer_auto_device_map
 
-from data_utils import tokenize_qa
+from data_utils import tokenize_qa, preprocess_text
 from medalpaca_prompt_handler import DataHandler
 
-prompt_template = "prompt_template.json"
+prompt_template = "prompt_template_SOAP.json"
 tokenizer_source = "medalpaca/medalpaca-13b"
 model_source = "medalpaca/medalpaca-13b"
 base_model_source = "decapoda-research/llama-13b-hf"
-data_source = "medalpaca/medical_meadow_mediqa"
+# data_source = "medalpaca/medical_meadow_mediqa"
+data_source = 'soap_ds.csv'
 
 seq_max_length = 32001  # llama max sequence length  # ORIGINAL 2048
 seq_doc_stride = 128  # NOTE: may need to be changed
@@ -82,14 +83,18 @@ tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 data_handler = DataHandler(tokenizer, prompt_template=prompt_template, model_max_length=seq_max_length, train_on_inputs=False)
 
 # NOTE: row names are only for mediQA rn
-# NOTE: flipped input and instruction cause maybe that's weird ?
+# NOTE: flipped input and instruction
+# NOTE: figure out how to add SEP tokens to separate dialogue
 ds_tokenized = ds.map(lambda row: {
     'input_tokens': tokenize_qa(
         tokenizer, 
-        data_handler.generate_prompt(instruction=row['input'], input=row['instruction']),  # pass output ??
+        #data_handler.generate_prompt(instruction=row['input'], input=row['instruction']),  # stock QA task
+        data_handler.generate_prompt_interview(transcript=preprocess_text(row['transcript'])),  # interview transcript SOAP task
         max_seq_length=seq_max_length, 
         doc_stride=seq_doc_stride
-    )
+    ), 
+    'transcript': preprocess_text(row['transcript']),
+    'output': preprocess_text(row['output'])
 })  # Custom tokenization
 
 '''
@@ -168,19 +173,24 @@ while True:
     item = ds_tokenized[idx]
     inputs = item['input_tokens']
     true_output = item['output']
-    instruction = item['instruction']
-    context = item['input']
+    transcript = item['transcript']
+    # instruction = item['instruction']
+    # context = item['input']
 
-    if len(context) > 1500:  # don't have enough memory for huge samples lol
+    if len(transcript) > 1500:  # don't have enough memory for huge samples lol
+        if idx not in seen_idx:
+            seen_idx.append(idx)
         while idx in seen_idx:
             idx = random.randint(0, len(ds_tokenized) - 1)
         continue
 
-    print('---------- INSTRUCTION ----------')
-    print(instruction)
-    print()
-    print('---------- CONTEXT ----------')
-    print(context)
+    # print('---------- INSTRUCTION ----------')
+    # print(instruction)
+    # print()
+    # print('---------- CONTEXT ----------')
+    # print(context)
+    print('---------- TRANSCRIPT ----------')
+    print(transcript)
     print()
     print('---------- EXPECTED OUTPUT ----------')
     print(true_output)

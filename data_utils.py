@@ -18,6 +18,7 @@ def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128):
         tokenized = tokenizer(
             x1, 
             x2, 
+            add_special_tokens=True,
             max_length=max_seq_length,
             truncation='only_second',
             return_overflowing_tokens=True,
@@ -26,6 +27,7 @@ def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128):
     else:
         tokenized = tokenizer(
             x1,
+            add_special_tokens=True,
             max_length=max_seq_length,
             truncation=True,
             stride=0
@@ -37,3 +39,13 @@ def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128):
     ids = tokenized['input_ids']
 
     return ids
+
+
+def preprocess_text(text):
+    '''
+    Any preprocessing needed for our read-in text data
+    e.g. removing newline characters
+    '''
+    text = text.replace('\\n', '')
+    text = text.replace('\\r', '')
+    return text

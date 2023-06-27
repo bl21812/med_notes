@@ -206,6 +206,23 @@ class DataHandler:
         )
 
         return prompt
+    
+    def generate_prompt_interview(
+        self,
+        transcript: Optional[str] = None,
+        output: Optional[str] = None,
+    ):
+        
+        if not any([transcript, output]):
+            raise ValueError("At least one of `transcript` or `output` should be defined")
+        
+        prompt = (
+            f'{self.prompt_template["primer"]}'
+            f'{self.prompt_template["transcript"]}{transcript or ""}'
+            f'{self.prompt_template["output"]}{output or ""}'
+        )
+
+        return prompt
 
     def resolve_output(self, output: str): 
         pass
