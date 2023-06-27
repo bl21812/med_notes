@@ -40,6 +40,7 @@ tokenizer.add_special_tokens({
 
 print(tokenizer.get_vocab()["[CLS]"])
 print(tokenizer.get_vocab()["[SEP]"])
+print(tokenizer.decode([29871]))
 
 tokenizer.post_processor = TemplateProcessing(
     single="[CLS] $A [SEP]",
