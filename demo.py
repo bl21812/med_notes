@@ -29,6 +29,15 @@ data_source = 'soap_ds.csv'
 seq_max_length = 32001  # llama max sequence length  # ORIGINAL 2048
 seq_doc_stride = 128  # NOTE: may need to be changed
 
+tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
+print('Tokenizer loaded!')
+
+inp = 'Hello, how are you doing today? \n Good, how are you? \n Pneumonia halitosis cardiac arrest. \n Agreed, I do have those.'
+tokenized = tokenizer(inp, add_special_tokens=True)
+print(tokenized)
+
+exit()
+
 # Load data 
 # TODO: Add splits for custom loading
 if os.path.exists(data_source):

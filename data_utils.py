@@ -53,3 +53,7 @@ def preprocess_text(text):
     text = text.replace('D:', '')
     text = text.replace('P:', '')
     return text
+
+# TRY: 
+    # describing soap notes (ask for patient's description of their condition, results of physical exams, doctor's diagnosis, and the doctor's plan) instead of just asking for soap
+    # Separately asking for each (as I wrote in prev point)
