@@ -37,6 +37,8 @@ if os.path.exists(data_source):
 else:
     ds = load_dataset(data_source, split='train')
 
+print('Dataset loaded!')
+
 # THIS DIDNT WORK FOR SOME REASON LOL
 '''
 use_default_pipeline = False
@@ -97,6 +99,8 @@ ds_tokenized = ds.map(lambda row: {
     'output': preprocess_text(row['output'])
 })  # Custom tokenization
 
+print('Tokenization complete!')
+
 '''
 INFO: 
 Each DS is: 
@@ -152,6 +156,7 @@ else:
         device_map=device_map
     )'''
 
+print('Model loaded!')
 
 '''
 # Test a few examples
