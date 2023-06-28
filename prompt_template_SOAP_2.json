@@ -1,9 +1,7 @@
 {
     "description": "Template for extracting full SOAP notes from a patient interview transcript.",
-    "primer": "Given the following transcript of a medical patient interview in the 'TRANSCRIPT' section, please return a summary of the following aspects: the patient's description of their condition, in the 'HISTORY' section, the results of any physical exams, in the 'PHYSICALS' section, the doctor's diagnosis, in the 'DIAGNOSIS' section, and the doctor's plan, in the 'PLAN' section. Ensure that each of these sections is filled.",
-    "transcript": "\n\n### TRANSCRIPT:\n",
-    "history": "\n\n### HISTORY:\n", 
-    "physicals": "\n\n### PHYSICALS:\n", 
-    "diagnosis": "\n\n### DIAGNOSIS:\n", 
-    "plan": "\n\n### PLAN:\n"
+    "primer": "Given the transcript of a medical patient interview separated by <>, please extract important information. Format your response as JSON with the following structure:\n",
+    "response_structure": "",
+    "transcript": "\n\n### TRANSCRIPT:\n"
 }
+

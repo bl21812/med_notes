@@ -193,7 +193,7 @@ while True:
     # instruction = item['instruction']
     # context = item['input']
 
-    '''if len(transcript) > 1500:  # don't have enough memory for huge samples lol
+    '''if len(transcript) > 10000:  # don't have enough memory for huge samples lol
         if idx not in seen_idx:
             seen_idx.append(idx)
         while idx in seen_idx:
