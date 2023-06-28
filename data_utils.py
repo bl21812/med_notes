@@ -41,11 +41,14 @@ def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128):
     return ids
 
 
-def preprocess_text(text):
+# TODO: Implement adding SEP tokens (just replace the D: and P: with SEP except the first one?)
+def preprocess_text(text, add_sep=False):
     '''
     Any preprocessing needed for our read-in text data
     e.g. removing newline characters
     e.g. removing speaker indications (D:, P:)
+
+    :param add_sep: Whether to add SEP tokens to separate dialogue or not
     '''
     text = repr(text).replace('\\n', ' ')
     text = repr(text).replace('\\r', ' ')

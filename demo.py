@@ -19,43 +19,16 @@ from accelerate import init_empty_weights, load_checkpoint_and_dispatch, infer_a
 from data_utils import tokenize_qa, preprocess_text
 from medalpaca_prompt_handler import DataHandler
 
-prompt_template = "prompt_template_SOAP.json"
+prompt_template = "prompt_template_SOAP_2.json"
 tokenizer_source = "medalpaca/medalpaca-13b"
 model_source = "medalpaca/medalpaca-13b"
 base_model_source = "decapoda-research/llama-13b-hf"
 # data_source = "medalpaca/medical_meadow_mediqa"
 data_source = 'soap_ds.csv'
 
-seq_max_length = 32001  # llama max sequence length  # ORIGINAL 2048
+add_sep_token = False
+seq_max_length = 2048  # llama max sequence length
 seq_doc_stride = 128  # NOTE: may need to be changed
-
-tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
-print('Tokenizer loaded!')
-
-# print(tokenizer.get_post_processor())
-
-tokenizer.add_special_tokens({
-    'additional_special_tokens': ['[CLS]', '[SEP]']
-})
-
-print(tokenizer.get_vocab()["[CLS]"])
-print(tokenizer.get_vocab()["[SEP]"])
-print(tokenizer.decode([29871]))
-
-tokenizer.post_processor = TemplateProcessing(
-    single="[CLS] $A [SEP]",
-    pair="[CLS] $A [SEP] $B:1 [SEP]:1",
-    special_tokens=[
-        ("[CLS]", tokenizer.get_vocab()["[CLS]"]),
-        ("[SEP]", tokenizer.get_vocab()["[SEP]"]),
-    ],
-)
-
-inp = 'Hello, how are you doing today? [SEP] Good, how are you? [SEP] Pneumonia halitosis cardiac arrest. [SEP] Agreed, I do have those.'
-tokenized = tokenizer(inp, add_special_tokens=True)
-print(tokenized)
-
-exit()
 
 # Load data 
 # TODO: Add splits for custom loading
@@ -111,6 +84,11 @@ if use_default_pipeline:
 tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 print('Tokenizer loaded!')
 
+if add_sep_token:
+    tokenizer.add_special_tokens({
+        'additional_special_tokens': ['[SEP]']
+    })
+
 data_handler = DataHandler(tokenizer, prompt_template=prompt_template, model_max_length=seq_max_length, train_on_inputs=False)
 
 # NOTE: row names are only for mediQA rn
@@ -120,7 +98,7 @@ ds_tokenized = ds.map(lambda row: {
     'input_tokens': tokenize_qa(
         tokenizer, 
         #data_handler.generate_prompt(instruction=row['input'], input=row['instruction']),  # stock QA task
-        data_handler.generate_prompt_interview(transcript=preprocess_text(row['transcript'])),  # interview transcript SOAP task
+        data_handler.generate_prompt_interview(transcript=preprocess_text(row['transcript'], add_sep=add_sep_token)),  # interview transcript SOAP task
         max_seq_length=seq_max_length, 
         doc_stride=seq_doc_stride
     ), 
@@ -185,6 +163,10 @@ else:
         device_map=device_map
     )'''
 
+# TODO: Expand embeddings to accomodate for SEP
+if add_sep_token:
+    print('Have not added support for this yet!')
+
 print('Model loaded!')
 
 '''
@@ -233,12 +215,12 @@ while True:
     print()
 
     # Get model prediction
-    generation_config = GenerationConfig(max_new_tokens=10000)
+    generation_config = GenerationConfig(max_new_tokens=1024)
     with torch.no_grad():
         generate_ids = model.generate(
             torch.tensor([inputs]).to('cuda'), 
             generation_config=generation_config,
-            max_new_tokens=10000
+            max_new_tokens=1024
         )
         print(generate_ids)
         pred = tokenizer.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
