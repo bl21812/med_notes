@@ -9,7 +9,7 @@ import random
 import pandas as pd
 import numpy as np
 
-# from peft import PeftModel
+from peft import PeftModel
 from datasets import Dataset, load_dataset
 from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data_collator, AutoModelForCausalLM, AutoConfig, \
     AutoModelForQuestionAnswering, pipeline, LlamaForCausalLM, GenerationConfig
@@ -142,7 +142,6 @@ else:
     model.tie_weights()
     max_memory = {0: "0GIB", 1: "0GIB", 2: "0GIB", 3: "8GIB"}  # only last GPU
     device_map = infer_auto_device_map(model, max_memory=max_memory)
-    # device_map = {"": 0}  # from medalpaca inferer class
     model = LlamaForCausalLM.from_pretrained(
         model_source,  # change to base_model_source if using peft
         device_map=device_map, 
