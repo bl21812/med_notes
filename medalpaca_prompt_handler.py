@@ -226,6 +226,10 @@ class DataHandler:
                 "Plan": doctor's prescribed plan
             }
 
+            To perform this task effectively, follow these steps:
+            - First, summarize the entire conversation in bullet points
+            - Then, categorize each bullet point based on which of the four sections it belongs to
+
             For example: 
 
             History:
@@ -252,7 +256,35 @@ class DataHandler:
             - Follow-up with the patient to discuss test results and adjust the treatment plan accordingly.
             '''
             f'{self.prompt_template["transcript"]}{f"<{transcript}>" or ""}'
-            # f'{self.prompt_template["output"]}{output or ""}'
+            f'{self.prompt_template["output"]}{output or ""}'
+        )
+
+        return prompt
+
+    def generate_prompt_interview_s_only(self,
+        transcript: Optional[str] = None,
+        output: Optional[str] = None,
+    ):
+        
+        if not any([transcript, output]):
+            raise ValueError("At least one of `transcript` or `output` should be defined")
+        
+        prompt = (
+            f'{self.prompt_template["primer"]}'
+            '''
+            To perform this task effectively, follow these steps:
+            - First, summarize the entire conversation in bullet points
+            - Then, summarize the conversation summary with a focus on only the patient's descriptions of the situation
+
+            For example: 
+
+            - The patient presented with a rash on their right leg that has been concerning them for about a week.
+            - The patient described the rash as red, with scabs and a larger size.
+            - The patient reported scratching at the rash and experiencing no prior occurrences of this type of rash.
+            - The patient acknowledged feeling less sensation in their feet over the years.
+            '''
+            f'{self.prompt_template["transcript"]}{f"<{transcript}>" or ""}'
+            f'{self.prompt_template["output"]}{output or ""}'
         )
 
         return prompt

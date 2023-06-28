@@ -1,0 +1,7 @@
+{
+    "description": "Template for extracting one section of SOAP notes from an interview transcript.",
+    "primer": "Given the transcript of a medical patient interview separated by <>, what was the patient's description of their condition? Please respond in bullet point form.",
+    "transcript": "\n\n### Medical Patient Interview Transcript:\n",
+    "output": "\n\n### Response:\n",
+    "response_split": "### Response:"
+}

@@ -19,7 +19,7 @@ from accelerate import init_empty_weights, load_checkpoint_and_dispatch, infer_a
 from data_utils import tokenize_qa, preprocess_text
 from medalpaca_prompt_handler import DataHandler
 
-prompt_template = "prompt_template_SOAP_2.json"
+prompt_template = "prompt_template_SOAP_S.json"
 tokenizer_source = "medalpaca/medalpaca-13b"
 model_source = "medalpaca/medalpaca-13b"
 base_model_source = "decapoda-research/llama-13b-hf"
@@ -98,7 +98,7 @@ ds_tokenized = ds.map(lambda row: {
     'input_tokens': tokenize_qa(
         tokenizer, 
         #data_handler.generate_prompt(instruction=row['input'], input=row['instruction']),  # stock QA task
-        data_handler.generate_prompt_interview(transcript=preprocess_text(row['transcript'], add_sep=add_sep_token)),  # interview transcript SOAP task
+        data_handler.generate_prompt_interview_s_only(transcript=preprocess_text(row['transcript'], add_sep=add_sep_token)),  # interview transcript SOAP task
         max_seq_length=seq_max_length, 
         doc_stride=seq_doc_stride
     ), 
@@ -220,7 +220,7 @@ while True:
         generate_ids = model.generate(
             torch.tensor([inputs]).to('cuda'), 
             generation_config=generation_config,
-            max_new_tokens=1024
+            max_new_tokens=256
         )
         print(generate_ids)
         pred = tokenizer.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
