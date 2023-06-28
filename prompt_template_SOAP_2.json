@@ -2,6 +2,7 @@
     "description": "Template for extracting full SOAP notes from a patient interview transcript.",
     "primer": "Given the transcript of a medical patient interview separated by <>, please extract important information. Format your response as JSON with the following structure:\n",
     "response_structure": "",
-    "transcript": "\n\n### TRANSCRIPT:\n"
+    "transcript": "\n\n### TRANSCRIPT:\n",
+    "response_split": "### Response:"
 }
 
