@@ -219,7 +219,7 @@ class DataHandler:
         prompt = (
             f'{self.prompt_template["primer"]}'
             f'{self.prompt_template["transcript"]}{transcript or ""}'
-            f'{self.prompt_template["output"]}{output or ""}'
+            # f'{self.prompt_template["output"]}{output or ""}'
         )
 
         return prompt
