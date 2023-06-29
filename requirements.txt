@@ -6,3 +6,4 @@ pandas
 bitsandbytes
 peft
 tokenizers
+scipy
