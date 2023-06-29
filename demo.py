@@ -136,7 +136,7 @@ Each DS is:
 if os.path.exists(model_source):
     model = None
 else:
-    config = AutoConfig.from_pretrained(model_source)
+    config = AutoConfig.from_pretrained(base_model_source)
     with init_empty_weights():
         model = LlamaForCausalLM._from_config(config)
     model.tie_weights()
