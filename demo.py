@@ -20,9 +20,9 @@ from data_utils import tokenize_qa, preprocess_text
 from medalpaca_prompt_handler import DataHandler
 
 prompt_template = "prompt_template_SOAP_S.json"
-tokenizer_source = "medalpaca/medalpaca-lora-7b-8bit"
-model_source = "medalpaca/medalpaca-13b"
-base_model_source = "decapoda-research/llama-7b-hf"
+tokenizer_source = "medalpaca/medalpaca-13b"
+model_source = "medalpaca/medalpaca-lora-13b-8bit"
+base_model_source = "decapoda-research/llama-13b-hf"
 # data_source = "medalpaca/medical_meadow_mediqa"
 data_source = 'soap_ds.csv'
 
