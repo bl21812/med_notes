@@ -143,19 +143,21 @@ else:
     max_memory = {0: "0GIB", 1: "0GIB", 2: "0GIB", 3: "8GIB"}  # only last GPU
     device_map = infer_auto_device_map(model, max_memory=max_memory)
     model = LlamaForCausalLM.from_pretrained(
-        model_source,  # change to base_model_source if using peft
+        base_model_source,  # change to model_source if not using peft
+        load_in_8bit=True,
         device_map=device_map, 
         offload_folder='offload', 
         torch_dtype=torch.float16
-    )  # ideally load in 8bit but doesn't seem to be working on server
-    '''model = PeftModel.from_pretrained(
+    ) 
+    model = PeftModel.from_pretrained(
         model,
         model_id=model_source,
         torch_dtype=torch.float16,
         device_map=device_map,
-    )'''
-    model.half()
+    )
+    # model.half()
     model.eval()
+    model.print_trainable_parameters()
     '''model = load_checkpoint_and_dispatch(
         model,
         "medalpaca-13b",
@@ -167,6 +169,8 @@ if add_sep_token:
     print('Have not added support for this yet!')
 
 print('Model loaded!')
+
+quit()
 
 '''
 # Test a few examples
