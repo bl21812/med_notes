@@ -81,7 +81,7 @@ if use_default_pipeline:
     
 # Preprocessing (including tokenization)
 
-tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
+'''tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 print('Tokenizer loaded!')
 
 if add_sep_token:
@@ -106,7 +106,7 @@ ds_tokenized = ds.map(lambda row: {
     'output': preprocess_text(row['output'])
 })  # Custom tokenization
 
-print('Tokenization complete!')
+print('Tokenization complete!')'''
 
 '''
 INFO: 
@@ -145,7 +145,7 @@ else:
     model = LlamaForCausalLM.from_pretrained(
         base_model_source,  # change to model_source if not using peft
         load_in_8bit=True,
-        device_map='auto', 
+        device_map={'': 3}, 
         offload_folder='offload', 
         llm_int8_enable_fp32_cpu_offload=True,
         torch_dtype=torch.float16
@@ -156,8 +156,8 @@ else:
     model = PeftModel.from_pretrained(
         model,
         model_id=model_source,
-        torch_dtype=torch.float16,
-        device_map='auto',
+        # torch_dtype=torch.float16,
+        # device_map='auto',
         # max_memory={0: "0GIB", 1: "0GIB", 2: "0GIB", 3: "4GIB"},
         # offload_folder='offload',
         # llm_int8_enable_fp32_cpu_offload=True
