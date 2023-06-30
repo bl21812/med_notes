@@ -136,16 +136,17 @@ Each DS is:
 if os.path.exists(model_source):
     model = None
 else:
-    config = AutoConfig.from_pretrained(base_model_source)
+    '''config = AutoConfig.from_pretrained(base_model_source)
     with init_empty_weights():
         model = LlamaForCausalLM._from_config(config)
-    model.tie_weights()
+    model.tie_weights()'''
     max_memory = {0: "0GIB", 1: "0GIB", 2: "0GIB", 3: "6GIB"}  # only last GPU
-    device_map = infer_auto_device_map(model, max_memory=max_memory)
+    # device_map = infer_auto_device_map(model, max_memory=max_memory)
     model = LlamaForCausalLM.from_pretrained(
         base_model_source,  # change to model_source if not using peft
         load_in_8bit=True,
-        device_map=device_map, 
+        max_memory=max_memory,
+        # device_map=device_map, 
         offload_folder='offload', 
         llm_int8_enable_fp32_cpu_offload=True,
         torch_dtype=torch.float16
@@ -154,7 +155,8 @@ else:
         model,
         model_id=model_source,
         torch_dtype=torch.float16,
-        device_map=device_map,
+        max_memory=max_memory,
+        # device_map=device_map,
         offload_folder='offload',
         llm_int8_enable_fp32_cpu_offload=True
     )
