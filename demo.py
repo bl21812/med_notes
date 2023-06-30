@@ -22,12 +22,12 @@ from accelerate import init_empty_weights, load_checkpoint_and_dispatch, infer_a
 from data_utils import tokenize_qa, preprocess_text
 from medalpaca_prompt_handler import DataHandler
 
-prompt_template = "prompt_template_SOAP_S.json"
+prompt_template = "prompt_template.json"
 tokenizer_source = "medalpaca/medalpaca-13b"
 model_source = "medalpaca/medalpaca-lora-13b-8bit"
 base_model_source = "decapoda-research/llama-13b-hf"
-# data_source = "medalpaca/medical_meadow_mediqa"
-data_source = 'soap_ds.csv'
+data_source = "medalpaca/medical_meadow_mediqa"
+# data_source = 'soap_ds.csv'
 
 add_sep_token = False
 seq_max_length = 2048  # llama max sequence length
@@ -84,7 +84,7 @@ if use_default_pipeline:
     
 # Preprocessing (including tokenization)
 
-'''tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
+tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 print('Tokenizer loaded!')
 
 if add_sep_token:
@@ -100,16 +100,16 @@ data_handler = DataHandler(tokenizer, prompt_template=prompt_template, model_max
 ds_tokenized = ds.map(lambda row: {
     'input_tokens': tokenize_qa(
         tokenizer, 
-        #data_handler.generate_prompt(instruction=row['input'], input=row['instruction']),  # stock QA task
-        data_handler.generate_prompt_interview_s_only(transcript=preprocess_text(row['transcript'], add_sep=add_sep_token)),  # interview transcript SOAP task
+        data_handler.generate_prompt(instruction=row['input'], input=row['instruction']),  # stock QA task
+        # data_handler.generate_prompt_interview_s_only(transcript=preprocess_text(row['transcript'], add_sep=add_sep_token)),  # interview transcript SOAP task
         max_seq_length=seq_max_length, 
         doc_stride=seq_doc_stride
     ), 
-    'transcript': preprocess_text(row['transcript']),
-    'output': preprocess_text(row['output'])
+    # 'transcript': preprocess_text(row['transcript']),  # interview transcript
+    # 'output': preprocess_text(row['output'])  # interview transcript
 })  # Custom tokenization
 
-print('Tokenization complete!')'''
+print('Tokenization complete!')
 
 '''
 INFO: 
@@ -155,8 +155,8 @@ else:
         torch_dtype=torch.float16
     ) 
 
-    # THE BELOW IS JUST FOR PEFT
-    lora_config = LoraConfig(
+    # MOVE THIS ONE TO TRAIN
+    '''lora_config = LoraConfig(
         r=8,
         lora_alpha=16,
         target_modules=('q_proj', 'v_proj'),
@@ -164,8 +164,8 @@ else:
         bias="none",
         task_type="CAUSAL_LM",
     )
-    model = get_peft_model(model, lora_config)
-    # model = PeftModel.from_pretrained(model, model_id=model_source)
+    model = get_peft_model(model, lora_config)'''
+    model = PeftModel.from_pretrained(model, model_id=model_source)  # USE THIS FOR EVAL DEMO SCRIPT
     # model.half()  # if not peft
     model.print_trainable_parameters()  # if peft
     model.eval()
@@ -180,8 +180,6 @@ if add_sep_token:
     print('Have not added support for this yet!')
 
 print('Model loaded!')
-
-quit()
 
 '''
 # Test a few examples
@@ -203,25 +201,25 @@ while True:
     item = ds_tokenized[idx]
     inputs = item['input_tokens']
     true_output = item['output']
-    transcript = item['transcript']
-    # instruction = item['instruction']
-    # context = item['input']
+    # transcript = item['transcript']
+    instruction = item['instruction']
+    context = item['input']
 
-    '''if len(transcript) > 10000:  # don't have enough memory for huge samples lol
+    '''if len(inputs) > 3500:  # don't have enough memory for huge samples lol
         if idx not in seen_idx:
             seen_idx.append(idx)
         while idx in seen_idx:
             idx = random.randint(0, len(ds_tokenized) - 1)
         continue'''
 
-    # print('---------- INSTRUCTION ----------')
-    # print(instruction)
-    # print()
-    # print('---------- CONTEXT ----------')
-    # print(context)
-    print('---------- TRANSCRIPT ----------')
-    print(repr(transcript))
+    print('---------- INSTRUCTION ----------')
+    print(instruction)
     print()
+    print('---------- CONTEXT ----------')
+    print(context)
+    # print('---------- TRANSCRIPT ----------')
+    # print(repr(transcript))
+    # print()
     print('---------- EXPECTED OUTPUT ----------')
     print(true_output)
     print()
