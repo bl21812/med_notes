@@ -21,8 +21,8 @@ from medalpaca_prompt_handler import DataHandler
 
 prompt_template = "prompt_template_SOAP_S.json"
 tokenizer_source = "medalpaca/medalpaca-13b"
-model_source = "medalpaca/medalpaca-lora-13b-8bit"
-base_model_source = "decapoda-research/llama-13b-hf"
+model_source = "medalpaca/medalpaca-lora-7b-8bit"
+base_model_source = "decapoda-research/llama-7b-hf"
 # data_source = "medalpaca/medical_meadow_mediqa"
 data_source = 'soap_ds.csv'
 
@@ -140,14 +140,14 @@ else:
     with init_empty_weights():
         model = LlamaForCausalLM._from_config(config)
     model.tie_weights()
-    max_memory = {0: "0GIB", 1: "0GIB", 2: "0GIB", 3: "8GIB"}  # only last GPU
+    max_memory = {0: "0GIB", 1: "10GIB", 2: "0GIB", 3: "10GIB"}  # only last GPU
     device_map = infer_auto_device_map(model, max_memory=max_memory)
     model = LlamaForCausalLM.from_pretrained(
         base_model_source,  # change to model_source if not using peft
         load_in_8bit=True,
         device_map=device_map, 
-        offload_folder='offload', 
-        llm_int8_enable_fp32_cpu_offload=True,
+        # offload_folder='offload', 
+        # llm_int8_enable_fp32_cpu_offload=True,
         torch_dtype=torch.float16
     ) 
 
@@ -160,7 +160,7 @@ else:
         # torch_dtype=torch.float16,
         # device_map=device_map,
         # max_memory={0: "0GIB", 1: "0GIB", 2: "0GIB", 3: "4GIB"},
-        offload_dir='offload_peft',
+        offload_folder='offload_peft',
         # llm_int8_enable_fp32_cpu_offload=True
     )
     # model.half()
