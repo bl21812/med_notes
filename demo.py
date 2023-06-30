@@ -154,7 +154,8 @@ else:
         model,
         model_id=model_source,
         torch_dtype=torch.float16,
-        device_map=device_map,
+        # device_map=device_map,
+        max_memory={0: "0GIB", 1: "0GIB", 2: "0GIB", 3: "4GIB"}
         offload_folder='offload',
         llm_int8_enable_fp32_cpu_offload=True
     )
