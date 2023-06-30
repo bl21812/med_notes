@@ -1,6 +1,9 @@
 '''
 Script to run inference using a given model and dataset
 and view outputs step by step
+
+PEFT DOES NOT WORK WITH CPU OFFLOAD
+I need 3 of the GPUs to load 7b or 13b
 '''
 
 import os
@@ -151,9 +154,6 @@ else:
         torch_dtype=torch.float16
     ) 
 
-    # TRY PEFT CONFIG THEN INFERRING DEVICE MAP AGAIN >
-    # config = PeftConfig.from_pretrained(model_source)
-
     model = PeftModel.from_pretrained(
         model,
         model_id=model_source,
@@ -165,7 +165,7 @@ else:
     )
     # model.half()
     model.print_trainable_parameters()  # if peft
-    model.eval()
+    # model.eval()
     '''model = load_checkpoint_and_dispatch(
         model,
         "medalpaca-13b",
