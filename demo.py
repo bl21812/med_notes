@@ -140,7 +140,7 @@ else:
     with init_empty_weights():
         model = LlamaForCausalLM._from_config(config)
     model.tie_weights()
-    max_memory = {0: "0GIB", 1: "0GIB", 2: "0GIB", 3: "8GIB"}  # only last GPU
+    max_memory = {0: "0GIB", 1: "0GIB", 2: "0GIB", 3: "6GIB"}  # only last GPU
     device_map = infer_auto_device_map(model, max_memory=max_memory)
     model = LlamaForCausalLM.from_pretrained(
         base_model_source,  # change to model_source if not using peft
