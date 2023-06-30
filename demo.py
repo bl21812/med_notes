@@ -21,8 +21,8 @@ from medalpaca_prompt_handler import DataHandler
 
 prompt_template = "prompt_template_SOAP_S.json"
 tokenizer_source = "medalpaca/medalpaca-13b"
-model_source = "medalpaca/medalpaca-lora-7b-8bit"
-base_model_source = "decapoda-research/llama-7b-hf"
+model_source = "medalpaca/medalpaca-lora-13b-8bit"
+base_model_source = "decapoda-research/llama-13b-hf"
 # data_source = "medalpaca/medical_meadow_mediqa"
 data_source = 'soap_ds.csv'
 
@@ -164,8 +164,8 @@ else:
         # llm_int8_enable_fp32_cpu_offload=True
     )
     # model.half()
+    model.print_trainable_parameters()  # if peft
     model.eval()
-    model.print_trainable_parameters()
     '''model = load_checkpoint_and_dispatch(
         model,
         "medalpaca-13b",
