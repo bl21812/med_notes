@@ -230,7 +230,7 @@ while True:
     generation_config = GenerationConfig(max_new_tokens=1024)
     with torch.no_grad():
         generate_ids = model.generate(
-            torch.tensor([inputs]).to('cuda'), 
+            inputs=torch.tensor([inputs]).to('cuda'), 
             generation_config=generation_config,
             max_new_tokens=256
         )
