@@ -12,7 +12,7 @@ import random
 import pandas as pd
 import numpy as np
 
-from peft import PeftModel, PeftConfig
+from peft import PeftModel, PeftConfig, LoraConfig, get_peft_model
 from datasets import Dataset, load_dataset
 from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data_collator, AutoModelForCausalLM, AutoConfig, \
     AutoModelForQuestionAnswering, pipeline, LlamaForCausalLM, GenerationConfig
@@ -139,6 +139,7 @@ Each DS is:
 if os.path.exists(model_source):
     model = None
 else:
+    # THE COMMENTED SECTION BELOW IS IF NOT USING PEFT
     '''config = AutoConfig.from_pretrained(base_model_source)
     with init_empty_weights():
         model = LlamaForCausalLM._from_config(config)
@@ -154,33 +155,20 @@ else:
         torch_dtype=torch.float16
     ) 
 
-    model = PeftModel.from_pretrained(
-        model,
-        model_id=model_source,
-        # torch_dtype=torch.float16,
-        # device_map=device_map,
-        # max_memory={0: "0GIB", 1: "0GIB", 2: "0GIB", 3: "4GIB"},
-        # offload_folder='offload_peft',
-        # llm_int8_enable_fp32_cpu_offload=True
+    # THE BELOW IS JUST FOR PEFT
+    lora_config = LoraConfig(
+        r=8,
+        lora_alpha=16,
+        target_modules=('q_proj', 'v_proj'),
+        lora_dropout=0.1,
+        bias="none",
+        task_type="CAUSAL_LM",
     )
-    # model.half()
-
-    def print_trainable_parameters(model):
-        """
-        Prints the number of trainable parameters in the model.
-        """
-        trainable_params = 0
-        all_param = 0
-        for _, param in model.named_parameters():
-            all_param += param.numel()
-            if param.requires_grad:
-                trainable_params += param.numel()
-        print(
-            f"trainable params: {trainable_params} || all params: {all_param} || trainable%: {100 * trainable_params / all_param}"
-        )
-
-    print_trainable_parameters(model)  # if peft
-    # model.eval()
+    model = get_peft_model(model, lora_config)
+    # model = PeftModel.from_pretrained(model, model_id=model_source)
+    # model.half()  # if not peft
+    model.print_trainable_parameters()  # if peft
+    model.eval()
     '''model = load_checkpoint_and_dispatch(
         model,
         "medalpaca-13b",
