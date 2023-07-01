@@ -51,10 +51,17 @@ latent_dims = 5120  # each embedding is about 1.2 million features
 val_prop = 0.1
 test_prop = 0
 
-batch_size = 1
-lr = 2e-5  # NOTE: may need to be increased
-epochs = 3  # NOTE: may need to be increased
-decay = 0.01  # NOTE: idk what val
+num_devices = 3
+
+# Hparams
+batch_size = 12
+optim = 'adamw_torch'
+lr = 2e-5
+lr_scheduler_type = 'cosine'
+epochs = 3
+decay = 0.01
+warmup_steps = 200
+eval_steps = 200  # num of steps between evals
 
 model_save_name = 'dialogsum_finetuned'
 
@@ -199,16 +206,28 @@ if add_sep_token:
 
 # Training
 
-# TODO: LOOK AT THIS CONFIG !!
 trainer_args = TrainingArguments(
-    model_save_name,
-    evaluation_strategy = "epoch",
-    learning_rate=lr,
-    per_device_train_batch_size=batch_size,
-    per_device_eval_batch_size=batch_size,
+    per_device_train_batch_size=batch_size // 3,
+    per_device_eval_batch_size=batch_size // 3,
+    gradient_accumulation_steps=num_devices,
+    warmup_steps=warmup_steps,
     num_train_epochs=epochs,
-    weight_decay=decay,
-    push_to_hub=True,  # NOTE: remove if causing issues
+    learning_rate=lr,
+    fp16=True,
+    bf16=False,
+    logging_steps=10,
+    optim=optim,
+    lr_scheduler=lr_scheduler_type,
+    evaluation_strategy = "steps",
+    save_strategy="steps",
+    eval_steps=eval_steps,
+    save_steps=eval_steps,
+    output_dir=model_save_name,
+    load_best_model_at_end=True,
+    ddp_find_unused_parameters=None,
+    group_by_length=False,
+    fsdp=None,
+    fsdp_transformer_layer_cls_to_wrap=None
 )
 
 trainer = Trainer(
