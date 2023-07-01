@@ -19,7 +19,9 @@ import torch
 import pandas as pd
 
 from datasets import Dataset, load_dataset
-from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data_collator
+from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data_collator, LlamaForCausalLM, \
+    DataCollatorForSeq2Seq
+from peft import LoraConfig, get_peft_model, prepare_model_for_int8_training, get_peft_model_state_dict
 
 from qa_model import QA_Head
 from embedder import Embedder
@@ -29,10 +31,11 @@ from medalpaca_prompt_handler import DataHandler
 
 seed = 0
 
-prompt_template = "prompts/prompt_template_dialogue_summary.json"
-llm_version = "medalpaca/medalpaca-13b"  # always taken for embeddings
 tokenizer_source = "medalpaca/medalpaca-13b"
-model_source = "medalpaca/medalpaca-13b"
+model_source = "medalpaca/medalpaca-lora-13b-8bit"
+base_model_source = "decapoda-research/llama-13b-hf"
+
+prompt_template = "prompts/prompt_template_dialogue_summary.json"
 data_source = "dialogsum.train.jsonl"
 data_source_train = "dialogsum.train.jsonl"
 data_source_eval = "dialogsum.test.jsonl"
@@ -82,6 +85,9 @@ print('Dataset loaded!')
 
 tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 print('Tokenizer loaded!')
+
+tokenizer.pad_token_id = 0
+tokenizer.padding_side = "left"
 
 if add_sep_token:
     tokenizer.add_special_tokens({
@@ -135,12 +141,8 @@ if ds_test:
 
 print('Preprocessing complete!')
 
-print(tokenizer.decode(ds_train_tokenized[0]['input_tokens']))
-print(tokenizer.decode(ds_val_tokenized[0]['input_tokens']))
-
-quit()
-
 '''
+THIS IS OUTDATED !! (i'm just following medalpaca train script now)
 INFO: 
 Each DS is: 
 [
@@ -165,74 +167,40 @@ Each DS is:
 # Load in model
 # TODO: Add code for locally saved model
 if os.path.exists(model_source):
-    head = None
+    model = None
 else:
-    head = QA_Head(fc_layers=fc_layers, input_dims=latent_dims)
+    model = LlamaForCausalLM.from_pretrained(
+        base_model_source,  # change to model_source if not using peft
+        load_in_8bit=True,
+        device_map='auto', 
+        # offload_folder='offload', 
+        # llm_int8_enable_fp32_cpu_offload=True,
+        torch_dtype=torch.float16
+    ) 
+    model = prepare_model_for_int8_training(model)
+    lora_config = LoraConfig(
+        r=8,
+        lora_alpha=16,
+        target_modules=('q_proj', 'v_proj'),
+        lora_dropout=0.1,
+        bias="none",
+        task_type="CAUSAL_LM",
+    )
+    model = get_peft_model(model, lora_config)
+    model.print_trainable_parameters()
 
-# if we load this in first it takes up all the memory
-embedder = Embedder(llm_version, num_units=num_attention_units)
+# ??
+model.is_parallelizable = True
+model.model_parallel = True
 
-loss_func = None
-optimizer = None
+# TODO: Expand embeddings to accomodate for SEP
+if add_sep_token:
+    print('Have not added support for this yet!')
 
-# NOTE: PAUSE
-# why don't i just try using the full model (like as is from huggingface)
-# and setting only MLP weights to trainable ??
-# it also looks like the embedding layer can take in 32001 tokens
-    # so maybe i can just ignore truncation
-# and also try just using the huggingface trainer as intended
-# NOTE: looks like the generate method is actually what gives predicted response tokens
-    # and is different from forward ?
-    # if default trainer just uses forward the output might have to be smth else
-        # or maybe I can set a custom loss ?
+# Training
 
-# train loop
-for epoch in range(epochs):
-
-    for i in range(len(ds_train_tokenized)):
-
-        item = ds_train_tokenized[i]
-        inputs = item['input_tokens'][0]  # NOTE: ignore batch dim for now
-        outputs = item['output_tokens'][0]
-        print(inputs)
-
-        # Forward pass
-        # HOW TO DEAL WITH MLP OUTPUT HAVING 237 DIMENSIONS (of sequences) ??
-        latents = None
-        for input in inputs:
-            l = embedder(torch.tensor([input]))[0]  # add batch dim for model input
-            l = torch.squeeze(l)
-            if not latents:
-                latents = l
-            else:
-                latents = torch.cat((latents, l), axis=-1)
-        # FIX THIS PADDING - since latents has 2 dimensions now instead of 1
-        # THEN address comment above (under 'Forward pass')
-        padding = torch.tensor([0] * (latent_dims - len(latents)))
-        latents = torch.cat(latents, padding)  # pad to length
-        latents = latents[None, :]  # add batch dim
-        print(latents)
-        quit()
-        preds = head(latents)
-        print(preds)
-
-        quit()
-
-        # Compute loss
-        # concat outputs with each other if applicable
-        # and compute loss
-        loss = None
-
-        # Update network
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-
-    for i in range(len(ds_val_tokenized)):
-        print()
-
-# NO TO THE BELOW
-args = TrainingArguments(
+# TODO: LOOK AT THIS CONFIG !!
+trainer_args = TrainingArguments(
     model_save_name,
     evaluation_strategy = "epoch",
     learning_rate=lr,
@@ -245,11 +213,21 @@ args = TrainingArguments(
 
 trainer = Trainer(
     model, 
-    args, 
+    args=trainer_args, 
     train_dataset=ds_train,
     eval_dataset=ds_val,
-    data_collator=default_data_collator,  # NOTE: may not work
-    tokenizer=tokenizer,  # NOTE: not sure if i need this since it's tokenized above ?
+    data_collator=DataCollatorForSeq2Seq(
+        tokenizer, pad_to_multiple_of=8, return_tensors="pt", padding=True
+    )
 )
 
-trainer.save_model(model_save_name)
+model.config.use_cache = False
+
+old_state_dict = model.state_dict
+model.state_dict = (
+    lambda self, *_, **__: get_peft_model_state_dict(self, old_state_dict())
+).__get__(model, type(model))
+
+trainer.train()
+
+model.save_pretrained(model_save_name)

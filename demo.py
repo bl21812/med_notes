@@ -167,7 +167,6 @@ else:
     model = get_peft_model(model, lora_config)'''
     model = PeftModel.from_pretrained(model, model_id=model_source)  # USE THIS FOR EVAL DEMO SCRIPT
     # model.half()  # if not peft
-    model.print_trainable_parameters()  # if peft
     model.eval()
     '''model = load_checkpoint_and_dispatch(
         model,
