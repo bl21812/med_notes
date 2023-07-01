@@ -28,7 +28,9 @@ from data_utils import tokenize_qa
 llm_version = "medalpaca/medalpaca-13b"  # always taken for embeddings
 tokenizer_source = "medalpaca/medalpaca-13b"
 model_source = "medalpaca/medalpaca-13b"
-data_source = "medalpaca/medical_meadow_mediqa"
+data_source = "dialogsum.train.jsonl"
+data_source_train = "dialogsum.train.jsonl"
+data_source_eval = "dialogsum.test.jsonl"
 
 seq_max_length = 2048  # llama max sequence length
 seq_doc_stride = 128  # NOTE: may need to be changed
@@ -45,19 +47,32 @@ lr = 2e-5  # NOTE: may need to be increased
 epochs = 3  # NOTE: may need to be increased
 decay = 0.01  # NOTE: idk what val
 
-model_save_name = 'mediQA_finetuned'
+model_save_name = 'dialogsum_finetuned'
 
 # Load data 
-# TODO: Add splits for custom loading
+# TODO: Add test support
 if os.path.exists(data_source):
-    df = pd.read_csv(data_source)
-    ds = Dataset.from_pandas(df)
+    if '.json' in data_source:
+        df_train = pd.read_json(data_source_train)
+        df_eval = pd.read_json(data_source_eval)
+    elif '.csv' in data_source:
+        df_train = pd.read_csv(data_source_train)
+        df_eval = pd.read_csv(data_source_eval)
+    else:
+        raise ValueError('Please provide either a csv, json, or huggingface dataset!')
+    ds_train = Dataset.from_pandas(df_train)
+    ds_eval = Dataset.from_pandas(df_eval)
 else:
     ds_train = load_dataset(data_source, split='train[:{}%]'.format(int(100 * (1 - val_prop - test_prop))))
     ds_val = load_dataset(data_source, split='train[{}%:{}%]'.format(int(100 * (1 - val_prop - test_prop)), int(100 * (1 - test_prop))))
     ds_test = None
     if test_prop:
         ds_test = load_dataset(data_source, split='train[{}%:]'.format(int(100 * (1 - test_prop))))
+
+print(df_train.head)
+print(df_eval.head)
+
+quit()
 
 # Preprocessing (including tokenization)
 
