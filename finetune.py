@@ -91,7 +91,8 @@ if add_sep_token:
 data_handler = DataHandler(tokenizer, prompt_template=prompt_template, model_max_length=seq_max_length, train_on_inputs=False)
 
 # OUTPUT SHOULD BE TRUNCATED WITHOUT ANY DOC STRIDE - since it's considered one thing
-# TODO: have to tokenize 
+
+# TODO: make called prompt function dynamic w.r.t. task
 
 train_columns = None
 val_columns = None
@@ -106,7 +107,7 @@ assert (train_columns and task)
 ds_train_tokenized = ds_train.shuffle(seed=seed).map(lambda row: {
     'input_tokens': tokenize_qa(
         tokenizer, 
-        data_handler.generate_prompt(**(preprocess_text(row, train_columns, task, add_sep=add_sep_token))),
+        data_handler.generate_prompt_summary(**(preprocess_text(row, train_columns, task, add_sep=add_sep_token))),
         max_seq_length=seq_max_length, 
         doc_stride=seq_doc_stride
     )
@@ -115,7 +116,7 @@ ds_train_tokenized = ds_train.shuffle(seed=seed).map(lambda row: {
 ds_val_tokenized = ds_val.shuffle(seed=seed).map(lambda row: {
     'input_tokens': tokenize_qa(
         tokenizer, 
-        data_handler.generate_prompt(**(preprocess_text(row, val_columns, task, add_sep=add_sep_token))),
+        data_handler.generate_prompt_summary(**(preprocess_text(row, val_columns, task, add_sep=add_sep_token))),
         max_seq_length=seq_max_length, 
         doc_stride=seq_doc_stride
     )
@@ -126,7 +127,7 @@ if ds_test:
     ds_test_tokenized = ds_test.shuffle(seed=seed).map(lambda row: {
         'input_tokens': tokenize_qa(
             tokenizer, 
-            data_handler.generate_prompt(**(preprocess_text(row, test_columns, task, add_sep=add_sep_token))),
+            data_handler.generate_prompt_summary(**(preprocess_text(row, test_columns, task, add_sep=add_sep_token))),
             max_seq_length=seq_max_length, 
             doc_stride=seq_doc_stride
         )
