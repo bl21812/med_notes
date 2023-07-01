@@ -53,8 +53,8 @@ model_save_name = 'dialogsum_finetuned'
 # TODO: Add test support
 if os.path.exists(data_source):
     if '.json' in data_source:
-        df_train = pd.read_json(data_source_train)
-        df_eval = pd.read_json(data_source_eval)
+        df_train = pd.read_json(data_source_train, lines=True)
+        df_eval = pd.read_json(data_source_eval, lines=True)
     elif '.csv' in data_source:
         df_train = pd.read_csv(data_source_train)
         df_eval = pd.read_csv(data_source_eval)
