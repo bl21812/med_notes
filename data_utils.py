@@ -42,7 +42,8 @@ def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128):
 
 
 # TODO: Implement adding SEP tokens (just replace the D: and P: with SEP except the first one?)
-def preprocess_text(text, columns, task, add_sep=False):
+# TODO: Implement task separation (diff preprocessing depending on dataset)
+def preprocess_text(row, columns, task, add_sep=False):
     '''
     Any preprocessing needed for our read-in text data
     Pulling relevant rows and ...
@@ -51,12 +52,18 @@ def preprocess_text(text, columns, task, add_sep=False):
 
     :param add_sep: Whether to add SEP tokens to separate dialogue or not
     '''
-    text = repr(text).replace('\\n', ' ')
-    text = repr(text).replace('\\r', ' ')
-    text = repr(text).replace('\\', '')
-    # text = text.replace('D:', '')
-    # text = text.replace('P:', '')
-    return text
+    ret = {}
+    for col in columns:
+        text = row[col]
+        text = repr(text).replace('\\n', ' ')
+        text = repr(text).replace('\\r', ' ')
+        text = repr(text).replace('\\', '')
+        # text = text.replace('D:', '')
+        # text = text.replace('P:', '')
+        if 'summary' in col:
+            col = 'summary'
+        ret[col] = text
+    return ret
 
 # TRY: 
     # describing soap notes (ask for patient's description of their condition, results of physical exams, doctor's diagnosis, and the doctor's plan) instead of just asking for soap

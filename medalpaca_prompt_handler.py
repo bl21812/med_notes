@@ -291,9 +291,20 @@ class DataHandler:
     
     def generate_prompt_summary(
         self,
-        
+        dialogue: Optional[str] = None,
+        summary: Optional[str] = None,
     ):
-        print()
+        
+        if not any([dialogue, summary]):
+            raise ValueError("At least one of `dialogue` or `summary` should be defined")
+        
+        prompt = (
+            f'{self.prompt_template["primer"]}'
+            f'{self.prompt_template["dialogue"]}{dialogue or ""}'
+            f'{self.prompt_template["summary"]}{summary or ""}'
+        )
+
+        return prompt
 
     def resolve_output(self, output: str): 
         pass
