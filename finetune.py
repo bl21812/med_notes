@@ -60,14 +60,14 @@ model_save_name = 'dialogsum_finetuned'
 if os.path.exists(data_source):
     if '.json' in data_source:
         df_train = pd.read_json(data_source_train, lines=True)
-        df_eval = pd.read_json(data_source_eval, lines=True)
+        df_val = pd.read_json(data_source_eval, lines=True)
     elif '.csv' in data_source:
         df_train = pd.read_csv(data_source_train)
-        df_eval = pd.read_csv(data_source_eval)
+        df_val = pd.read_csv(data_source_eval)
     else:
         raise ValueError('Please provide either a csv, json, or huggingface dataset!')
     ds_train = Dataset.from_pandas(df_train)
-    ds_eval = Dataset.from_pandas(df_eval)
+    ds_val = Dataset.from_pandas(df_val)
     ds_test = None
 else:
     ds_train = load_dataset(data_source, split='train[:{}%]'.format(int(100 * (1 - val_prop - test_prop))))
