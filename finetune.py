@@ -69,8 +69,8 @@ else:
     if test_prop:
         ds_test = load_dataset(data_source, split='train[{}%:]'.format(int(100 * (1 - test_prop))))
 
-print(df_train.head)
-print(df_eval.head)
+print(df_train.iloc[0]['dialogue'])
+print(df_train.iloc[0]['summary'])
 
 quit()
 
