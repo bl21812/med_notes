@@ -42,9 +42,10 @@ def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128):
 
 
 # TODO: Implement adding SEP tokens (just replace the D: and P: with SEP except the first one?)
-def preprocess_text(text, add_sep=False):
+def preprocess_text(text, columns, task, add_sep=False):
     '''
     Any preprocessing needed for our read-in text data
+    Pulling relevant rows and ...
     e.g. removing newline characters
     e.g. removing speaker indications (D:, P:)
 
@@ -53,8 +54,8 @@ def preprocess_text(text, add_sep=False):
     text = repr(text).replace('\\n', ' ')
     text = repr(text).replace('\\r', ' ')
     text = repr(text).replace('\\', '')
-    text = text.replace('D:', '')
-    text = text.replace('P:', '')
+    # text = text.replace('D:', '')
+    # text = text.replace('P:', '')
     return text
 
 # TRY: 

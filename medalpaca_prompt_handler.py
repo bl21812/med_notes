@@ -288,6 +288,12 @@ class DataHandler:
         )
 
         return prompt
+    
+    def generate_prompt_summary(
+        self,
+        
+    ):
+        print()
 
     def resolve_output(self, output: str): 
         pass

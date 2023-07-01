@@ -23,8 +23,13 @@ from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data
 
 from qa_model import QA_Head
 from embedder import Embedder
-from data_utils import tokenize_qa
 
+from data_utils import tokenize_qa, preprocess_text
+from medalpaca_prompt_handler import DataHandler
+
+seed = 0
+
+prompt_template = "prompt_template.json"
 llm_version = "medalpaca/medalpaca-13b"  # always taken for embeddings
 tokenizer_source = "medalpaca/medalpaca-13b"
 model_source = "medalpaca/medalpaca-13b"
@@ -32,6 +37,7 @@ data_source = "dialogsum.train.jsonl"
 data_source_train = "dialogsum.train.jsonl"
 data_source_eval = "dialogsum.test.jsonl"
 
+add_sep_token = False
 seq_max_length = 2048  # llama max sequence length
 seq_doc_stride = 128  # NOTE: may need to be changed
 
@@ -62,6 +68,7 @@ if os.path.exists(data_source):
         raise ValueError('Please provide either a csv, json, or huggingface dataset!')
     ds_train = Dataset.from_pandas(df_train)
     ds_eval = Dataset.from_pandas(df_eval)
+    ds_test = None
 else:
     ds_train = load_dataset(data_source, split='train[:{}%]'.format(int(100 * (1 - val_prop - test_prop))))
     ds_val = load_dataset(data_source, split='train[{}%:{}%]'.format(int(100 * (1 - val_prop - test_prop)), int(100 * (1 - test_prop))))
@@ -69,41 +76,62 @@ else:
     if test_prop:
         ds_test = load_dataset(data_source, split='train[{}%:]'.format(int(100 * (1 - test_prop))))
 
-print(df_train.iloc[0]['dialogue'])
-print(df_train.iloc[0]['summary'])
-
-quit()
+print('Dataset loaded!')
 
 # Preprocessing (including tokenization)
 
 tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
+print('Tokenizer loaded!')
 
-'''
-TODO
+if add_sep_token:
+    tokenizer.add_special_tokens({
+        'additional_special_tokens': ['[SEP]']
+    })
 
-edit qa model to work from embeddings only (just linear units and head)
-write demo: embed max length seqs, then concat embeddings to feed into MLP
-'''
+data_handler = DataHandler(tokenizer, prompt_template=prompt_template, model_max_length=seq_max_length, train_on_inputs=False)
 
 # OUTPUT SHOULD BE TRUNCATED WITHOUT ANY DOC STRIDE - since it's considered one thing
+# TODO: have to tokenize 
 
-# NOTE: row names are only for mediQA rn
-ds_train_tokenized = ds_train.map(lambda row: {
-    'input_tokens': tokenize_qa(tokenizer, row['instruction'], row['input'], max_seq_length=seq_max_length, doc_stride=seq_doc_stride), 
-    'output_tokens': tokenize_qa(tokenizer, row['output'])
+train_columns = None
+val_columns = None
+test_columns = None
+task = None
+if 'dialogsum' in data_source:
+    train_columns = ['dialogue', 'summary']
+    val_columns = ['dialogue', 'summary1']
+    task = 'dialogsum'
+assert (train_columns and task)
+
+ds_train_tokenized = ds_train.shuffle(seed=seed).map(lambda row: {
+    'input_tokens': tokenize_qa(
+        tokenizer, 
+        data_handler.generate_prompt(preprocess_text(row, train_columns, task, add_sep=add_sep_token))
+    )
 }, remove_columns=ds_train.column_names)
 
-ds_val_tokenized = ds_val.map(lambda row: {
-    'input_tokens': tokenize_qa(tokenizer, row['instruction'], row['input'], max_seq_length=seq_max_length, doc_stride=seq_doc_stride), 
-    'output_tokens': tokenize_qa(tokenizer, row['output'])
+ds_val_tokenized = ds_val.shuffle(seed=seed).map(lambda row: {
+    'input_tokens': tokenize_qa(
+        tokenizer, 
+        data_handler.generate_prompt(preprocess_text(row, val_columns, task, add_sep=add_sep_token))
+    )
 }, remove_columns=ds_val.column_names)
 
 ds_test_tokenized = None
 if ds_test:
-    ds_test_tokenized = ds_test.map(lambda row: {
-        'input_tokens': tokenize_qa(tokenizer, row['instruction'], row['input'], max_seq_length=seq_max_length, doc_stride=seq_doc_stride), 
-        'output_tokens': tokenize_qa(tokenizer, row['output'])
+    ds_test_tokenized = ds_test.shuffle(seed=seed).map(lambda row: {
+        'input_tokens': tokenize_qa(
+            tokenizer, 
+            data_handler.generate_prompt(preprocess_text(row, test_columns, task, add_sep=add_sep_token))
+        )
     }, remove_columns=ds_test.column_names)
+
+print('Preprocessing complete!')
+
+print(tokenizer.decode(ds_train_tokenized[0]['input_tokens']))
+print(tokenizer.decode(ds_val_tokenized[0]['input_tokens']))
+
+quit()
 
 '''
 INFO: 
