@@ -34,8 +34,7 @@ def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128):
         )
 
     # extract token ids
-    # add batch dim ?
-    ids = [tokenized['input_ids']]
+    ids = tokenized['input_ids']
 
     return ids
 

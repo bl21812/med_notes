@@ -118,7 +118,7 @@ if 'dialogsum' in data_source:
 assert (train_columns and task)
 
 ds_train_tokenized = ds_train.shuffle(seed=seed).map(lambda row: {
-    'input_tokens': tokenize_qa(
+    'input_ids': tokenize_qa(
         tokenizer, 
         data_handler.generate_prompt_summary(**(preprocess_text(row, train_columns, task, add_sep=add_sep_token))),
         max_seq_length=seq_max_length, 
@@ -127,7 +127,7 @@ ds_train_tokenized = ds_train.shuffle(seed=seed).map(lambda row: {
 }, remove_columns=ds_train.column_names)
 
 ds_val_tokenized = ds_val.shuffle(seed=seed).map(lambda row: {
-    'input_tokens': tokenize_qa(
+    'input_ids': tokenize_qa(
         tokenizer, 
         data_handler.generate_prompt_summary(**(preprocess_text(row, val_columns, task, add_sep=add_sep_token))),
         max_seq_length=seq_max_length, 
@@ -138,7 +138,7 @@ ds_val_tokenized = ds_val.shuffle(seed=seed).map(lambda row: {
 ds_test_tokenized = None
 if ds_test:
     ds_test_tokenized = ds_test.shuffle(seed=seed).map(lambda row: {
-        'input_tokens': tokenize_qa(
+        'input_ids': tokenize_qa(
             tokenizer, 
             data_handler.generate_prompt_summary(**(preprocess_text(row, test_columns, task, add_sep=add_sep_token))),
             max_seq_length=seq_max_length, 
@@ -154,7 +154,7 @@ INFO:
 Each DS is: 
 [
     {
-        'input_tokens': [
+        'input_ids': [
             [
                 [token_seq_1],
                 ...
