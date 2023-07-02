@@ -227,7 +227,8 @@ trainer_args = TrainingArguments(
     ddp_find_unused_parameters=None,
     group_by_length=False,
     fsdp="",
-    fsdp_transformer_layer_cls_to_wrap=None
+    fsdp_transformer_layer_cls_to_wrap=None, 
+    remove_unused_columns=False
 )
 
 trainer = Trainer(
