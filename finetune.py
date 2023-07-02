@@ -55,7 +55,7 @@ num_devices = 3
 
 # Hparams
 batch_size = 3
-optim = 'adamw_torch'
+optim = 'adafactor'
 lr = 2e-5
 lr_scheduler_type = 'cosine'
 epochs = 3
@@ -63,7 +63,7 @@ decay = 0.01
 warmup_steps = 200
 eval_steps = 200  # num of steps between evals
 
-model_save_name = 'dialogsum_finetuned'
+model_save_name = 'dialogsum_finetuned/2023-07-02'
 
 # Load data 
 # TODO: Add test support
