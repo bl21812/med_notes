@@ -226,7 +226,7 @@ trainer_args = TrainingArguments(
     load_best_model_at_end=True,
     ddp_find_unused_parameters=None,
     group_by_length=False,
-    fsdp=None,
+    fsdp="",
     fsdp_transformer_layer_cls_to_wrap=None
 )
 
