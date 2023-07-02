@@ -227,15 +227,14 @@ trainer_args = TrainingArguments(
     ddp_find_unused_parameters=None,
     group_by_length=False,
     fsdp="",
-    fsdp_transformer_layer_cls_to_wrap=None, 
-    remove_unused_columns=False
+    fsdp_transformer_layer_cls_to_wrap=None
 )
 
 trainer = Trainer(
     model, 
     args=trainer_args, 
-    train_dataset=ds_train,
-    eval_dataset=ds_val,
+    train_dataset=ds_train_tokenized,
+    eval_dataset=ds_val_tokenized,
     data_collator=DataCollatorForSeq2Seq(
         tokenizer, pad_to_multiple_of=8, return_tensors="pt", padding=True
     )
