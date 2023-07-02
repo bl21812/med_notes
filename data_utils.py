@@ -12,6 +12,8 @@ def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128):
 
     :return: List of input ids (tokens)
         or list of lists of input ids if len(x) > max_seq_length
+        IM RETURNING DICT WITH input_ids, attention_mask, and labels keys now
+            where labels = input_ids
     '''
 
     if x2:
@@ -33,10 +35,16 @@ def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128):
             stride=0
         )
 
-    # extract token ids
-    ids = tokenized['input_ids']
+    keys = ['input_ids', 'attention_mask']
+    result = {key: tokenized[key] for key in keys}
 
-    return ids
+    if tokenized['input_ids'][-1] != tokenizer.eos_token_id:
+        result['input_ids'].append(tokenizer.eos_token_id)
+        result['attention_mask'].append(1)
+    
+    result['labels'] = result['input_ids'].copy()
+
+    return result
 
 
 # TODO: Implement adding SEP tokens (just replace the D: and P: with SEP except the first one?)

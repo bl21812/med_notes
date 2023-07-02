@@ -117,34 +117,65 @@ if 'dialogsum' in data_source:
     task = 'dialogsum'
 assert (train_columns and task)
 
-ds_train_tokenized = ds_train.shuffle(seed=seed).map(lambda row: {
+# TODO: do i need an attention mask ??
+
+'''ds_train_tokenized = ds_train.shuffle(seed=seed).map(lambda row: {
     'input_ids': tokenize_qa(
         tokenizer, 
         data_handler.generate_prompt_summary(**(preprocess_text(row, train_columns, task, add_sep=add_sep_token))),
         max_seq_length=seq_max_length, 
         doc_stride=seq_doc_stride
     )
-}, remove_columns=ds_train.column_names)
+}, remove_columns=ds_train.column_names)'''
 
-ds_val_tokenized = ds_val.shuffle(seed=seed).map(lambda row: {
+ds_train_tokenized = ds_train.shuffle(seed=seed).map(
+    lambda row: tokenize_qa(
+        tokenizer, 
+        data_handler.generate_prompt_summary(**(preprocess_text(row, train_columns, task, add_sep=add_sep_token))),
+        max_seq_length=seq_max_length, 
+        doc_stride=seq_doc_stride
+    ), 
+    remove_columns=ds_train.column_names
+)
+
+'''ds_val_tokenized = ds_val.shuffle(seed=seed).map(lambda row: {
     'input_ids': tokenize_qa(
         tokenizer, 
         data_handler.generate_prompt_summary(**(preprocess_text(row, val_columns, task, add_sep=add_sep_token))),
         max_seq_length=seq_max_length, 
         doc_stride=seq_doc_stride
     )
-}, remove_columns=ds_val.column_names)
+}, remove_columns=ds_val.column_names)'''
+
+ds_val_tokenized = ds_val.shuffle(seed=seed).map(
+    lambda row: tokenize_qa(
+        tokenizer, 
+        data_handler.generate_prompt_summary(**(preprocess_text(row, train_columns, task, add_sep=add_sep_token))),
+        max_seq_length=seq_max_length, 
+        doc_stride=seq_doc_stride
+    ), 
+    remove_columns=ds_val.column_names
+)
 
 ds_test_tokenized = None
 if ds_test:
-    ds_test_tokenized = ds_test.shuffle(seed=seed).map(lambda row: {
+    '''ds_test_tokenized = ds_test.shuffle(seed=seed).map(lambda row: {
         'input_ids': tokenize_qa(
             tokenizer, 
             data_handler.generate_prompt_summary(**(preprocess_text(row, test_columns, task, add_sep=add_sep_token))),
             max_seq_length=seq_max_length, 
             doc_stride=seq_doc_stride
         )
-    }, remove_columns=ds_test.column_names)
+    }, remove_columns=ds_test.column_names)'''
+    ds_test_tokenized = ds_test.shuffle(seed=seed).map(
+        lambda row: tokenize_qa(
+            tokenizer, 
+            data_handler.generate_prompt_summary(**(preprocess_text(row, train_columns, task, add_sep=add_sep_token))),
+            max_seq_length=seq_max_length, 
+            doc_stride=seq_doc_stride
+        ), 
+        remove_columns=ds_test.column_names
+    )
 
 print('Preprocessing complete!')
 
