@@ -124,48 +124,44 @@ Each DS is:
 
 # Load in model
 
-# TODO: Add code for locally saved model
-if os.path.exists(model_source):
-    model = None
-else:
-    # THE COMMENTED SECTION BELOW IS IF NOT USING PEFT
-    '''config = AutoConfig.from_pretrained(base_model_source)
-    with init_empty_weights():
-        model = LlamaForCausalLM._from_config(config)
-    model.tie_weights()
-    max_memory = {0: "0GIB", 1: "10GIB", 2: "10GIB", 3: "10GIB"}  # only last GPU
-    device_map = infer_auto_device_map(model, max_memory=max_memory)'''
-    model = LlamaForCausalLM.from_pretrained(
-        base_model_source,  # change to model_source if not using peft
-        load_in_8bit=True,
-        device_map='auto', 
-        # offload_folder='offload', 
-        # llm_int8_enable_fp32_cpu_offload=True,
-        torch_dtype=torch.float16
-    ) 
+# THE COMMENTED SECTION BELOW IS IF NOT USING PEFT
+'''config = AutoConfig.from_pretrained(base_model_source)
+with init_empty_weights():
+    model = LlamaForCausalLM._from_config(config)
+model.tie_weights()
+max_memory = {0: "0GIB", 1: "10GIB", 2: "10GIB", 3: "10GIB"}  # only last GPU
+device_map = infer_auto_device_map(model, max_memory=max_memory)'''
+model = LlamaForCausalLM.from_pretrained(
+    base_model_source,  # change to model_source if not using peft
+    load_in_8bit=True,
+    device_map='auto', 
+    # offload_folder='offload', 
+    # llm_int8_enable_fp32_cpu_offload=True,
+    torch_dtype=torch.float16
+) 
 
-    # MOVE THIS ONE TO TRAIN
-    '''lora_config = LoraConfig(
-        r=8,
-        lora_alpha=16,
-        target_modules=('q_proj', 'v_proj'),
-        lora_dropout=0.1,
-        bias="none",
-        task_type="CAUSAL_LM",
-    )
-    model = get_peft_model(model, lora_config)'''
-    model = PeftModel.from_pretrained(
-        model=model, 
-        model_id=model_source,
-        is_trainable=False
-    )
-    # model.half()  # if not peft
-    model.eval()
-    '''model = load_checkpoint_and_dispatch(
-        model,
-        "medalpaca-13b",
-        device_map=device_map
-    )'''
+# MOVE THIS ONE TO TRAIN
+'''lora_config = LoraConfig(
+    r=8,
+    lora_alpha=16,
+    target_modules=('q_proj', 'v_proj'),
+    lora_dropout=0.1,
+    bias="none",
+    task_type="CAUSAL_LM",
+)
+model = get_peft_model(model, lora_config)'''
+model = PeftModel.from_pretrained(
+    model=model, 
+    model_id=model_source,
+    is_trainable=False
+)
+# model.half()  # if not peft
+model.eval()
+'''model = load_checkpoint_and_dispatch(
+    model,
+    "medalpaca-13b",
+    device_map=device_map
+)'''
 
 # TODO: Expand embeddings to accomodate for SEP
 if add_sep_token:
