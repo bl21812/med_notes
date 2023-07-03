@@ -26,7 +26,7 @@ from peft import LoraConfig, get_peft_model, prepare_model_for_int8_training, ge
 from qa_model import QA_Head
 from embedder import Embedder
 
-from data_utils import tokenize_qa, preprocess_text
+from data_utils import tokenize_qa, preprocess_text, tokenize_dialogue_summary
 from medalpaca_prompt_handler import DataHandler
 
 seed = 0
@@ -107,6 +107,7 @@ data_handler = DataHandler(tokenizer, prompt_template=prompt_template, model_max
 
 # TODO: make called prompt function dynamic w.r.t. task
 
+dialogue_columns = ['dialogue']
 train_columns = None
 val_columns = None
 test_columns = None
@@ -119,16 +120,7 @@ assert (train_columns and task)
 
 # TODO: do i need an attention mask ??
 
-'''ds_train_tokenized = ds_train.shuffle(seed=seed).map(lambda row: {
-    'input_ids': tokenize_qa(
-        tokenizer, 
-        data_handler.generate_prompt_summary(**(preprocess_text(row, train_columns, task, add_sep=add_sep_token))),
-        max_seq_length=seq_max_length, 
-        doc_stride=seq_doc_stride
-    )
-}, remove_columns=ds_train.column_names)'''
-
-ds_train_tokenized = ds_train.shuffle(seed=seed).map(
+'''ds_train_tokenized = ds_train.shuffle(seed=seed).map(
     lambda row: tokenize_qa(
         tokenizer, 
         data_handler.generate_prompt_summary(**(preprocess_text(row, train_columns, task, add_sep=add_sep_token))),
@@ -136,21 +128,34 @@ ds_train_tokenized = ds_train.shuffle(seed=seed).map(
         doc_stride=seq_doc_stride
     ), 
     remove_columns=ds_train.column_names
+)'''
+
+ds_train_tokenized = ds_train.shuffle(seed=seed).map(
+    lambda row: tokenize_dialogue_summary(
+        tokenizer, 
+        inputs=data_handler.generate_prompt_summary(**(preprocess_text(row, dialogue_columns, task, add_sep=add_sep_token))),
+        outputs=data_handler.generate_prompt_summary(**(preprocess_text(row, train_columns, task, add_sep=add_sep_token))),
+        max_seq_length=seq_max_length, 
+        doc_stride=seq_doc_stride
+    ), 
+    remove_columns=ds_train.column_names
 )
 
-'''ds_val_tokenized = ds_val.shuffle(seed=seed).map(lambda row: {
-    'input_ids': tokenize_qa(
+'''ds_val_tokenized = ds_val.shuffle(seed=seed).map(
+    lambda row: tokenize_qa(
         tokenizer, 
         data_handler.generate_prompt_summary(**(preprocess_text(row, val_columns, task, add_sep=add_sep_token))),
         max_seq_length=seq_max_length, 
         doc_stride=seq_doc_stride
-    )
-}, remove_columns=ds_val.column_names)'''
+    ), 
+    remove_columns=ds_val.column_names
+)'''
 
 ds_val_tokenized = ds_val.shuffle(seed=seed).map(
-    lambda row: tokenize_qa(
+    lambda row: tokenize_dialogue_summary(
         tokenizer, 
-        data_handler.generate_prompt_summary(**(preprocess_text(row, val_columns, task, add_sep=add_sep_token))),
+        inputs=data_handler.generate_prompt_summary(**(preprocess_text(row, dialogue_columns, task, add_sep=add_sep_token))),
+        outputs=data_handler.generate_prompt_summary(**(preprocess_text(row, val_columns, task, add_sep=add_sep_token))),
         max_seq_length=seq_max_length, 
         doc_stride=seq_doc_stride
     ), 
@@ -159,18 +164,20 @@ ds_val_tokenized = ds_val.shuffle(seed=seed).map(
 
 ds_test_tokenized = None
 if ds_test:
-    '''ds_test_tokenized = ds_test.shuffle(seed=seed).map(lambda row: {
-        'input_ids': tokenize_qa(
+    '''ds_test_tokenized = ds_test.shuffle(seed=seed).map(
+        lambda row: tokenize_qa(
             tokenizer, 
             data_handler.generate_prompt_summary(**(preprocess_text(row, test_columns, task, add_sep=add_sep_token))),
             max_seq_length=seq_max_length, 
             doc_stride=seq_doc_stride
-        )
-    }, remove_columns=ds_test.column_names)'''
+        ), 
+        remove_columns=ds_test.column_names
+    )'''
     ds_test_tokenized = ds_test.shuffle(seed=seed).map(
-        lambda row: tokenize_qa(
+        lambda row: tokenize_dialogue_summary(
             tokenizer, 
-            data_handler.generate_prompt_summary(**(preprocess_text(row, test_columns, task, add_sep=add_sep_token))),
+            inputs=data_handler.generate_prompt_summary(**(preprocess_text(row, dialogue_columns, task, add_sep=add_sep_token))),
+            outputs=data_handler.generate_prompt_summary(**(preprocess_text(row, test_columns, task, add_sep=add_sep_token))),
             max_seq_length=seq_max_length, 
             doc_stride=seq_doc_stride
         ), 

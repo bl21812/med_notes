@@ -1,5 +1,6 @@
 # NOTE: I might have to change the [D:] and [P:] speaker indicators to 
     # become special tokens for finetuning
+# this might be kinda messed up now
 def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128):
     '''
     Tokenize question(s) and context(s) for a QA task
@@ -43,6 +44,43 @@ def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128):
         result['attention_mask'].append(1)
     
     result['labels'] = result['input_ids'].copy()
+
+    return result
+
+
+# IGNORING OVERFLOW FOR NOW
+def tokenize_dialogue_summary(tokenizer, inputs, outputs, max_seq_length=2048, doc_stride=128):
+    '''
+    Let input_ids be a prompt template with dialogue and blank summary section (inputs)
+        and labels be the above but with the summary section filled (outputs)
+    '''
+    input_tokenized = tokenizer(
+        inputs, 
+        add_special_tokens=True,
+        max_length=max_seq_length,
+        truncation=True,
+        return_overflowing_tokens=True,
+        stride=doc_stride
+    )
+
+    output_tokenized = tokenizer(
+        outputs, 
+        add_special_tokens=True,
+        max_length=max_seq_length,
+        truncation=True,
+        return_overflowing_tokens=True,
+        stride=doc_stride
+    )
+
+    keys = ['input_ids', 'attention_mask']
+    result = {key: input_tokenized[key] for key in keys}
+    result['labels'] = output_tokenized['input_ids']
+
+    if input_tokenized['input_ids'][-1] != tokenizer.eos_token_id:
+        result['input_ids'].append(tokenizer.eos_token_id)
+        result['attention_mask'].append(1)
+    if output_tokenized['input_ids'][-1] != tokenizer.eos_token_id:
+        result['labels'].append(tokenizer.eos_token_id)
 
     return result
 
