@@ -2,6 +2,6 @@
     "description": "Template for dialogue summarization task.",
     "primer": "Please provide a summary for the following dialogue between two people.",
     "dialogue": "\n\n### Dialogue:\n",
-    "summary": "\n\n### Summary:\n",
-    "response_split": "### Summary:"
+    "summary": "\n\n### Response:\n",
+    "response_split": "### Response:"
 }
