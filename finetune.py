@@ -63,7 +63,7 @@ decay = 0.01
 warmup_steps = 200
 eval_steps = 200  # num of steps between evals
 
-model_save_name = 'dialogsum_finetuned/2023-07-02'
+model_save_name = 'dialogsum_finetuned/2023-07-03'
 
 # Load data 
 # TODO: Add test support
