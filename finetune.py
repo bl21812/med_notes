@@ -36,9 +36,9 @@ model_source = "medalpaca/medalpaca-lora-13b-8bit"
 base_model_source = "decapoda-research/llama-13b-hf"
 
 prompt_template = "prompts/prompt_template_dialogue_summary.json"
-data_source = "dialogsum.train.jsonl"
-data_source_train = "dialogsum.train.jsonl"
-data_source_eval = "dialogsum.test.jsonl"
+data_source = "dialogsum/dialogsum.train.jsonl"
+data_source_train = "dialogsum/dialogsum.train.jsonl"
+data_source_eval = "dialogsum/dialogsum.test.jsonl"
 
 add_sep_token = False
 seq_max_length = 2048  # llama max sequence length
@@ -181,6 +181,8 @@ print('Preprocessing complete!')
 
 '''
 THIS IS OUTDATED !! (i'm just following medalpaca train script now)
+    which has input_ids, attention_mask, and labels keys
+    where labels = input_ids
 INFO: 
 Each DS is: 
 [
@@ -246,10 +248,10 @@ trainer_args = TrainingArguments(
     learning_rate=lr,
     fp16=True,
     bf16=False,
-    logging_steps=10,
+    logging_steps=eval_steps/10,
     optim=optim,
     lr_scheduler_type=lr_scheduler_type,
-    evaluation_strategy = "steps",
+    evaluation_strategy="steps",
     save_strategy="steps",
     eval_steps=eval_steps,
     save_steps=eval_steps,

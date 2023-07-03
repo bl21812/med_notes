@@ -22,12 +22,15 @@ from accelerate import init_empty_weights, load_checkpoint_and_dispatch, infer_a
 from data_utils import tokenize_qa, preprocess_text
 from medalpaca_prompt_handler import DataHandler
 
-prompt_template = "prompt_template.json"
+seed = 0
+
+prompt_template = "prompts/prompt_template_dialogue_summary.json"
 tokenizer_source = "medalpaca/medalpaca-13b"
-model_source = "medalpaca/medalpaca-lora-13b-8bit"
+# model_source = "medalpaca/medalpaca-lora-13b-8bit"  # pre-trained from hub
+model_source = "dialogsum_finetuned/2023-07-02"  # local checkpoint
 base_model_source = "decapoda-research/llama-13b-hf"
-data_source = "medalpaca/medical_meadow_mediqa"
-# data_source = 'soap_ds.csv'
+# data_source = "medalpaca/medical_meadow_mediqa"  # from hub
+data_source = "dialogsum/dialogsum.test.jsonl"
 
 add_sep_token = False
 seq_max_length = 2048  # llama max sequence length
@@ -36,56 +39,25 @@ seq_doc_stride = 128  # NOTE: may need to be changed
 # Load data 
 # TODO: Add splits for custom loading
 if os.path.exists(data_source):
-    df = pd.read_csv(data_source)
+    if '.json' in data_source:
+        df = pd.read_json(data_source, lines=True)
+    elif '.csv' in data_source:
+        df = pd.read_csv(data_source)
+    else:
+        raise ValueError('Please provide either a csv, json, or huggingface dataset!')
     ds = Dataset.from_pandas(df)
 else:
     ds = load_dataset(data_source, split='train')
 
 print('Dataset loaded!')
-
-# THIS DIDNT WORK FOR SOME REASON LOL
-'''
-use_default_pipeline = False
-if use_default_pipeline:
-
-    qa_pipeline = pipeline('question-answering', model=model_source, tokenizer=model_source)
-
-    inp = ''
-    idx = 0
-
-    while True:
-
-        item = ds[idx]
-        true_output = item['output']
-        instruction = item['instruction']
-        context = item['input']
-        print('---------- INSTRUCTION ----------')
-        print(instruction)
-        print()
-        print('---------- CONTEXT ----------')
-        print(context)
-        print()
-        print('---------- EXPECTED OUTPUT ----------')
-        print(true_output)
-        print()
-
-        # Get model prediction
-        pred = qa_pipeline({'question': instruction, 'context': context})
-        print('---------- PREDICTED OUTPUT ----------')
-        print(pred)
-
-        inp = input()
-        if not (inp == ''):
-            break
-        idx += 1
-
-    quit()
-'''
     
 # Preprocessing (including tokenization)
 
 tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 print('Tokenizer loaded!')
+
+tokenizer.pad_token_id = 0
+tokenizer.padding_side = "left"
 
 if add_sep_token:
     tokenizer.add_special_tokens({
@@ -94,10 +66,27 @@ if add_sep_token:
 
 data_handler = DataHandler(tokenizer, prompt_template=prompt_template, model_max_length=seq_max_length, train_on_inputs=False)
 
+columns = None
+task = None
+if 'dialogsum' in data_source:
+    columns = ['dialogue']
+    task = 'dialogsum'
+assert columns and task
+
+ds_tokenized = ds.shuffle(seed=seed).map(
+    lambda row: tokenize_qa(
+        tokenizer, 
+        data_handler.generate_prompt_summary(**(preprocess_text(row, columns, task, add_sep=add_sep_token))),
+        max_seq_length=seq_max_length, 
+        doc_stride=seq_doc_stride
+    ), 
+    remove_columns=ds.column_names
+)
+
 # NOTE: row names are only for mediQA rn
 # NOTE: flipped input and instruction
 # NOTE: figure out how to add SEP tokens to separate dialogue
-ds_tokenized = ds.map(lambda row: {
+'''ds_tokenized = ds.map(lambda row: {
     'input_tokens': tokenize_qa(
         tokenizer, 
         data_handler.generate_prompt(instruction=row['input'], input=row['instruction']),  # stock QA task
@@ -107,7 +96,7 @@ ds_tokenized = ds.map(lambda row: {
     ), 
     # 'transcript': preprocess_text(row['transcript']),  # interview transcript
     # 'output': preprocess_text(row['output'])  # interview transcript
-})  # Custom tokenization
+})'''  # Custom tokenization
 
 print('Tokenization complete!')
 
@@ -165,7 +154,11 @@ else:
         task_type="CAUSAL_LM",
     )
     model = get_peft_model(model, lora_config)'''
-    model = PeftModel.from_pretrained(model, model_id=model_source)  # USE THIS FOR EVAL DEMO SCRIPT
+    model = PeftModel.from_pretrained(
+        model=model, 
+        model_id=model_source,
+        is_trainable=False
+    )
     # model.half()  # if not peft
     model.eval()
     '''model = load_checkpoint_and_dispatch(
@@ -198,11 +191,12 @@ seen_idx = [idx]
 while True:
 
     item = ds_tokenized[idx]
-    inputs = item['input_tokens']
-    true_output = item['output']
+    # inputs = item['input_tokens']
+    inputs = item['input_ids']
+    # true_output = item['output']
     # transcript = item['transcript']
-    instruction = item['instruction']
-    context = item['input']
+    # instruction = item['instruction']
+    # context = item['input']
 
     '''if len(inputs) > 3500:  # don't have enough memory for huge samples lol
         if idx not in seen_idx:
@@ -211,7 +205,7 @@ while True:
             idx = random.randint(0, len(ds_tokenized) - 1)
         continue'''
 
-    print('---------- INSTRUCTION ----------')
+    '''print('---------- INSTRUCTION ----------')
     print(instruction)
     print()
     print('---------- CONTEXT ----------')
@@ -221,7 +215,7 @@ while True:
     # print()
     print('---------- EXPECTED OUTPUT ----------')
     print(true_output)
-    print()
+    print()'''
     print('Number of tokens in input: {}'.format(len(inputs)))
     print()
 
@@ -235,6 +229,10 @@ while True:
         )
         print(generate_ids)
         pred = tokenizer.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
+        input_prompt = tokenizer.decode(inputs)
+        print('---------- INPUT ----------')
+        print(input_prompt)
+        print()
         print('---------- PREDICTED OUTPUT ----------')
         print(pred)
         print()
