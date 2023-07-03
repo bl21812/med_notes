@@ -59,7 +59,6 @@ def tokenize_dialogue_summary(tokenizer, inputs, outputs, max_seq_length=2048, d
         add_special_tokens=True,
         max_length=max_seq_length,
         truncation=True,
-        return_overflowing_tokens=True,
         stride=doc_stride
     )
 
@@ -68,7 +67,6 @@ def tokenize_dialogue_summary(tokenizer, inputs, outputs, max_seq_length=2048, d
         add_special_tokens=True,
         max_length=max_seq_length,
         truncation=True,
-        return_overflowing_tokens=True,
         stride=doc_stride
     )
 
