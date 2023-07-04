@@ -56,6 +56,10 @@ print('Dataset loaded!')
 tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 print('Tokenizer loaded!')
 
+print(tokenizer.eos_token_id)
+print(tokenizer.bos_token_id)
+quit()
+
 tokenizer.pad_token_id = 0
 tokenizer.padding_side = "left"
 
