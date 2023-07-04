@@ -26,11 +26,12 @@ seed = 0
 
 prompt_template = "prompts/prompt_template.json"
 # tokenizer_source = "medalpaca/medalpaca-13b"
-tokenizer_source = "yahma/llama-7b-hf"
-model_source = "yahma/alpaca-7b-lora"
+tokenizer_source = "decapoda-research/llama-7b-hf"
+model_source = "tloen/alpaca-lora-7b"
 # model_source = "medalpaca/medalpaca-lora-13b-8bit"  # pre-trained from hub
 # model_source = "dialogsum_finetuned/2023-07-02"  # local checkpoint
-base_model_source = "yahma/llama-7b-hf"
+# base_model_source = "yahma/llama-13b-hf"
+base_model_source = "decapoda-research/llama-7b-hf"
 # data_source = "medalpaca/medical_meadow_mediqa"  # from hub
 data_source = "dialogsum/dialogsum.test.jsonl"
 
@@ -154,7 +155,8 @@ model = get_peft_model(model, lora_config)'''
 model = PeftModel.from_pretrained(
     model=model, 
     model_id=model_source,
-    is_trainable=False
+    is_trainable=False, 
+    torch_dtype=torch.float16
 )
 # model.half()  # if not peft
 model.eval()
@@ -169,6 +171,11 @@ if add_sep_token:
     print('Have not added support for this yet!')
 
 print('Model loaded!')
+
+# unwind broken decapoda-research config
+model.config.pad_token_id = tokenizer.pad_token_id = 0  # unk
+model.config.bos_token_id = 1
+model.config.eos_token_id = 2
 
 '''
 # Test a few examples
@@ -197,16 +204,25 @@ while True:
 
     tokenized_inputs = tokenized['input_ids']
 
-    generation_config = GenerationConfig(max_new_tokens=256)
+    generation_config = GenerationConfig(
+        max_new_tokens=256,
+        temperature=0.1,
+        top_p=0.75,
+        top_k=40,
+        num_beams=4
+    )
+
     with torch.no_grad():
         generate_ids = model.generate(
             inputs=torch.tensor([tokenized_inputs]).to('cuda'), 
             generation_config=generation_config,
-            max_new_tokens=256
+            max_new_tokens=256,
+            return_dict_in_generate=True,
+            output_scores=True
         )
         print(generate_ids)
-        print(generate_ids.size())
-        pred = tokenizer.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
+        # print(generate_ids.size())
+        pred = tokenizer.batch_decode(generate_ids.sequences[0], skip_special_tokens=True, clean_up_tokenization_spaces=False)
         input_prompt = tokenizer.decode(tokenized_inputs)
         print('---------- INPUT ----------')
         print(input_prompt)
