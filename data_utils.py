@@ -86,7 +86,7 @@ def tokenize_dialogue_summary(tokenizer, inputs, outputs, max_seq_length=2048, d
 
 # TODO: Implement adding SEP tokens (just replace the D: and P: with SEP except the first one?)
 # TODO: Implement task separation (diff preprocessing depending on dataset)
-def preprocess_text(row, columns, task, add_sep=False):
+def preprocess_text(row, columns, task=None, add_sep=False):
     '''
     Any preprocessing needed for our read-in text data
     Pulling relevant rows and ...
