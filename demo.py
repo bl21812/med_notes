@@ -214,7 +214,7 @@ while True:
 
     with torch.no_grad():
         generate_output = model.generate(
-            inputs=torch.tensor(tokenized_inputs).to('cuda'), 
+            inputs=torch.tensor([tokenized_inputs]).to('cuda'), 
             generation_config=generation_config,
             max_new_tokens=256,
             return_dict_in_generate=True,
