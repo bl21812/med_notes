@@ -24,16 +24,20 @@ from medalpaca_prompt_handler import DataHandler
 
 seed = 0
 
-prompt_template = "prompts/prompt_template.json"
-# tokenizer_source = "medalpaca/medalpaca-13b"
+# file from prompts/ folder
+prompt_template = "prompts/prompt_template_SOAP_2.json"
+
+# one of ["decapoda-research/llama-7b-hf", "medalpaca/medalpaca-13b"]
 tokenizer_source = "decapoda-research/llama-7b-hf"
+
+# one of ["tloen/alpaca-lora-7b", "medalpaca/medalpaca-lora-13b-8bit", or local folder with adapter files]
 model_source = "tloen/alpaca-lora-7b"
-# model_source = "medalpaca/medalpaca-lora-13b-8bit"  # pre-trained from hub
-# model_source = "dialogsum_finetuned/2023-07-02"  # local checkpoint
-# base_model_source = "yahma/llama-13b-hf"
+
+# one of ["decapoda-research/llama-7b-hf", "yahma/llama-13b-hf"]
 base_model_source = "decapoda-research/llama-7b-hf"
-# data_source = "medalpaca/medical_meadow_mediqa"  # from hub
-data_source = "dialogsum/dialogsum.test.jsonl"
+
+# one of ["medalpaca/medical_meadow_mediqa", "dialogsum/dialogsum.test.jsonl", "soap_ds.csv"]
+data_source = "soap_ds.csv"  
 
 add_sep_token = False
 seq_max_length = 2048  # llama max sequence length
@@ -85,20 +89,20 @@ ds_tokenized = ds.shuffle(seed=seed).map(
     ), 
     remove_columns=ds.column_names
 )'''
-'''
+
 # NOTE: row names are only for mediQA rn
 # NOTE: flipped input and instruction
 # NOTE: figure out how to add SEP tokens to separate dialogue
 ds_tokenized = ds.shuffle(seed=seed).map(lambda row:
     tokenize_qa(
         tokenizer, 
-        data_handler.generate_prompt(instruction=row['instruction'], input=row['input']),  # stock QA task
-        # data_handler.generate_prompt_interview_s_only(transcript=preprocess_text(row['transcript'], add_sep=add_sep_token)),  # interview transcript SOAP task
+        # data_handler.generate_prompt(instruction=row['instruction'], input=row['input']),  # stock QA task
+        data_handler.generate_prompt_interview(transcript=preprocess_text(row['transcript'], add_sep=add_sep_token)),  # interview transcript SOAP task
         max_seq_length=seq_max_length, 
         doc_stride=seq_doc_stride
     ), 
 )  # Custom tokenization
-'''
+
 print('Tokenization complete!')
 
 '''
@@ -177,17 +181,8 @@ model.config.pad_token_id = tokenizer.pad_token_id = 0  # unk
 model.config.bos_token_id = 1
 model.config.eos_token_id = 2
 
+# TEST MODEL WITH CUSTOM INPUT
 '''
-# Test a few examples
-tests = [
-    'what are the side effects of radiation therapy?',
-    'what are the symptoms of a common cold?'
-]
-
-for item in tests:
-    x = tokenizer(data_handler.generate_prompt(item))
-'''
-
 inp = ''
 while True:
 
@@ -233,6 +228,7 @@ while True:
 
     if inp == 'exit':
         quit()
+'''
 
 inp = ''
 idx = random.randint(0, len(ds_tokenized) - 1)
@@ -241,45 +237,30 @@ seen_idx = [idx]
 while True:
 
     item = ds_tokenized[idx]
-    # inputs = item['input_tokens']
     inputs = item['input_ids']
-    # true_output = item['output']
-    # transcript = item['transcript']
-    # instruction = item['instruction']
-    # context = item['input']
 
-    '''if len(inputs) > 3500:  # don't have enough memory for huge samples lol
-        if idx not in seen_idx:
-            seen_idx.append(idx)
-        while idx in seen_idx:
-            idx = random.randint(0, len(ds_tokenized) - 1)
-        continue'''
-
-    '''print('---------- INSTRUCTION ----------')
-    print(instruction)
-    print()
-    print('---------- CONTEXT ----------')
-    print(context)
-    # print('---------- TRANSCRIPT ----------')
-    # print(repr(transcript))
-    # print()
-    print('---------- EXPECTED OUTPUT ----------')
-    print(true_output)
-    print()'''
     print('Number of tokens in input: {}'.format(len(inputs)))
     print()
 
+    generation_config = GenerationConfig(
+        max_new_tokens=256,
+        temperature=0.1,
+        top_p=0.75,
+        top_k=40,
+        num_beams=4
+    )
+
     # Get model prediction
-    generation_config = GenerationConfig(max_new_tokens=256)
     with torch.no_grad():
-        generate_ids = model.generate(
+        generate_output = model.generate(
             inputs=torch.tensor([inputs]).to('cuda'), 
             generation_config=generation_config,
-            max_new_tokens=256
+            max_new_tokens=256,
+            return_dict_in_generate=True,
+            output_scores=True
         )
-        print(generate_ids)
-        print(generate_ids.size())
-        pred = tokenizer.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
+        # print(generate_output)
+        pred = tokenizer.decode(generate_output.sequences[0])
         input_prompt = tokenizer.decode(inputs)
         print('---------- INPUT ----------')
         print(input_prompt)

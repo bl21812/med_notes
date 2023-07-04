@@ -217,8 +217,11 @@ class DataHandler:
             raise ValueError("At least one of `transcript` or `output` should be defined")
         
         prompt = (
-            f'{self.prompt_template["primer"]}'
             '''
+            ### Instruction: 
+
+            Given the transcript of a medical patient interview separated by <>, please extract important information. Format your response as JSON with the following structure:
+
             {
                 "History": patient's description of their condition,
                 "Physicals": results of any physical examinations, 
@@ -229,31 +232,6 @@ class DataHandler:
             To perform this task effectively, follow these steps:
             - First, summarize the entire conversation in bullet points
             - Then, categorize each bullet point based on which of the four sections it belongs to
-
-            For example: 
-
-            History:
-            - The patient presented with a rash on their right leg that has been concerning them for about a week.
-            - The patient described the rash as red, with scabs and a larger size.
-            - The patient reported scratching at the rash and experiencing no prior occurrences of this type of rash.
-            - The patient acknowledged feeling less sensation in their feet over the years.
-
-            Physicals:
-            - Physical examination revealed a swollen and red rash on the right ankle, with scabs and signs of an open wound.
-            - The patient's right leg felt warmer compared to the left.
-            - The patient experienced pain when walking and flexing the affected leg.
-            - No loss of feeling was noted specifically in the ankle area.
-            
-            Diagnosis:
-            - Possible infected ulcer on the right ankle, exacerbated by poor diabetes management.
-            - Concerns of cellulitis or another type of infection due to redness, swelling, and pain.
-            - Potential neuropathy in the feet due to decreased sensation over time.
-            
-            Plan:
-            - Order blood tests to assess blood sugar levels and evaluate for infection.
-            - Recommend the patient to wear compression socks to improve circulation in the area.
-            - Prescribe appropriate wound care, including cleaning the wound and applying a dressing.
-            - Follow-up with the patient to discuss test results and adjust the treatment plan accordingly.
             '''
             f'{self.prompt_template["transcript"]}{f"<{transcript}>" or ""}'
             f'{self.prompt_template["output"]}{output or ""}'
@@ -308,3 +286,32 @@ class DataHandler:
 
     def resolve_output(self, output: str): 
         pass
+
+
+# sample output for one-shot prompting
+'''
+An example: 
+
+History:
+- The patient presented with a rash on their right leg that has been concerning them for about a week.
+- The patient described the rash as red, with scabs and a larger size.
+- The patient reported scratching at the rash and experiencing no prior occurrences of this type of rash.
+- The patient acknowledged feeling less sensation in their feet over the years.
+
+Physicals:
+- Physical examination revealed a swollen and red rash on the right ankle, with scabs and signs of an open wound.
+- The patient's right leg felt warmer compared to the left.
+- The patient experienced pain when walking and flexing the affected leg.
+- No loss of feeling was noted specifically in the ankle area.
+
+Diagnosis:
+- Possible infected ulcer on the right ankle, exacerbated by poor diabetes management.
+- Concerns of cellulitis or another type of infection due to redness, swelling, and pain.
+- Potential neuropathy in the feet due to decreased sensation over time.
+
+Plan:
+- Order blood tests to assess blood sugar levels and evaluate for infection.
+- Recommend the patient to wear compression socks to improve circulation in the area.
+- Prescribe appropriate wound care, including cleaning the wound and applying a dressing.
+- Follow-up with the patient to discuss test results and adjust the treatment plan accordingly.
+'''
