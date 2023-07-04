@@ -83,6 +83,8 @@ def tokenize_dialogue_summary(tokenizer, inputs, outputs, max_seq_length=2048, d
 
     return result
 
+# replace D: with #Doctor#:
+# replace \n\n with \n
 
 # TODO: Implement adding SEP tokens (just replace the D: and P: with SEP except the first one?)
 # TODO: Implement task separation (diff preprocessing depending on dataset)
