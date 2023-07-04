@@ -28,10 +28,10 @@ seed = 0
 prompt_template = "prompts/prompt_template_dialogue_summary_2.json"
 
 # one of ["decapoda-research/llama-7b-hf", "medalpaca/medalpaca-13b"]
-tokenizer_source = "decapoda-research/llama-7b-hf"
+tokenizer_source = "medalpaca/medalpaca-7b"
 
 # one of ["tloen/alpaca-lora-7b", "medalpaca/medalpaca-lora-13b-8bit", or local folder with adapter files]
-model_source = "tloen/alpaca-lora-7b"
+model_source = "medalpaca/medalpaca-lora-7b-8bit"
 
 # one of ["decapoda-research/llama-7b-hf", "yahma/llama-13b-hf"]
 base_model_source = "decapoda-research/llama-7b-hf"
