@@ -247,8 +247,8 @@ while True:
         temperature=0.1,
         top_p=0.75,
         top_k=40,
-        num_beams=4,
-        early_stopping=True, 
+        num_beams=3,
+        # early_stopping=True, 
         # no_repeat_ngram_size=3  # need to take into account summary contexts! (what is the longest sequence that could repeat)
     )
 
