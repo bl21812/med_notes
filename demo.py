@@ -67,7 +67,7 @@ if add_sep_token:
     })
 
 data_handler = DataHandler(tokenizer, prompt_template=prompt_template, model_max_length=seq_max_length, train_on_inputs=False)
-
+'''
 columns = None
 task = None
 if 'dialogsum' in data_source:
@@ -83,7 +83,7 @@ ds_tokenized = ds.shuffle(seed=seed).map(
         doc_stride=seq_doc_stride
     ), 
     remove_columns=ds.column_names
-)
+)'''
 '''
 # NOTE: row names are only for mediQA rn
 # NOTE: flipped input and instruction
