@@ -97,7 +97,7 @@ ds_tokenized = ds.shuffle(seed=seed).map(lambda row:
     tokenize_qa(
         tokenizer, 
         # data_handler.generate_prompt(instruction=row['instruction'], input=row['input']),  # stock QA task
-        data_handler.generate_prompt_interview(transcript=preprocess_text(row['transcript'], add_sep=add_sep_token)),  # interview transcript SOAP task
+        data_handler.generate_prompt_interview(transcript=preprocess_text(row, columns=['transcript'], add_sep=add_sep_token)),  # interview transcript SOAP task
         max_seq_length=seq_max_length, 
         doc_stride=seq_doc_stride
     ), 
