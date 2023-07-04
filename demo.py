@@ -28,7 +28,7 @@ prompt_template = "prompts/prompt_template.json"
 tokenizer_source = "medalpaca/medalpaca-13b"
 model_source = "medalpaca/medalpaca-lora-13b-8bit"  # pre-trained from hub
 # model_source = "dialogsum_finetuned/2023-07-02"  # local checkpoint
-base_model_source = "decapoda/llama-13b-hf"
+base_model_source = "decapoda-research/llama-13b-hf"
 data_source = "medalpaca/medical_meadow_mediqa"  # from hub
 # data_source = "dialogsum/dialogsum.test.jsonl"
 
