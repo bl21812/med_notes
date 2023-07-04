@@ -25,10 +25,12 @@ from medalpaca_prompt_handler import DataHandler
 seed = 0
 
 prompt_template = "prompts/prompt_template.json"
-tokenizer_source = "medalpaca/medalpaca-7b"
-model_source = "medalpaca/medalpaca-lora-7b-8bit"  # pre-trained from hub
+# tokenizer_source = "medalpaca/medalpaca-13b"
+tokenizer_source = "yahma/llama-13b-hf"
+model_source = "yahma/alpaca-13b-lora"
+# model_source = "medalpaca/medalpaca-lora-13b-8bit"  # pre-trained from hub
 # model_source = "dialogsum_finetuned/2023-07-02"  # local checkpoint
-base_model_source = "decapoda-research/llama-7b-hf"
+base_model_source = "yahma/llama-13b-hf"
 data_source = "medalpaca/medical_meadow_mediqa"  # from hub
 # data_source = "dialogsum/dialogsum.test.jsonl"
 
@@ -223,6 +225,7 @@ while True:
             max_new_tokens=256
         )
         print(generate_ids)
+        print(generate_ids.size())
         pred = tokenizer.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
         input_prompt = tokenizer.decode(inputs)
         print('---------- INPUT ----------')
