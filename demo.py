@@ -59,7 +59,7 @@ else:
 print('Dataset loaded!')
 
 # ONLY IF APPLICABLE
-df.rename({'transcript': 'dialogue'})
+df.rename({'transcript': 'dialogue'}, inplace=True)
     
 # Preprocessing (including tokenization)
 
