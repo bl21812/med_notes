@@ -213,16 +213,16 @@ while True:
     )
 
     with torch.no_grad():
-        generate_ids = model.generate(
-            inputs=torch.tensor([tokenized_inputs]).to('cuda'), 
+        generate_output = model.generate(
+            inputs=torch.tensor(tokenized_inputs).to('cuda'), 
             generation_config=generation_config,
             max_new_tokens=256,
             return_dict_in_generate=True,
             output_scores=True
         )
-        print(generate_ids)
+        # print(generate_output)
         # print(generate_ids.size())
-        pred = tokenizer.batch_decode(generate_ids.sequences[0], skip_special_tokens=True, clean_up_tokenization_spaces=False)
+        pred = tokenizer.decode(generate_output.sequences[0])
         input_prompt = tokenizer.decode(tokenized_inputs)
         print('---------- INPUT ----------')
         print(input_prompt)
