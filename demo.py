@@ -29,8 +29,8 @@ tokenizer_source = "medalpaca/medalpaca-13b"
 model_source = "medalpaca/medalpaca-lora-13b-8bit"  # pre-trained from hub
 # model_source = "dialogsum_finetuned/2023-07-02"  # local checkpoint
 base_model_source = "yahma/llama-13b-hf"
-# data_source = "medalpaca/medical_meadow_mediqa"  # from hub
-data_source = "dialogsum/dialogsum.test.jsonl"
+data_source = "medalpaca/medical_meadow_mediqa"  # from hub
+# data_source = "dialogsum/dialogsum.test.jsonl"
 
 add_sep_token = False
 seq_max_length = 2048  # llama max sequence length
