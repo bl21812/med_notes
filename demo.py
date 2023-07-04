@@ -86,7 +86,7 @@ ds_tokenized = ds.shuffle(seed=seed).map(
 # NOTE: row names are only for mediQA rn
 # NOTE: flipped input and instruction
 # NOTE: figure out how to add SEP tokens to separate dialogue
-ds_tokenized = ds.map(lambda row: {
+ds_tokenized = ds.shuffle(seed=seed).map(lambda row:
     tokenize_qa(
         tokenizer, 
         data_handler.generate_prompt(instruction=row['instruction'], input=row['input']),  # stock QA task
@@ -94,9 +94,7 @@ ds_tokenized = ds.map(lambda row: {
         max_seq_length=seq_max_length, 
         doc_stride=seq_doc_stride
     ), 
-    # 'transcript': preprocess_text(row['transcript']),  # interview transcript
-    # 'output': preprocess_text(row['output'])  # interview transcript
-})  # Custom tokenization
+)  # Custom tokenization
 
 print('Tokenization complete!')
 
