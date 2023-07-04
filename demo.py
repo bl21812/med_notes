@@ -24,7 +24,7 @@ from medalpaca_prompt_handler import DataHandler
 
 seed = 0
 
-prompt_template = "prompts/prompt_template_dialogue_summary_2.json"
+prompt_template = "prompts/prompt_template.json"
 # tokenizer_source = "medalpaca/medalpaca-13b"
 tokenizer_source = "yahma/llama-13b-hf"
 model_source = "yahma/alpaca-13b-lora"
@@ -191,7 +191,7 @@ while True:
     inputs = input()
     print()
 
-    prompt = data_handler.generate_prompt_summary(**(preprocess_text({'dialogue': inputs}, ['dialogue'], task, add_sep=add_sep_token)))
+    prompt = data_handler.generate_prompt(instruction=instruction, input=inputs)
 
     tokenized = tokenize_qa(tokenizer, prompt, max_seq_length=seq_max_length, doc_stride=seq_doc_stride)
 
