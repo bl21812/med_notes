@@ -53,7 +53,7 @@ if os.path.exists(data_source):
     else:
         raise ValueError('Please provide either a csv, json, or huggingface dataset!')
     # ONLY IF APPLICABLE
-    df.rename({'transcript': 'dialogue'}, inplace=True)
+    df.rename(columns={'transcript': 'dialogue'}, inplace=True)
     ds = Dataset.from_pandas(df)
 else:
     ds = load_dataset(data_source, split='train')
