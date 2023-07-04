@@ -24,7 +24,7 @@ from medalpaca_prompt_handler import DataHandler
 
 seed = 0
 
-prompt_template = "prompts/prompt_template_dialogue_summary_2.json"
+prompt_template = "prompts/prompt_template.json"
 tokenizer_source = "medalpaca/medalpaca-13b"
 model_source = "medalpaca/medalpaca-lora-13b-8bit"  # pre-trained from hub
 # model_source = "dialogsum_finetuned/2023-07-02"  # local checkpoint
@@ -65,7 +65,7 @@ if add_sep_token:
     })
 
 data_handler = DataHandler(tokenizer, prompt_template=prompt_template, model_max_length=seq_max_length, train_on_inputs=False)
-
+'''
 columns = None
 task = None
 if 'dialogsum' in data_source:
@@ -82,25 +82,26 @@ ds_tokenized = ds.shuffle(seed=seed).map(
     ), 
     remove_columns=ds.column_names
 )
-
+'''
 # NOTE: row names are only for mediQA rn
 # NOTE: flipped input and instruction
 # NOTE: figure out how to add SEP tokens to separate dialogue
-'''ds_tokenized = ds.map(lambda row: {
-    'input_tokens': tokenize_qa(
+ds_tokenized = ds.map(lambda row: {
+    tokenize_qa(
         tokenizer, 
-        data_handler.generate_prompt(instruction=row['input'], input=row['instruction']),  # stock QA task
+        data_handler.generate_prompt(instruction=row['instruction'], input=row['input']),  # stock QA task
         # data_handler.generate_prompt_interview_s_only(transcript=preprocess_text(row['transcript'], add_sep=add_sep_token)),  # interview transcript SOAP task
         max_seq_length=seq_max_length, 
         doc_stride=seq_doc_stride
     ), 
     # 'transcript': preprocess_text(row['transcript']),  # interview transcript
     # 'output': preprocess_text(row['output'])  # interview transcript
-})'''  # Custom tokenization
+})  # Custom tokenization
 
 print('Tokenization complete!')
 
 '''
+OUTDATED !!!
 INFO: 
 Each DS is: 
 [

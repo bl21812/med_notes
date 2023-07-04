@@ -1,6 +1,6 @@
 # NOTE: I might have to change the [D:] and [P:] speaker indicators to 
     # become special tokens for finetuning
-# this might be kinda messed up now
+# NOTE: Ignoring overflow rn
 def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128):
     '''
     Tokenize question(s) and context(s) for a QA task
@@ -23,8 +23,9 @@ def tokenize_qa(tokenizer, x1, x2=None, max_seq_length=2048, doc_stride=128):
             x2, 
             add_special_tokens=True,
             max_length=max_seq_length,
-            truncation='only_second',
-            return_overflowing_tokens=True,
+            truncation=True,
+            # truncation='only_second',
+            # return_overflowing_tokens=True,
             stride=doc_stride
         )
     else:
