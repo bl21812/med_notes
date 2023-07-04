@@ -15,7 +15,7 @@ import numpy as np
 from peft import PeftModel, PeftConfig, LoraConfig, get_peft_model
 from datasets import Dataset, load_dataset
 from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data_collator, AutoModelForCausalLM, AutoConfig, \
-    AutoModelForQuestionAnswering, pipeline, LlamaForCausalLM, GenerationConfig
+    AutoModelForQuestionAnswering, pipeline, LlamaForCausalLM, GenerationConfig, LlamaTokenizer
 from tokenizers.processors import TemplateProcessing
 from accelerate import init_empty_weights, load_checkpoint_and_dispatch, infer_auto_device_map
 
@@ -56,7 +56,7 @@ print('Dataset loaded!')
     
 # Preprocessing (including tokenization)
 
-tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
+tokenizer = LlamaTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 print('Tokenizer loaded!')
 
 tokenizer.pad_token_id = 0
