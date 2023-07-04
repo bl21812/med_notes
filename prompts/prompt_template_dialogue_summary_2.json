@@ -1,6 +1,5 @@
 {
     "description": "Template for dialogue summarization as a QA task.",
-    "primer": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.",
     "instruction": "\n\n### Instruction:\n Please provide a summary for the following dialogue between two people.",
     "dialogue": "\n\n### Input:\n",
     "summary": "\n\n### Response:\n",

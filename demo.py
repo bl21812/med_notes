@@ -182,6 +182,43 @@ for item in tests:
 '''
 
 inp = ''
+while True:
+
+    print('Instruction: ')
+    instruction = input()
+    print()
+    print('Input: ')
+    inputs = input()
+    print()
+
+    prompt = data_handler.generate_prompt_summary(**(preprocess_text({'dialogue': inputs}, ['dialogue'], task, add_sep=add_sep_token)))
+
+    tokenized = tokenize_qa(tokenizer, prompt, max_seq_length=seq_max_length, doc_stride=seq_doc_stride)
+
+    tokenized_inputs = tokenized['input_ids']
+
+    generation_config = GenerationConfig(max_new_tokens=256)
+    with torch.no_grad():
+        generate_ids = model.generate(
+            inputs=torch.tensor([tokenized_inputs]).to('cuda'), 
+            generation_config=generation_config,
+            max_new_tokens=256
+        )
+        print(generate_ids)
+        print(generate_ids.size())
+        pred = tokenizer.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
+        input_prompt = tokenizer.decode(tokenized_inputs)
+        print('---------- INPUT ----------')
+        print(input_prompt)
+        print()
+        print('---------- PREDICTED OUTPUT ----------')
+        print(pred)
+        print()
+
+    if inp == 'exit':
+        quit()
+
+inp = ''
 idx = random.randint(0, len(ds_tokenized) - 1)
 seen_idx = [idx]
 
@@ -217,7 +254,7 @@ while True:
     print()
 
     # Get model prediction
-    generation_config = GenerationConfig(max_new_tokens=1024)
+    generation_config = GenerationConfig(max_new_tokens=256)
     with torch.no_grad():
         generate_ids = model.generate(
             inputs=torch.tensor([inputs]).to('cuda'), 
