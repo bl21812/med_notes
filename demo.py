@@ -25,7 +25,7 @@ from medalpaca_prompt_handler import DataHandler
 seed = 0
 
 # file from prompts/ folder
-prompt_template = "prompts/prompt_template_SOAP_2.json"
+prompt_template = "prompts/prompt_template_dialogue_summary_2.json"
 
 # one of ["decapoda-research/llama-7b-hf", "medalpaca/medalpaca-13b"]
 tokenizer_source = "decapoda-research/llama-7b-hf"
@@ -57,6 +57,9 @@ else:
     ds = load_dataset(data_source, split='train')
 
 print('Dataset loaded!')
+
+# ONLY IF APPLICABLE
+df.rename({'transcript': 'dialogue'})
     
 # Preprocessing (including tokenization)
 
@@ -72,9 +75,9 @@ if add_sep_token:
     })
 
 data_handler = DataHandler(tokenizer, prompt_template=prompt_template, model_max_length=seq_max_length, train_on_inputs=False)
-'''
-columns = None
-task = None
+
+columns = ['dialogue']
+task = 'summary'
 if 'dialogsum' in data_source:
     columns = ['dialogue']
     task = 'dialogsum'
@@ -88,8 +91,8 @@ ds_tokenized = ds.shuffle(seed=seed).map(
         doc_stride=seq_doc_stride
     ), 
     remove_columns=ds.column_names
-)'''
-
+)
+'''
 # NOTE: row names are only for mediQA rn
 # NOTE: flipped input and instruction
 # NOTE: figure out how to add SEP tokens to separate dialogue
@@ -102,7 +105,7 @@ ds_tokenized = ds.shuffle(seed=seed).map(lambda row:
         doc_stride=seq_doc_stride
     ), 
 )  # Custom tokenization
-
+'''
 print('Tokenization complete!')
 
 '''
@@ -247,7 +250,7 @@ while True:
         temperature=0.1,
         top_p=0.75,
         top_k=40,
-        num_beams=3,
+        num_beams=3,  # higher = more memory
         # early_stopping=True, 
         # no_repeat_ngram_size=3  # need to take into account summary contexts! (what is the longest sequence that could repeat)
     )

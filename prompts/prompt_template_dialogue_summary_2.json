@@ -1,5 +1,5 @@
 {
-    "description": "Template for dialogue summarization as a QA task.",
+    "description": "Template for dialogue summarization as an alpaca prompt.",
     "instruction": "\n\n### Instruction:\n Please provide a summary for the following dialogue between two people.",
     "dialogue": "\n\n### Input:\n",
     "summary": "\n\n### Response:\n",
