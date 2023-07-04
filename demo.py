@@ -248,7 +248,7 @@ while True:
         max_new_tokens=256,
         temperature=0.1,
         top_p=0.75,
-        top_k=40,
+        top_k=30,
         num_beams=3,  # higher = more memory
         # early_stopping=True, 
         # no_repeat_ngram_size=3  # need to take into account summary contexts! (what is the longest sequence that could repeat)
