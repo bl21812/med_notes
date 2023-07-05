@@ -247,7 +247,7 @@ while True:
     generation_config = GenerationConfig(
         max_new_tokens=256,
         temperature=0.1,
-        top_p=0.6,  # NOTE: would decreasing this give less chance of returning 'no response' ?
+        # top_p=0.6,
         top_k=40,  # higher = more memory
         num_beams=2,  # higher = more memory
         # early_stopping=True, 
