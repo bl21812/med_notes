@@ -25,7 +25,7 @@ from medalpaca_prompt_handler import DataHandler
 seed = 0
 
 # file from prompts/ folder
-prompt_template = "prompts/prompt_template_dialogue_summary_2.json"
+prompt_template = "prompts/prompt_template_SOAP_P.json"
 
 # one of ["decapoda-research/llama-7b-hf", "medalpaca/medalpaca-13b"]
 tokenizer_source = "decapoda-research/llama-7b-hf"
@@ -247,7 +247,7 @@ while True:
     generation_config = GenerationConfig(
         max_new_tokens=256,
         temperature=0.1,
-        # top_p=0.6,
+        top_p=0.75,
         top_k=40,  # higher = more memory
         num_beams=2,  # higher = more memory
         # early_stopping=True, 

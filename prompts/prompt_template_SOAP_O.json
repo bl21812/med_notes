@@ -1,0 +1,7 @@
+{
+    "description": "Template for extracting the O section of SOAP notes from an interview transcript.",
+    "instruction": "\n\n### Instruction:\n Given the following dialogue between two people, summarize the results of the physical examinations that the doctor performed on the patient.",
+    "dialogue": "\n\n### Input:\n",
+    "summary": "\n\n### Response:\n",
+    "response_split": "### Response:"
+}
