@@ -25,7 +25,7 @@ from medalpaca_prompt_handler import DataHandler
 seed = 0
 
 # file from prompts/ folder
-prompt_template = "prompts/prompt_template_SOAP_A.json"
+prompt_template = "prompts/prompt_template_SOAP_S.json"
 
 # one of ["decapoda-research/llama-7b-hf", "medalpaca/medalpaca-13b"]
 tokenizer_source = "decapoda-research/llama-7b-hf"
