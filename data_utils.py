@@ -98,7 +98,7 @@ def preprocess_text(row, columns, task=None, add_sep=False):
     ret = {}
     for col in columns:
         text = row[col]
-        text = repr(text).replace('\\n \\n', '\\n ')
+        # text = repr(text).replace('\\n', ' ')
         text = repr(text).replace('\\r', ' ')
         # text = repr(text).replace('\\', '')
         text = text.replace('D:', '#Doctor#:')
