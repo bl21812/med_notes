@@ -100,7 +100,7 @@ def preprocess_text(row, columns, task=None, add_sep=False):
         text = row[col]
         text = repr(text).replace('\\r', ' ')
         text = repr(text).replace('\\n', ' ')
-        # text = repr(text).replace('\\', '')
+        text = repr(text).replace('\\', '')
         text = text.replace('D:', '')
         text = text.replace('P:', '')
         if 'summary' in col:
