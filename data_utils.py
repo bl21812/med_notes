@@ -98,11 +98,11 @@ def preprocess_text(row, columns, task=None, add_sep=False):
     ret = {}
     for col in columns:
         text = row[col]
-        # text = repr(text).replace('\\n', ' ')
         text = repr(text).replace('\\r', ' ')
+        text = repr(text).replace('\\n', ' ')
         # text = repr(text).replace('\\', '')
-        # text = text.replace('D:', '#Doctor#:')
-        # text = text.replace('P:', '#Patient#:')
+        text = text.replace('D:', '')
+        text = text.replace('P:', '')
         if 'summary' in col:
             col = 'summary'
         ret[col] = text
