@@ -1,5 +1,6 @@
 {
     "description": "Template for extracting full SOAP notes from a patient interview transcript.",
+    "instruction": "\n\n### Instruction:\n", 
     "transcript": "\n\n### Input:\n",
     "output": "\n\n### Response:\n",
     "response_split": "### Response:"

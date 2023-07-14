@@ -283,6 +283,22 @@ class DataHandler:
         )
 
         return prompt
+    
+    def generate_prompt_soap_section(
+        self, 
+        instruction: Optional[str] = None,
+        transcript: Optional[str] = None,
+        output: Optional[str] = None,
+    ):
+        
+        prompt = (
+            f'{self.prompt_template["instruction"]}{instruction or ""}'
+            f'{self.prompt_template["transcript"]}{transcript or ""}'
+            f'{self.prompt_template["output"]}{output or ""}'
+        )
+
+        return prompt
+
 
     def resolve_output(self, output: str): 
         pass

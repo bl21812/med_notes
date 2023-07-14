@@ -86,7 +86,7 @@ def tokenize_dialogue_summary(tokenizer, inputs, outputs, max_seq_length=2048, d
 
 # TODO: Implement adding SEP tokens (just replace the D: and P: with SEP except the first one?)
 # TODO: Implement task separation (diff preprocessing depending on dataset)
-def preprocess_text(row, columns, task=None, add_sep=False):
+def preprocess_text(row, columns, add_sep=False):
     '''
     Any preprocessing needed for our read-in text data
     Pulling relevant rows and ...
@@ -98,11 +98,12 @@ def preprocess_text(row, columns, task=None, add_sep=False):
     ret = {}
     for col in columns:
         text = row[col]
-        text = repr(text).replace('\\r', ' ')
-        text = repr(text).replace('\\n', ' ')
-        text = repr(text).replace('\\', '')
-        text = text.replace('D:', '')
-        text = text.replace('P:', '')
+        if col == 'transcript':  # only transcript really needs cleaning rn
+            text = repr(text).replace('\\r', ' ')
+            text = repr(text).replace('\\n', ' ')
+            text = repr(text).replace('\\', '')
+            text = text.replace('D:', '')
+            text = text.replace('P:', '')
         if 'summary' in col:
             col = 'summary'
         ret[col] = text

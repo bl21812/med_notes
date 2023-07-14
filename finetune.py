@@ -31,14 +31,14 @@ from medalpaca_prompt_handler import DataHandler
 
 seed = 0
 
-tokenizer_source = "medalpaca/medalpaca-13b"
-model_source = "medalpaca/medalpaca-lora-13b-8bit"
-base_model_source = "decapoda-research/llama-13b-hf"
+tokenizer_source = "decapoda-research/llama-7b-hf"
+model_source = "tloen/alpaca-lora-7b"
+base_model_source = "decapoda-research/llama-7b-hf"
 
-prompt_template = "prompts/prompt_template_dialogue_summary.json"
-data_source = "dialogsum/dialogsum.train.jsonl"
-data_source_train = "dialogsum/dialogsum.train.jsonl"
-data_source_eval = "dialogsum/dialogsum.test.jsonl"
+prompt_template = "prompts/prompt_template_SOAP_2.json"
+data_source = "dummy_separated.csv"
+data_source_train = None
+data_source_eval = None
 
 add_sep_token = False
 seq_max_length = 2048  # llama max sequence length
@@ -63,12 +63,12 @@ decay = 0.01
 warmup_steps = 200
 eval_steps = 200  # num of steps between evals
 
-model_save_name = 'dialogsum_finetuned/2023-07-03'
+model_save_name = 'dummy_finetuned/2023-07-13'
 
 # Load data 
 # TODO: Add test support
 if os.path.exists(data_source):
-    if '.json' in data_source:
+    '''if '.json' in data_source:
         df_train = pd.read_json(data_source_train, lines=True)
         df_val = pd.read_json(data_source_eval, lines=True)
     elif '.csv' in data_source:
@@ -78,7 +78,15 @@ if os.path.exists(data_source):
         raise ValueError('Please provide either a csv, json, or huggingface dataset!')
     ds_train = Dataset.from_pandas(df_train)
     ds_val = Dataset.from_pandas(df_val)
-    ds_test = None
+    ds_test = None'''
+    if '.json' in data_source:
+        df = pd.read_json(data_source, lines=True)
+    elif '.csv' in data_source:
+        df = pd.read_csv(data_source)
+    else:
+        raise ValueError('Please provide either a csv, json, or huggingface dataset!')
+    ds = Dataset.from_pandas(df)
+    ds_train = None
 else:
     ds_train = load_dataset(data_source, split='train[:{}%]'.format(int(100 * (1 - val_prop - test_prop))))
     ds_val = load_dataset(data_source, split='train[{}%:{}%]'.format(int(100 * (1 - val_prop - test_prop)), int(100 * (1 - test_prop))))
@@ -107,7 +115,7 @@ data_handler = DataHandler(tokenizer, prompt_template=prompt_template, model_max
 
 # TODO: make called prompt function dynamic w.r.t. task
 
-dialogue_columns = ['dialogue']
+'''dialogue_columns = ['dialogue']
 train_columns = None
 val_columns = None
 test_columns = None
@@ -116,7 +124,7 @@ if 'dialogsum' in data_source:
     train_columns = ['dialogue', 'summary']
     val_columns = ['dialogue', 'summary1']
     task = 'dialogsum'
-assert (train_columns and task)
+assert (train_columns and task)'''
 
 # TODO: do i need an attention mask ??
 
@@ -130,7 +138,7 @@ assert (train_columns and task)
     remove_columns=ds_train.column_names
 )'''
 
-ds_train_tokenized = ds_train.shuffle(seed=seed).map(
+'''ds_train_tokenized = ds_train.shuffle(seed=seed).map(
     lambda row: tokenize_dialogue_summary(
         tokenizer, 
         inputs=data_handler.generate_prompt_summary(**(preprocess_text(row, dialogue_columns, task, add_sep=add_sep_token))),
@@ -139,7 +147,7 @@ ds_train_tokenized = ds_train.shuffle(seed=seed).map(
         doc_stride=seq_doc_stride
     ), 
     remove_columns=ds_train.column_names
-)
+)'''
 
 '''ds_val_tokenized = ds_val.shuffle(seed=seed).map(
     lambda row: tokenize_qa(
@@ -151,7 +159,7 @@ ds_train_tokenized = ds_train.shuffle(seed=seed).map(
     remove_columns=ds_val.column_names
 )'''
 
-ds_val_tokenized = ds_val.shuffle(seed=seed).map(
+'''ds_val_tokenized = ds_val.shuffle(seed=seed).map(
     lambda row: tokenize_dialogue_summary(
         tokenizer, 
         inputs=data_handler.generate_prompt_summary(**(preprocess_text(row, dialogue_columns, task, add_sep=add_sep_token))),
@@ -160,31 +168,53 @@ ds_val_tokenized = ds_val.shuffle(seed=seed).map(
         doc_stride=seq_doc_stride
     ), 
     remove_columns=ds_val.column_names
+)'''
+
+# ds_test_tokenized = None
+# if ds_test:
+'''ds_test_tokenized = ds_test.shuffle(seed=seed).map(
+    lambda row: tokenize_qa(
+        tokenizer, 
+        data_handler.generate_prompt_summary(**(preprocess_text(row, test_columns, task, add_sep=add_sep_token))),
+        max_seq_length=seq_max_length, 
+        doc_stride=seq_doc_stride
+    ), 
+    remove_columns=ds_test.column_names
+)'''
+'''ds_test_tokenized = ds_test.shuffle(seed=seed).map(
+    lambda row: tokenize_dialogue_summary(
+        tokenizer, 
+        inputs=data_handler.generate_prompt_summary(**(preprocess_text(row, dialogue_columns, task, add_sep=add_sep_token))),
+        outputs=data_handler.generate_prompt_summary(**(preprocess_text(row, test_columns, task, add_sep=add_sep_token))),
+        max_seq_length=seq_max_length, 
+        doc_stride=seq_doc_stride
+    ), 
+    remove_columns=ds_test.column_names
+)'''
+
+cols = ['instruction', 'transcript', 'output']
+
+# map
+ds_tokenized = ds.shuffle(seed=seed).map(
+    lambda row: tokenize_qa(
+        tokenizer=tokenizer,
+        x1=data_handler.generate_prompt_summary(**(preprocess_text(row, cols, add_sep=add_sep_token))),
+        max_seq_length=seq_max_length, 
+        doc_stride=seq_doc_stride
+    )
 )
 
-ds_test_tokenized = None
-if ds_test:
-    '''ds_test_tokenized = ds_test.shuffle(seed=seed).map(
-        lambda row: tokenize_qa(
-            tokenizer, 
-            data_handler.generate_prompt_summary(**(preprocess_text(row, test_columns, task, add_sep=add_sep_token))),
-            max_seq_length=seq_max_length, 
-            doc_stride=seq_doc_stride
-        ), 
-        remove_columns=ds_test.column_names
-    )'''
-    ds_test_tokenized = ds_test.shuffle(seed=seed).map(
-        lambda row: tokenize_dialogue_summary(
-            tokenizer, 
-            inputs=data_handler.generate_prompt_summary(**(preprocess_text(row, dialogue_columns, task, add_sep=add_sep_token))),
-            outputs=data_handler.generate_prompt_summary(**(preprocess_text(row, test_columns, task, add_sep=add_sep_token))),
-            max_seq_length=seq_max_length, 
-            doc_stride=seq_doc_stride
-        ), 
-        remove_columns=ds_test.column_names
-    )
+# split train and test
+ds_tokenized = ds_tokenized.train_test_split(test_size=val_prop)
+ds_train_tokenized = ds_tokenized['train']
+ds_val_tokenized = ds_tokenized['test']
 
 print('Preprocessing complete!')
+
+# test some input !!
+x = ds_train_tokenized[0]
+print(tokenizer.decode(x))
+quit()
 
 '''
 THIS IS OUTDATED !! (i'm just following medalpaca train script now)
