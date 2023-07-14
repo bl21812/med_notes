@@ -20,7 +20,7 @@ import pandas as pd
 
 from datasets import Dataset, load_dataset
 from transformers import AutoTokenizer, Trainer, TrainingArguments, default_data_collator, LlamaForCausalLM, \
-    DataCollatorForSeq2Seq
+    DataCollatorForSeq2Seq, LlamaTokenizer
 from peft import LoraConfig, get_peft_model, prepare_model_for_int8_training, get_peft_model_state_dict
 
 from qa_model import QA_Head
@@ -98,7 +98,7 @@ print('Dataset loaded!')
 
 # Preprocessing (including tokenization)
 
-tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
+tokenizer = LlamaTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 print('Tokenizer loaded!')
 
 tokenizer.pad_token_id = 0
