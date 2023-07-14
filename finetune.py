@@ -48,22 +48,22 @@ num_attention_units = 40
 fc_layers = 1
 latent_dims = 5120  # each embedding is about 1.2 million features
 
-val_prop = 0.1
+val_prop = 0.25
 test_prop = 0
 
 num_devices = 3
 
 # Hparams
-batch_size = 3
+batch_size = 12
 optim = 'adafactor'
 lr = 2e-5
 lr_scheduler_type = 'cosine'
 epochs = 2
 decay = 0.01
-warmup_steps = 200
-eval_steps = 200  # num of steps between evals
+warmup_steps = 100
+eval_steps = 100  # num of steps between evals
 
-model_save_name = 'dummy_finetuned/2023-07-13'
+model_save_name = 'sectioned_dummy_finetuned/2023-07-14'
 
 # Load data 
 # TODO: Add test support
@@ -212,11 +212,6 @@ ds_val_tokenized = ds_tokenized['test']
 
 print('Preprocessing complete!')
 
-# test some input !!
-x = ds_train_tokenized[0]
-print(tokenizer.decode(x['input_ids']))
-quit()
-
 '''
 THIS IS OUTDATED !! (i'm just following medalpaca train script now)
     which has input_ids, attention_mask, and labels keys
@@ -260,7 +255,7 @@ else:
         r=8,
         lora_alpha=16,
         target_modules=('q_proj', 'v_proj'),
-        lora_dropout=0.1,
+        lora_dropout=0.05,
         bias="none",
         task_type="CAUSAL_LM",
     )
@@ -286,7 +281,7 @@ trainer_args = TrainingArguments(
     learning_rate=lr,
     fp16=True,
     bf16=False,
-    logging_steps=eval_steps/10,
+    logging_steps=eval_steps/4,
     optim=optim,
     lr_scheduler_type=lr_scheduler_type,
     evaluation_strategy="steps",
