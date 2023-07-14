@@ -214,7 +214,7 @@ print('Preprocessing complete!')
 
 # test some input !!
 x = ds_train_tokenized[0]
-print(tokenizer.decode(x))
+print(tokenizer.decode(x['input_ids']))
 quit()
 
 '''
