@@ -201,7 +201,8 @@ ds_tokenized = ds.shuffle(seed=seed).map(
         x1=data_handler.generate_prompt_soap_section(**(preprocess_text(row, cols, add_sep=add_sep_token))),
         max_seq_length=seq_max_length, 
         doc_stride=seq_doc_stride
-    )
+    ),
+    remove_columns=ds.column_names
 )
 
 # split train and test
