@@ -54,7 +54,7 @@ test_prop = 0
 num_devices = 3
 
 # Hparams
-batch_size = 12
+batch_size = 6
 optim = 'adafactor'
 lr = 2e-5
 lr_scheduler_type = 'cosine'
