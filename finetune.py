@@ -58,7 +58,7 @@ batch_size = 3
 optim = 'adamw_torch'
 lr = 2e-5
 lr_scheduler_type = 'cosine'
-epochs = 20
+epochs = 20  # this is currently 1200 passes, while T-few does 8000 passes
 decay = 0.01
 warmup_steps = 100
 eval_steps = 100  # num of steps between evals
@@ -261,6 +261,11 @@ else:
     )
     model = get_peft_model(model, lora_config)
     model.print_trainable_parameters()
+
+# unwind broken decapoda-research config
+model.config.pad_token_id = tokenizer.pad_token_id = 0  # unk
+model.config.bos_token_id = 1
+model.config.eos_token_id = 2
 
 # ??
 model.is_parallelizable = True

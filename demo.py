@@ -25,19 +25,19 @@ from medalpaca_prompt_handler import DataHandler
 seed = 0
 
 # file from prompts/ folder
-prompt_template = "prompts/prompt_template_SOAP_S.json"
+prompt_template = "prompts/prompt_template_SOAP_2.json"
 
 # one of ["decapoda-research/llama-7b-hf", "medalpaca/medalpaca-13b"]
 tokenizer_source = "decapoda-research/llama-7b-hf"
 
 # one of ["tloen/alpaca-lora-7b", "medalpaca/medalpaca-lora-13b-8bit", or local folder with adapter files]
-model_source = "tloen/alpaca-lora-7b"
+model_source = "sectioned_dummy_finetuned/2023-07-14"
 
 # one of ["decapoda-research/llama-7b-hf", "yahma/llama-13b-hf"]
 base_model_source = "decapoda-research/llama-7b-hf"
 
 # one of ["medalpaca/medical_meadow_mediqa", "dialogsum/dialogsum.test.jsonl", "soap_ds.csv"]
-data_source = "soap_ds.csv"  
+data_source = "dummy_separated.csv"  
 
 add_sep_token = False
 seq_max_length = 2048  # llama max sequence length
@@ -53,7 +53,7 @@ if os.path.exists(data_source):
     else:
         raise ValueError('Please provide either a csv, json, or huggingface dataset!')
     # ONLY IF APPLICABLE
-    df.rename(columns={'transcript': 'dialogue'}, inplace=True)
+    # df.rename(columns={'transcript': 'dialogue'}, inplace=True)
     ds = Dataset.from_pandas(df)
 else:
     ds = load_dataset(data_source, split='train')
@@ -75,17 +75,19 @@ if add_sep_token:
 
 data_handler = DataHandler(tokenizer, prompt_template=prompt_template, model_max_length=seq_max_length, train_on_inputs=False)
 
-columns = ['dialogue']
+'''columns = ['dialogue']
 task = 'summary'
 if 'dialogsum' in data_source:
     columns = ['dialogue']
     task = 'dialogsum'
-assert columns and task
+assert columns and task'''
+
+columns = ['instruction', 'transcript']
 
 ds_tokenized = ds.shuffle(seed=seed).map(
     lambda row: tokenize_qa(
         tokenizer, 
-        data_handler.generate_prompt_summary(**(preprocess_text(row, columns, task, add_sep=add_sep_token))),
+        data_handler.generate_prompt_soap_section(**(preprocess_text(row, columns, add_sep=add_sep_token))),
         max_seq_length=seq_max_length, 
         doc_stride=seq_doc_stride
     ), 
