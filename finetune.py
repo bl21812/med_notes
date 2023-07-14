@@ -54,11 +54,11 @@ test_prop = 0
 num_devices = 3
 
 # Hparams
-batch_size = 6
-optim = 'adafactor'
+batch_size = 3
+optim = 'adamw_torch'
 lr = 2e-5
 lr_scheduler_type = 'cosine'
-epochs = 2
+epochs = 20
 decay = 0.01
 warmup_steps = 100
 eval_steps = 100  # num of steps between evals
