@@ -198,7 +198,7 @@ cols = ['instruction', 'transcript', 'output']
 ds_tokenized = ds.shuffle(seed=seed).map(
     lambda row: tokenize_qa(
         tokenizer=tokenizer,
-        x1=data_handler.generate_prompt_summary(**(preprocess_text(row, cols, add_sep=add_sep_token))),
+        x1=data_handler.generate_prompt_soap_section(**(preprocess_text(row, cols, add_sep=add_sep_token))),
         max_seq_length=seq_max_length, 
         doc_stride=seq_doc_stride
     )
