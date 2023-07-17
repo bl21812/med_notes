@@ -33,7 +33,7 @@ seed = 0
 
 tokenizer_source = "yahma/llama-7b-hf"  # "decapoda-research/llama-7b-hf"
 model_source = "tloen/alpaca-lora-7b"
-base_model_source = "decapoda-research/llama-7b-hf"
+base_model_source = "yahma/llama-7b-hf"  # "decapoda-research/llama-7b-hf"
 
 prompt_template = "prompts/prompt_template_SOAP_2.json"
 data_source = "dummy_separated.csv"
@@ -212,7 +212,7 @@ ds_val_tokenized = ds_tokenized['test']
 
 print('Preprocessing complete!')
 
-print(tokenizer.eos_token_id)
+'''print(tokenizer.eos_token_id)
 print(tokenizer.bos_token_id)
 print(tokenizer.pad_token_id)
 
@@ -223,7 +223,7 @@ while inp == '':
     print(tokenizer.decode(item))
     idx += 1
     inp = input()
-quit()
+quit()'''
 
 '''
 THIS IS OUTDATED !! (i'm just following medalpaca train script now)
@@ -326,10 +326,10 @@ trainer = Trainer(
 
 model.config.use_cache = False
 
-old_state_dict = model.state_dict
+'''old_state_dict = model.state_dict
 model.state_dict = (
     lambda self, *_, **__: get_peft_model_state_dict(self, old_state_dict())
-).__get__(model, type(model))
+).__get__(model, type(model))'''
 
 trainer.train()
 
