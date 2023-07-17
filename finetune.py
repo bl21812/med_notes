@@ -31,7 +31,7 @@ from medalpaca_prompt_handler import DataHandler
 
 seed = 0
 
-tokenizer_source = "decapoda-research/llama-7b-hf"
+tokenizer_source = "yahma/llama-7b-hf"  # "decapoda-research/llama-7b-hf"
 model_source = "tloen/alpaca-lora-7b"
 base_model_source = "decapoda-research/llama-7b-hf"
 
