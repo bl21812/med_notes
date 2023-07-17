@@ -58,10 +58,10 @@ batch_size = 3
 optim = 'adamw_torch'
 lr = 2e-5
 lr_scheduler_type = 'cosine'
-epochs = 20  # this is currently 1200 passes, while T-few does 8000 passes
+epochs = 130  # T-few does 8000 passes
 decay = 0.01
 warmup_steps = 100
-eval_steps = 100  # num of steps between evals
+eval_steps = 200  # currently evals every 10 epochs (frequency = eval_steps / (train_set_size / batch_size))
 
 model_save_name = 'sectioned_dummy_finetuned/2023-07-14'
 
