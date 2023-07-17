@@ -212,6 +212,19 @@ ds_val_tokenized = ds_tokenized['test']
 
 print('Preprocessing complete!')
 
+print(tokenizer.eos_token_id)
+print(tokenizer.bos_token_id)
+print(tokenizer.pad_token_id)
+
+inp = ''
+idx = 0
+while inp == '':
+    item = ds_train_tokenized[idx]['input_ids']
+    print(tokenizer.decode(item))
+    idx += 1
+    inp = input()
+quit()
+
 '''
 THIS IS OUTDATED !! (i'm just following medalpaca train script now)
     which has input_ids, attention_mask, and labels keys
