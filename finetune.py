@@ -31,9 +31,9 @@ from medalpaca_prompt_handler import DataHandler
 
 seed = 0
 
-tokenizer_source = "yahma/llama-7b-hf"  # "decapoda-research/llama-7b-hf"
+tokenizer_source = "decapoda-research/llama-7b-hf"
 model_source = "tloen/alpaca-lora-7b"
-base_model_source = "yahma/llama-7b-hf"  # "decapoda-research/llama-7b-hf"
+base_model_source = "decapoda-research/llama-7b-hf"
 
 prompt_template = "prompts/prompt_template_SOAP_2.json"
 data_source = "dummy_separated.csv"
@@ -63,7 +63,7 @@ decay = 0.01
 warmup_steps = 100
 eval_steps = 200  # currently evals every 10 epochs (frequency = eval_steps / (train_set_size / batch_size))
 
-model_save_name = 'sectioned_dummy_finetuned/2023-07-17'
+model_save_name = 'sectioned_dummy_finetuned/2023-07-18'
 
 # Load data 
 # TODO: Add test support
@@ -276,9 +276,9 @@ else:
     model.print_trainable_parameters()
 
 # unwind broken decapoda-research config
-model.config.pad_token_id = tokenizer.pad_token_id = 0  # unk
+'''model.config.pad_token_id = tokenizer.pad_token_id = 0  # unk
 model.config.bos_token_id = 1
-model.config.eos_token_id = 2
+model.config.eos_token_id = 2'''
 
 # ??
 model.is_parallelizable = True
