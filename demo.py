@@ -28,7 +28,7 @@ seed = 0
 prompt_template = "prompts/prompt_template_SOAP_2.json"
 
 # one of ["decapoda-research/llama-7b-hf", "medalpaca/medalpaca-13b"]
-tokenizer_source = "yahma/llama-7b-hf"
+tokenizer_source = "decapoda-research/llama-7b-hf"
 
 # one of ["tloen/alpaca-lora-7b", "medalpaca/medalpaca-lora-13b-8bit", or local folder with adapter files]
 model_source = "tloen/alpaca-lora-7b"  # "sectioned_dummy_finetuned/2023-07-17"
