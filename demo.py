@@ -31,7 +31,7 @@ prompt_template = "prompts/prompt_template_SOAP_2.json"
 tokenizer_source = "yahma/llama-7b-hf"
 
 # one of ["tloen/alpaca-lora-7b", "medalpaca/medalpaca-lora-13b-8bit", or local folder with adapter files]
-model_source = "sectioned_dummy_finetuned/2023-07-17"
+model_source = "tloen/alpaca-lora-7b"  # "sectioned_dummy_finetuned/2023-07-17"
 
 # one of ["decapoda-research/llama-7b-hf", "yahma/llama-7b-hf"]
 base_model_source = "decapoda-research/llama-7b-hf"
