@@ -174,6 +174,9 @@ model.eval()
     device_map=device_map
 )'''
 
+print(model.hf_device_map)
+quit()
+
 # TODO: Expand embeddings to accomodate for SEP
 if add_sep_token:
     print('Have not added support for this yet!')
