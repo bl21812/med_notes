@@ -141,10 +141,14 @@ with init_empty_weights():
 model.tie_weights()
 max_memory = {0: "0GIB", 1: "10GIB", 2: "10GIB", 3: "10GIB"}  # only last GPU
 device_map = infer_auto_device_map(model, max_memory=max_memory)'''
+
+# for my 3 gpu setup
+device_map = {'model.embed_tokens': 0, 'model.layers.0': 0, 'model.layers.1': 0, 'model.layers.2': 0, 'model.layers.3': 0, 'model.layers.4': 0, 'model.layers.5': 0, 'model.layers.6': 0, 'model.layers.7': 0, 'model.layers.8': 0, 'model.layers.9': 0, 'model.layers.10': 1, 'model.layers.11': 1, 'model.layers.12': 1, 'model.layers.13': 1, 'model.layers.14': 1, 'model.layers.15': 1, 'model.layers.16': 1, 'model.layers.17': 1, 'model.layers.18': 1, 'model.layers.19': 1, 'model.layers.20': 1, 'model.layers.21': 1, 'model.layers.22': 2, 'model.layers.23': 2, 'model.layers.24': 2, 'model.layers.25': 2, 'model.layers.26': 2, 'model.layers.27': 2, 'model.layers.28': 2, 'model.layers.29': 2, 'model.layers.30': 2, 'model.layers.31': 2, 'model.norm': 2, 'lm_head': 0}
+
 model = LlamaForCausalLM.from_pretrained(
     base_model_source,  # change to model_source if not using peft
     load_in_8bit=True,
-    device_map='auto', 
+    device_map=device_map, 
     # offload_folder='offload', 
     # llm_int8_enable_fp32_cpu_offload=True,
     torch_dtype=torch.float16
@@ -174,8 +178,10 @@ model.eval()
     device_map=device_map
 )'''
 
-print(model.hf_device_map)
-quit()
+device_map = model.hf_device_map
+if not (device_map['model.embed_tokens'] == device_map['lm_head']):
+    print('Embed tokens and LM head are not on the same device, will error in generate!')
+print(device_map)
 
 # TODO: Expand embeddings to accomodate for SEP
 if add_sep_token:
