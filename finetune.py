@@ -55,7 +55,7 @@ num_devices = 3
 
 # Hparams
 batch_size = 3
-optim = 'adafactor'
+optim = 'adamw_torch'
 lr = 2e-5
 lr_scheduler_type = 'cosine'
 epochs = 130  # T-few does 8000 passes
