@@ -68,13 +68,13 @@ print('Tokenizer loaded!')
 tokenizer.pad_token_id = 0
 tokenizer.padding_side = "left"
 
+tokenizer.eos_token_id = 2
+tokenizer.bos_token_id = 1
+
 print(tokenizer.decode([0]))
 print(tokenizer.decode([1]))
 print(tokenizer.decode([2]))
 quit()
-
-tokenizer.eos_token_id = 2
-tokenizer.bos_token_id = 1
 
 if add_sep_token:
     tokenizer.add_special_tokens({
