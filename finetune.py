@@ -55,7 +55,7 @@ num_devices = 3
 
 # Hparams
 batch_size = 3
-optim = 'adamw_torch'
+optim = 'adafactor'
 lr = 2e-5
 lr_scheduler_type = 'cosine'
 epochs = 130  # T-few does 8000 passes
@@ -63,7 +63,7 @@ decay = 0.01
 warmup_steps = 100
 eval_steps = 200  # currently evals every 10 epochs (frequency = eval_steps / (train_set_size / batch_size))
 
-model_save_name = 'sectioned_dummy_finetuned/2023-07-14'
+model_save_name = 'sectioned_dummy_finetuned/2023-07-17'
 
 # Load data 
 # TODO: Add test support
