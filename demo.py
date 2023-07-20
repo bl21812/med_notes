@@ -37,7 +37,7 @@ model_source = "sectioned_dummy_finetuned/2023-07-18"
 base_model_source = "decapoda-research/llama-7b-hf"
 
 # one of ["medalpaca/medical_meadow_mediqa", "dialogsum/dialogsum.test.jsonl", "soap_ds.csv"]
-data_source = "dummy_separated.csv"  
+data_source = "dummy_separated_small_TEST.csv"  
 
 add_sep_token = False
 seq_max_length = 2048  # llama max sequence length
