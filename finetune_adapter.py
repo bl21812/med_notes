@@ -4,6 +4,21 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 tokenizer_source = "knkarthick/meeting-summary-samsum"
 base_model_source = "knkarthick/meeting-summary-samsum"
 
+def print_trainable_parameters(model):
+    """
+    Prints the number of trainable parameters in the model.
+    """
+    trainable_params = 0
+    all_param = 0
+    for _, param in model.named_parameters():
+        all_param += param.numel()
+        if param.requires_grad:
+            trainable_params += param.numel()
+    print(
+        f"trainable params: {trainable_params} || all params: {all_param} || trainable%: {100 * trainable_params / all_param}"
+    )
+
+# believe i can use this instead of AutoAdapterModel ?
 model = AutoModelForSeq2SeqLM.from_pretrained(
     base_model_source, 
     device_map='auto'
@@ -19,6 +34,6 @@ model.add_adapter("bottleneck_adapter", config=config)
 
 model.train_adapter("bottleneck_adapter")
 model.set_active_adapters("bottleneck_adapter")
-model.print_trainable_parameters()
+print_trainable_parameters(model)
 
 input()
