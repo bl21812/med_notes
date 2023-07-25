@@ -17,9 +17,8 @@ config = ParallelConfig(
 )
 model.add_adapter("bottleneck_adapter", config=config)
 
-print(model.config.adapters)
-
-# model.train_adapter()
-# print trainable params
+model.train_adapter("bottleneck_adapter")
+model.set_active_adapters("bottleneck_adapter")
+model.print_trainable_parameters()
 
 input()
