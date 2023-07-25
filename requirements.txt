@@ -7,3 +7,4 @@ bitsandbytes
 peft
 tokenizers
 scipy
+adapter-transformers

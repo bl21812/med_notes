@@ -179,8 +179,6 @@ model.eval()
 )'''
 
 device_map = model.hf_device_map
-if not (device_map['model.embed_tokens'] == device_map['lm_head']):
-    print('Embed tokens and LM head are not on the same device, will error in generate!')
 print(device_map)
 
 # TODO: Expand embeddings to accomodate for SEP
