@@ -19,7 +19,7 @@ def print_trainable_parameters(model):
     )
 
 # believe i can use this instead of AutoAdapterModel ?
-model = AutoModelForSeq2SeqLM.from_pretrained(
+'''model = AutoModelForSeq2SeqLM.from_pretrained(
     base_model_source, 
     device_map='auto'
 )
@@ -35,7 +35,7 @@ model.add_adapter("bottleneck_adapter", config=config)
 
 model.train_adapter("bottleneck_adapter")
 model.set_active_adapters("bottleneck_adapter")
-print_trainable_parameters(model)
+print_trainable_parameters(model)'''
 
 tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 
