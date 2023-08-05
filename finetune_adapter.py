@@ -63,6 +63,7 @@ if os.path.exists(data_source):
     if '.csv' in data_source:
         df = pd.read_csv(data_source)
     ds = Dataset.from_pandas(df)
+    print(df)
 
 ds_tokenized = ds.shuffle(seed=seed).map(
     lambda row: tokenize_summary_subsection(
