@@ -53,4 +53,4 @@ tokenized = tokenizer(example, return_tensors='pt')['input_ids']
 
 outputs = model.generate(tokenized.to('cuda'))  # input shouldnt be a list ??
 print(outputs)
-print(tokenizer.decode(outputs)[0])
+print(tokenizer.batch_decode(outputs)[0])
