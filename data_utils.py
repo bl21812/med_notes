@@ -95,7 +95,7 @@ def tokenize_summary_subsection(tokenizer, dialogue, summary):
     res = tokenizer(dialogue)
 
     labels = tokenizer(summary)['input_ids']
-    res['labels'] = labels['input_ids']
+    res['labels'] = labels
 
     return res
 
