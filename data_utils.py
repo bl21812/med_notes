@@ -91,6 +91,7 @@ def tokenize_summary_subsection(tokenizer, dialogue, summary):
         labels: tokenized summary (token IDs)
     '''
 
+    dialogue = "summarize: \n\n" + dialogue
     res = tokenizer(dialogue)
 
     labels = tokenizer(summary)['input_ids']

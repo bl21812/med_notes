@@ -1,10 +1,23 @@
+import os
 import torch
+import pandas as pd
 
+from datasets import Dataset
 from transformers.adapters import ParallelConfig
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, GenerationConfig
 
+from data_utils import tokenize_summary_subsection
+
 tokenizer_source = "knkarthick/meeting-summary-samsum"
 base_model_source = "knkarthick/meeting-summary-samsum"
+
+data_source = "test_ds_summ.csv"
+
+input_key = 'transcript'
+output_key = 'output'
+
+seed = 0
+val_prop = 0.2
 
 def print_trainable_parameters(model):
     """
@@ -20,6 +33,8 @@ def print_trainable_parameters(model):
         f"trainable params: {trainable_params} || all params: {all_param} || trainable%: {100 * trainable_params / all_param}"
     )
 
+# ----- MODEL LOADING -----
+
 # believe i can use this instead of AutoAdapterModel ?
 model = AutoModelForSeq2SeqLM.from_pretrained(
     base_model_source, 
@@ -27,7 +42,7 @@ model = AutoModelForSeq2SeqLM.from_pretrained(
 )
 
 # idk if parallel adapter is good for few shot
-'''config = ParallelConfig(
+config = ParallelConfig(
     mh_adapter=True,
     output_adapter=True,  # can keep both of these in for now (unsure if needed)
     reduction_factor=16,  # important param !! (not sure what val)
@@ -37,10 +52,41 @@ model.add_adapter("bottleneck_adapter", config=config)
 
 model.train_adapter("bottleneck_adapter")
 model.set_active_adapters("bottleneck_adapter")
-print_trainable_parameters(model)'''
+print_trainable_parameters(model)
 
 tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
+print ('Tokenizer loaded!')
 
+# ----- PREPARE DATASET -----
+
+if os.path.exists(data_source):
+    if '.csv' in data_source:
+        df = pd.read_csv(data_source)
+    ds = Dataset.from_pandas(df)
+
+ds_tokenized = ds.shuffle(seed=seed).map(
+    lambda row: tokenize_summary_subsection(
+        tokenizer=tokenizer,
+        dialogue=row[input_key],
+        summary=row[output_key]
+    ), 
+    remove_columns=ds.column_names
+)
+
+ds_tokenized = ds_tokenized.train_test_split(test_size=val_prop)
+ds_train_tokenized = ds_tokenized['train']
+ds_val_tokenized = ds_tokenized['test']
+
+print('Preprocessing complete!')
+
+elem1 = ds_train_tokenized[0]
+print(tokenizer.decode(elem1['input_ids']))
+print(tokenizer.decode(elem1['labels']))
+
+# ----- TRAINING -----
+
+# KEEPING THE BELOW AS A REFERENCE FOR WORKING GENERATION
+'''
 example = """
 summarize:
 
@@ -63,3 +109,4 @@ with torch.no_grad():
 
 print(outputs)
 print(tokenizer.batch_decode(outputs)[0])
+'''
