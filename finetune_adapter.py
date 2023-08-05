@@ -42,6 +42,8 @@ print_trainable_parameters(model)'''
 tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 
 example = """
+summarize:
+
 D: OK. Your lymph nodes don’t feel swollen to me, which is a good sign. So here’s what I think should be our next steps. I’m going to order an exercise stress test for you to do, which will help figure out if there’s anything wrong with your heart. I’m also going to order bloodwork to rule out any possible infection that might be causing your chest pain. In the meantime, I’m going to prescribe you 2 pills of aspirin to take as needed when you feel that chest pain, and we’ll see if that helps relieve the pain. And let’s follow up once we get all the test results back. My office will contact you to set up an appointment in a few weeks. How does that sound? 
 
 P: Sounds great Doc. Thanks!
