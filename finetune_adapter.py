@@ -4,7 +4,7 @@ import pandas as pd
 
 from datasets import Dataset
 from transformers.adapters import ParallelConfig
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, GenerationConfig
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, GenerationConfig, DataCollatorForSeq2Seq
 
 from data_utils import tokenize_summary_subsection
 
@@ -63,7 +63,6 @@ if os.path.exists(data_source):
     if '.csv' in data_source:
         df = pd.read_csv(data_source)
     ds = Dataset.from_pandas(df)
-    print(df)
 
 ds_tokenized = ds.shuffle(seed=seed).map(
     lambda row: tokenize_summary_subsection(
@@ -78,13 +77,13 @@ ds_tokenized = ds_tokenized.train_test_split(test_size=val_prop)
 ds_train_tokenized = ds_tokenized['train']
 ds_val_tokenized = ds_tokenized['test']
 
+data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=tokenizer_source)
+
 print('Preprocessing complete!')
 
-elem1 = ds_train_tokenized[0]
-print(tokenizer.decode(elem1['input_ids']))
-print(tokenizer.decode(elem1['labels']))
-
 # ----- TRAINING -----
+
+
 
 # KEEPING THE BELOW AS A REFERENCE FOR WORKING GENERATION
 '''

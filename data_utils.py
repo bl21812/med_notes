@@ -92,9 +92,9 @@ def tokenize_summary_subsection(tokenizer, dialogue, summary):
     '''
 
     dialogue = "summarize: \n\n" + dialogue
-    res = tokenizer(dialogue)
+    res = tokenizer(dialogue, return_tensors='pt')
 
-    labels = tokenizer(summary)['input_ids']
+    labels = tokenizer(summary, return_tensors='pt')['input_ids']
     res['labels'] = labels
 
     return res
