@@ -51,6 +51,6 @@ tokenized = tokenizer(example, return_tensors='pt')['input_ids']
 # decoded = tokenizer.decode(tokenized)
 # print(decoded)
 
-outputs = model(tokenized)  # input shouldnt be a list ??
+outputs = model.generate(tokenized)  # input shouldnt be a list ??
 print(outputs)
-print(tokenizer.decode(outputs))
+print(tokenizer.decode(outputs)[0])
