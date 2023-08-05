@@ -19,13 +19,13 @@ def print_trainable_parameters(model):
     )
 
 # believe i can use this instead of AutoAdapterModel ?
-'''model = AutoModelForSeq2SeqLM.from_pretrained(
+model = AutoModelForSeq2SeqLM.from_pretrained(
     base_model_source, 
     device_map='auto'
 )
 
 # idk if parallel adapter is good for few shot
-config = ParallelConfig(
+'''config = ParallelConfig(
     mh_adapter=True,
     output_adapter=True,  # can keep both of these in for now (unsure if needed)
     reduction_factor=16,  # important param !! (not sure what val)
@@ -46,7 +46,11 @@ P: Sounds great Doc. Thanks!
 """
 
 tokenized = tokenizer(example)['input_ids']
-print(tokenized)
+# print(tokenized)
 
-decoded = tokenizer.decode(tokenized)
-print(decoded)
+# decoded = tokenizer.decode(tokenized)
+# print(decoded)
+
+outputs = model(tokenized)
+print(outputs)
+print(tokenizer.decode(outputs))

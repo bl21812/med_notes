@@ -84,6 +84,21 @@ def tokenize_dialogue_summary(tokenizer, inputs, outputs, max_seq_length=2048, d
     return result
 
 
+def tokenize_summary_subsection(tokenizer, dialogue, summary):
+    '''
+    Returns dict, with important keys:
+        input_ids: tokenized dialogue (token IDs)
+        labels: tokenized summary (token IDs)
+    '''
+
+    res = tokenizer(dialogue)
+
+    labels = tokenizer(summary)['input_ids']
+    res['labels'] = labels['input_ids']
+
+    return res
+
+
 # TODO: Implement adding SEP tokens (just replace the D: and P: with SEP except the first one?)
 # TODO: Implement task separation (diff preprocessing depending on dataset)
 def preprocess_text(row, columns, add_sep=False):
