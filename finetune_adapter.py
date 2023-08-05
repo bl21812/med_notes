@@ -51,6 +51,6 @@ tokenized = tokenizer(example)['input_ids']
 # decoded = tokenizer.decode(tokenized)
 # print(decoded)
 
-outputs = model(tokenized)
+outputs = model([tokenized])
 print(outputs)
 print(tokenizer.decode(outputs))
