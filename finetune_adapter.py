@@ -53,20 +53,10 @@ tokenized = tokenizer(example, return_tensors='pt')['input_ids']
 # decoded = tokenizer.decode(tokenized)
 # print(decoded)
 
-generation_config = GenerationConfig(
-        max_new_tokens=64,
-        temperature=0.1,
-        top_p=0.75,
-        top_k=40,  # higher = more memory
-        num_beams=1,  # higher = more memory
-        # early_stopping=True, 
-        # no_repeat_ngram_size=3  # need to take into account summary contexts! (what is the longest sequence that could repeat)
-    )
-
 with torch.no_grad():
     outputs = model.generate(
         tokenized.to('cuda'),
-        generation_config=generation_config
+        max_new_tokens=64
     )  # input shouldnt be a list ??
 
 print(outputs)
