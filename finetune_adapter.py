@@ -47,3 +47,6 @@ P: Sounds great Doc. Thanks!
 
 tokenized = tokenizer(example)['input_ids']
 print(tokenized)
+
+decoded = tokenizer.decode(tokenized)
+print(decoded)
