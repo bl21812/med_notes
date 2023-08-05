@@ -45,12 +45,12 @@ D: OK. Your lymph nodes don’t feel swollen to me, which is a good sign. So her
 P: Sounds great Doc. Thanks!
 """
 
-tokenized = tokenizer(example)['input_ids']
+tokenized = tokenizer(example, return_tensors='pt')['input_ids']
 # print(tokenized)
 
 # decoded = tokenizer.decode(tokenized)
 # print(decoded)
 
-outputs = model([tokenized])
+outputs = model(tokenized)  # input shouldnt be a list ??
 print(outputs)
 print(tokenizer.decode(outputs))
