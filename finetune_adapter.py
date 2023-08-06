@@ -1,10 +1,13 @@
 import os
 import torch
+import numpy as np
 import pandas as pd
 
+import evaluate
 from datasets import Dataset
-from transformers.adapters import ParallelConfig
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, GenerationConfig, DataCollatorForSeq2Seq
+from transformers.adapters import ParallelConfig, AdapterTrainer
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, DataCollatorForSeq2Seq, TrainingArguments, \
+    Seq2SeqTrainingArguments, Seq2SeqTrainer
 
 from data_utils import tokenize_summary_subsection
 
@@ -18,6 +21,8 @@ output_key = 'output'
 
 seed = 0
 val_prop = 0.2
+
+save_path = 'summ_adapter/2023-08-07'
 
 def print_trainable_parameters(model):
     """
@@ -83,7 +88,47 @@ print('Preprocessing complete!')
 
 # ----- TRAINING -----
 
+rouge = evaluate.load('rouge')
 
+def compute_metrics(eval_pred):
+    predictions, labels = eval_pred
+    decoded_preds = tokenizer.batch_decode(predictions, skip_special_tokens=True)
+    labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
+    decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
+
+    result = rouge.compute(predictions=decoded_preds, references=decoded_labels, use_stemmer=True)
+
+    prediction_lens = [np.count_nonzero(pred != tokenizer.pad_token_id) for pred in predictions]
+    result["gen_len"] = np.mean(prediction_lens)
+
+    return {k: round(v, 4) for k, v in result.items()}
+
+# HPARAMS !!!
+training_args =  Seq2SeqTrainingArguments(
+    learning_rate=1e-4,  # apparently this works well
+    num_train_epochs=200,  # dunno how long
+    per_device_train_batch_size=4,  # whatever can fit
+    per_device_eval_batch_size=4,  # whatever can fit
+    save_strategy='no',
+    evaluation_strategy='epoch',
+    predict_with_generate=True,
+    load_best_model_at_end=True,
+)
+
+trainer = Seq2SeqTrainer(
+    model=model,
+    args=training_args,
+    train_dataset=ds_train_tokenized,
+    eval_dataset=ds_val_tokenized,
+    tokenizer=tokenizer,
+    data_collator=data_collator,
+    compute_metrics=compute_metrics,
+)
+
+trainer.train()
+
+# Save adapter
+model.save_adapter(save_path)
 
 # KEEPING THE BELOW AS A REFERENCE FOR WORKING GENERATION
 '''

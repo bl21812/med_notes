@@ -7,4 +7,5 @@ bitsandbytes
 peft
 tokenizers
 scipy
+evaluate
 adapter-transformers
