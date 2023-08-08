@@ -137,6 +137,7 @@ training_args =  Seq2SeqTrainingArguments(
     load_best_model_at_end=True,
     metric_for_best_model='rougeLsum',
     output_dir=save_path,
+    logging_strategy='no',
 )
 
 trainer = Seq2SeqTrainer(
