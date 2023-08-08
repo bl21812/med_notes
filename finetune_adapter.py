@@ -9,10 +9,9 @@ from transformers.adapters import ParallelConfig, AdapterTrainer
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, DataCollatorForSeq2Seq, TrainingArguments, \
     Seq2SeqTrainingArguments, Seq2SeqTrainer
 
-from data_utils import tokenize_summary_subsection
-
 tokenizer_source = "knkarthick/meeting-summary-samsum"
 base_model_source = "knkarthick/meeting-summary-samsum"
+adapter_name = "bottleneck_adapter"
 
 data_source = "PARTIAL_half_page_summ_dummy.csv"
 
@@ -22,7 +21,27 @@ output_key = 'output'
 seed = 0
 val_prop = 0.2
 
-save_path = 'summ_adapter/2023-08-07'
+save_path = 'summ_adapter/2023-08-08'
+
+def tokenize_summary_subsection(tokenizer, dialogue, summary):
+    '''
+    Returns dict, with important keys:
+        input_ids: tokenized dialogue (token IDs)
+        labels: tokenized summary (token IDs)
+    '''
+
+    dialogue = "summarize: \n\n" + dialogue
+    res = tokenizer(dialogue, return_tensors='pt', padding='max_length', max_length=512, truncation=True)
+
+    if summary:
+        labels = tokenizer(summary, return_tensors='pt', padding='max_length', max_length=256, truncation=True)['input_ids']
+    else:
+        labels = torch.tensor([[tokenizer.eos_token_id]])
+    res['labels'] = labels
+
+    res = {key: torch.squeeze(item, 0) for key, item in res.items()}
+
+    return res
 
 def print_trainable_parameters(model):
     """
@@ -42,7 +61,7 @@ def print_trainable_parameters(model):
 
 # believe i can use this instead of AutoAdapterModel ?
 model = AutoModelForSeq2SeqLM.from_pretrained(
-    base_model_source, 
+    base_model_source,
     device_map='auto'
 )
 
@@ -50,13 +69,13 @@ model = AutoModelForSeq2SeqLM.from_pretrained(
 config = ParallelConfig(
     mh_adapter=True,
     output_adapter=True,  # can keep both of these in for now (unsure if needed)
-    reduction_factor=16,  # important param !! (not sure what val)
+    reduction_factor=32,  # important param !! (not sure what val)
     non_linearity="relu"
 )
-model.add_adapter("bottleneck_adapter", config=config)
+model.add_adapter(adapter_name, config=config)
 
-model.train_adapter("bottleneck_adapter")
-model.set_active_adapters("bottleneck_adapter")
+model.train_adapter(adapter_name)
+model.set_active_adapters(adapter_name)
 print_trainable_parameters(model)
 
 tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
@@ -74,7 +93,7 @@ ds_tokenized = ds.shuffle(seed=seed).map(
         tokenizer=tokenizer,
         dialogue=row[input_key],
         summary=row[output_key]
-    ), 
+    ),
     remove_columns=ds.column_names
 )
 
@@ -104,6 +123,7 @@ def compute_metrics(eval_pred):
     return {k: round(v, 4) for k, v in result.items()}
 
 # HPARAMS !!!
+# TRAIN LOSS IS NOT LOGGING AT EPOCHS !!
 training_args =  Seq2SeqTrainingArguments(
     learning_rate=1e-4,  # apparently this works well
     num_train_epochs=200,  # dunno how long
@@ -115,7 +135,7 @@ training_args =  Seq2SeqTrainingArguments(
     save_total_limit=3,  # keep at most 4 models (one being best model)
     predict_with_generate=True,
     load_best_model_at_end=True,
-    metric_for_best_model='rouge1',
+    metric_for_best_model='rougeLsum',
     output_dir=save_path,
 )
 
@@ -132,7 +152,7 @@ trainer = Seq2SeqTrainer(
 trainer.train()
 
 # Save adapter
-model.save_adapter(save_path)
+model.save_adapter(save_path, adapter_name)
 
 # KEEPING THE BELOW AS A REFERENCE FOR WORKING GENERATION
 '''
