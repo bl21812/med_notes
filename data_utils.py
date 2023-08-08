@@ -1,3 +1,5 @@
+import torch
+
 # NOTE: I might have to change the [D:] and [P:] speaker indicators to 
     # become special tokens for finetuning
 # NOTE: Ignoring overflow rn
@@ -92,10 +94,15 @@ def tokenize_summary_subsection(tokenizer, dialogue, summary):
     '''
 
     dialogue = "summarize: \n\n" + dialogue
-    res = tokenizer(dialogue, return_tensors='pt')
+    res = tokenizer(dialogue, return_tensors='pt', padding='max_length', max_length=512, truncation=True)
 
-    labels = tokenizer(summary, return_tensors='pt')['input_ids']
+    if summary:
+        labels = tokenizer(summary, return_tensors='pt', padding='max_length', max_length=256, truncation=True)['input_ids']
+    else:
+        labels = torch.tensor([[tokenizer.eos_token_id]])
     res['labels'] = labels
+
+    res = {key: torch.squeeze(item, 0) for key, item in res.items()}
 
     return res
 

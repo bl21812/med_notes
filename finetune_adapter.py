@@ -14,7 +14,7 @@ from data_utils import tokenize_summary_subsection
 tokenizer_source = "knkarthick/meeting-summary-samsum"
 base_model_source = "knkarthick/meeting-summary-samsum"
 
-data_source = "test_ds_summ.csv"
+data_source = "PARTIAL_half_page_summ_dummy.csv"
 
 input_key = 'transcript'
 output_key = 'output'
@@ -109,10 +109,14 @@ training_args =  Seq2SeqTrainingArguments(
     num_train_epochs=200,  # dunno how long
     per_device_train_batch_size=4,  # whatever can fit
     per_device_eval_batch_size=4,  # whatever can fit
-    save_strategy='no',
+    logging_strategy='epoch',
+    save_strategy='epoch',
     evaluation_strategy='epoch',
+    save_total_limit=3,  # keep at most 4 models (one being best model)
     predict_with_generate=True,
     load_best_model_at_end=True,
+    metric_for_best_model='rouge1',
+    output_dir=save_path,
 )
 
 trainer = Seq2SeqTrainer(

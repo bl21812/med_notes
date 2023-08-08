@@ -9,3 +9,4 @@ tokenizers
 scipy
 evaluate
 adapter-transformers
+rouge-score
