@@ -50,6 +50,8 @@ m = AutoModelForSeq2SeqLM.from_pretrained(
 adapter_name = m.load_adapter(adapter_path, config=adapter_type)
 m.set_active_adapters(adapter_name)
 
+m.to('cuda')
+
 tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 
 # ----- PREPARE DATASET -----
