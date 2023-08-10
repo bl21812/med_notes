@@ -65,9 +65,6 @@ model = AutoModelForSeq2SeqLM.from_pretrained(
     device_map='auto'
 )
 
-print(model)
-quit()
-
 # idk if parallel adapter is good for few shot
 config = ParallelConfig(
     mh_adapter=True,
@@ -76,6 +73,9 @@ config = ParallelConfig(
     non_linearity="relu"
 )
 model.add_adapter(adapter_name, config=config)
+
+print(model)
+quit()
 
 model.train_adapter(adapter_name)
 model.set_active_adapters(adapter_name)
