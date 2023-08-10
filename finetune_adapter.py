@@ -21,7 +21,7 @@ output_key = 'output'
 seed = 0
 val_prop = 0.2
 
-save_path = 'summ_adapter/0004'
+save_path = 'summ_adapter/0005'
 
 def tokenize_summary_subsection(tokenizer, dialogue, summary):
     '''
@@ -67,9 +67,9 @@ model = AutoModelForSeq2SeqLM.from_pretrained(
 
 # idk if parallel adapter is good for few shot
 config = ParallelConfig(
-    mh_adapter=False,
-    output_adapter=True,
-    reduction_factor=32,
+    mh_adapter=True,
+    output_adapter=False,
+    reduction_factor=16,
     non_linearity="relu"
 )
 model.add_adapter(adapter_name, config=config)
