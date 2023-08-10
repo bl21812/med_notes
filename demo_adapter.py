@@ -84,7 +84,7 @@ while idx < len(ds_tokenized):
     decoded_label = tokenizer.decode(label)
 
     with torch.no_grad():
-        outputs = m.generate(torch.tensor([data]).to('cuda'), max_new_tokens=64)
+        outputs = m.generate(torch.tensor([data]).to('cuda'), max_new_tokens=100)
 
     print('\n\nDIALOGUE: \n')
     print(decoded)
