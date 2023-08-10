@@ -21,7 +21,7 @@ output_key = 'output'
 seed = 0
 val_prop = 0.2
 
-save_path = 'summ_adapter/0003'
+save_path = 'summ_adapter/0004'
 
 def tokenize_summary_subsection(tokenizer, dialogue, summary):
     '''
@@ -69,7 +69,7 @@ model = AutoModelForSeq2SeqLM.from_pretrained(
 config = ParallelConfig(
     mh_adapter=False,
     output_adapter=True,
-    reduction_factor=16,  # important param !! (not sure what val)
+    reduction_factor=32,
     non_linearity="relu"
 )
 model.add_adapter(adapter_name, config=config)
@@ -132,7 +132,7 @@ training_args =  Seq2SeqTrainingArguments(
     logging_strategy='epoch',
     save_strategy='epoch',
     evaluation_strategy='epoch',
-    save_total_limit=3,  # keep at most 4 models (one being best model)
+    save_total_limit=2,  # keep at most 3 models (one being best model)
     predict_with_generate=True,
     load_best_model_at_end=True,
     metric_for_best_model='rougeLsum',
