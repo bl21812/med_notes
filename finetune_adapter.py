@@ -21,7 +21,7 @@ output_key = 'output'
 seed = 0
 val_prop = 0.2
 
-save_path = 'summ_adapter/2023-08-08'
+save_path = 'summ_adapter/0003'
 
 def tokenize_summary_subsection(tokenizer, dialogue, summary):
     '''
@@ -73,9 +73,6 @@ config = ParallelConfig(
     non_linearity="relu"
 )
 model.add_adapter(adapter_name, config=config)
-
-print(model)
-quit()
 
 model.train_adapter(adapter_name)
 model.set_active_adapters(adapter_name)
