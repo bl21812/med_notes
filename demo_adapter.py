@@ -80,8 +80,8 @@ while idx < len(ds_tokenized):
     data = ds_tokenized[idx]['input_ids']
     label = ds_tokenized[idx]['labels']
 
-    decoded = tokenizer.decode(data)
-    decoded_label = tokenizer.decode(label)
+    decoded = tokenizer.decode(data, skip_special_tokens=True)
+    decoded_label = tokenizer.decode(label, skip_special_tokens=True)
 
     with torch.no_grad():
         outputs = m.generate(torch.tensor([data]).to('cuda'), max_new_tokens=100)
@@ -91,7 +91,7 @@ while idx < len(ds_tokenized):
     print('\n\nEXPECTED OUTPUT: \n')
     print(decoded_label)
     print('\n\nPREDICTED OUTPUT: \n')
-    print(tokenizer.batch_decode(outputs)[0])
+    print(tokenizer.batch_decode(outputs, skip_special_tokens=True)[0])
 
     idx += 1
 
