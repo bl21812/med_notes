@@ -65,6 +65,9 @@ model = AutoModelForSeq2SeqLM.from_pretrained(
     device_map='auto'
 )
 
+print(model)
+quit()
+
 # idk if parallel adapter is good for few shot
 config = ParallelConfig(
     mh_adapter=True,
