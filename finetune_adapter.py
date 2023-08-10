@@ -67,9 +67,9 @@ model = AutoModelForSeq2SeqLM.from_pretrained(
 
 # idk if parallel adapter is good for few shot
 config = ParallelConfig(
-    mh_adapter=True,
-    output_adapter=True,  # can keep both of these in for now (unsure if needed)
-    reduction_factor=64,  # important param !! (not sure what val)
+    mh_adapter=False,
+    output_adapter=True,
+    reduction_factor=16,  # important param !! (not sure what val)
     non_linearity="relu"
 )
 model.add_adapter(adapter_name, config=config)
