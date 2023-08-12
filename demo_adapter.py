@@ -11,7 +11,7 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, DataCollatorForSe
 
 tokenizer_source = "knkarthick/meeting-summary-samsum"
 base_model_source = "knkarthick/meeting-summary-samsum"
-adapter_path = "summ_adapter/0005/"
+adapter_path = "summ_adapter/0006/"
 adapter_type = "parallel"
 
 data_source = "half_page_summ_dummy.csv"
