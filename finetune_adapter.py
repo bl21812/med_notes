@@ -21,7 +21,7 @@ output_key = 'output'
 seed = 0
 val_prop = 0.2
 
-save_path = 'summ_adapter/0006'
+save_path = 'summ_adapter/0007'
 
 def tokenize_summary_subsection(tokenizer, dialogue, summary):
     '''
@@ -69,7 +69,7 @@ model = AutoModelForSeq2SeqLM.from_pretrained(
 config = ParallelConfig(
     mh_adapter=True,
     output_adapter=False,
-    reduction_factor=16,
+    reduction_factor=8,
     non_linearity="relu"
 )
 model.add_adapter(adapter_name, config=config)
@@ -126,7 +126,7 @@ def compute_metrics(eval_pred):
 # TRAIN LOSS IS NOT LOGGING AT EPOCHS !!
 training_args =  Seq2SeqTrainingArguments(
     learning_rate=1e-4,  # apparently this works well
-    num_train_epochs=300,  # dunno how long
+    num_train_epochs=200,
     per_device_train_batch_size=4,  # whatever can fit
     per_device_eval_batch_size=4,  # whatever can fit
     logging_strategy='epoch',
