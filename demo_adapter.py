@@ -9,9 +9,9 @@ from transformers.adapters import ParallelConfig, AdapterTrainer
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, DataCollatorForSeq2Seq, TrainingArguments, \
     Seq2SeqTrainingArguments, Seq2SeqTrainer
 
-tokenizer_source = "lidiya/bart-large-xsum-samsum"
-base_model_source = "lidiya/bart-large-xsum-samsum"
-adapter_path = "summ_adapter/0006/"
+tokenizer_source = "knkarthick/meeting-summary-samsum"
+base_model_source = "knkarthick/meeting-summary-samsum"
+adapter_path = "summ_adapter/0007/"
 adapter_type = "parallel"
 
 data_source = "half_page_summ_dummy.csv"
@@ -46,8 +46,8 @@ m = AutoModelForSeq2SeqLM.from_pretrained(
     device_map='auto'
 )
 
-'''adapter_name = m.load_adapter(adapter_path, config=adapter_type)
-m.set_active_adapters(adapter_name)'''
+adapter_name = m.load_adapter(adapter_path, config=adapter_type)
+m.set_active_adapters(adapter_name)
 
 m.to('cuda')
 
