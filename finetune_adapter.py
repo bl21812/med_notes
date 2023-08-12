@@ -13,7 +13,7 @@ tokenizer_source = "knkarthick/meeting-summary-samsum"
 base_model_source = "knkarthick/meeting-summary-samsum"
 adapter_name = "bottleneck_adapter"
 
-data_source = "PARTIAL_half_page_summ_dummy.csv"
+data_source = "half_page_summ_dummy.csv"
 
 input_key = 'transcript'
 output_key = 'output'
@@ -21,7 +21,7 @@ output_key = 'output'
 seed = 0
 val_prop = 0.2
 
-save_path = 'summ_adapter/0005'
+save_path = 'summ_adapter/0006'
 
 def tokenize_summary_subsection(tokenizer, dialogue, summary):
     '''
@@ -126,7 +126,7 @@ def compute_metrics(eval_pred):
 # TRAIN LOSS IS NOT LOGGING AT EPOCHS !!
 training_args =  Seq2SeqTrainingArguments(
     learning_rate=1e-4,  # apparently this works well
-    num_train_epochs=200,  # dunno how long
+    num_train_epochs=300,  # dunno how long
     per_device_train_batch_size=4,  # whatever can fit
     per_device_eval_batch_size=4,  # whatever can fit
     logging_strategy='epoch',

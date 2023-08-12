@@ -14,7 +14,7 @@ base_model_source = "knkarthick/meeting-summary-samsum"
 adapter_path = "summ_adapter/0005/"
 adapter_type = "parallel"
 
-data_source = "PARTIAL_half_page_summ_dummy.csv"
+data_source = "half_page_summ_dummy.csv"
 
 input_key = 'transcript'
 output_key = 'output'
