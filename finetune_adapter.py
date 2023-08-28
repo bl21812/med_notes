@@ -28,7 +28,7 @@ def scrub_all(text):
     '''
     remove newlines, speaker indicators, punctuation (periods, commas, question marks)
     '''
-    text = text.replace('\\n', '')
+    text = repr(text).replace('\\n', '')
     text = text.replace('D:', '')
     text = text.replace('P:', '')
     text = text.replace(',', '')
