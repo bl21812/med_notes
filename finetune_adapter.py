@@ -14,7 +14,7 @@ base_model_source = "knkarthick/meeting-summary-samsum"
 adapter_name = "bottleneck_adapter"
 
 data_source = "dummy_75_overlap_20.csv"
-scrub_transcripts = True
+scrub_transcripts = False
 
 input_key = 'transcript'
 output_key = 'output'
