@@ -13,7 +13,8 @@ tokenizer_source = "knkarthick/meeting-summary-samsum"
 base_model_source = "knkarthick/meeting-summary-samsum"
 adapter_name = "bottleneck_adapter"
 
-data_source = "half_page_summ_dummy.csv"
+data_source = "dummy_75_overlap_20.csv"
+scrub_transcripts = True
 
 input_key = 'transcript'
 output_key = 'output'
@@ -21,7 +22,21 @@ output_key = 'output'
 seed = 0
 val_prop = 0.2
 
-save_path = 'summ_adapter/0007'
+save_path = 'summ_adapter/0008'
+
+def scrub_all(text):
+    '''
+    remove newlines, speaker indicators, punctuation (periods, commas, question marks)
+    '''
+    text = repr(text).replace('\\n', ' ')
+    text = text.replace('D:', '')
+    text = text.replace('P:', '')
+    text = text.replace(',', '')
+    text = text.replace('.', '')
+    text = text.replace('?', '')
+    text = text.replace('!', '')
+    text = text.replace(':', '')
+    return 
 
 def tokenize_summary_subsection(tokenizer, dialogue, summary):
     '''
@@ -30,6 +45,7 @@ def tokenize_summary_subsection(tokenizer, dialogue, summary):
         labels: tokenized summary (token IDs)
     '''
 
+    dialogue = scrub_all(dialogue) if scrub_transcripts else dialogue
     dialogue = "summarize: \n\n" + dialogue
     res = tokenizer(dialogue, return_tensors='pt', padding='max_length', max_length=512, truncation=True)
 
@@ -60,7 +76,7 @@ def print_trainable_parameters(model):
 # ----- MODEL LOADING -----
 
 # believe i can use this instead of AutoAdapterModel ?
-model = AutoModelForSeq2SeqLM.from_pretrained(
+'''model = AutoModelForSeq2SeqLM.from_pretrained(
     base_model_source,
     device_map='auto'
 )
@@ -76,7 +92,7 @@ model.add_adapter(adapter_name, config=config)
 
 model.train_adapter(adapter_name)
 model.set_active_adapters(adapter_name)
-print_trainable_parameters(model)
+print_trainable_parameters(model)'''
 
 tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 print ('Tokenizer loaded!')
@@ -101,6 +117,9 @@ ds_tokenized = ds_tokenized.train_test_split(test_size=val_prop)
 ds_train_tokenized = ds_tokenized['train']
 ds_val_tokenized = ds_tokenized['test']
 
+print(tokenizer.decode(ds_train_tokenized[0]))
+quit()
+
 data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=tokenizer_source)
 
 print('Preprocessing complete!')
@@ -123,7 +142,6 @@ def compute_metrics(eval_pred):
     return {k: round(v, 4) for k, v in result.items()}
 
 # HPARAMS !!!
-# TRAIN LOSS IS NOT LOGGING AT EPOCHS !!
 training_args =  Seq2SeqTrainingArguments(
     learning_rate=1e-4,  # apparently this works well
     num_train_epochs=200,
