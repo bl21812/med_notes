@@ -76,7 +76,7 @@ def print_trainable_parameters(model):
 # ----- MODEL LOADING -----
 
 # believe i can use this instead of AutoAdapterModel ?
-'''model = AutoModelForSeq2SeqLM.from_pretrained(
+model = AutoModelForSeq2SeqLM.from_pretrained(
     base_model_source,
     device_map='auto'
 )
@@ -92,7 +92,7 @@ model.add_adapter(adapter_name, config=config)
 
 model.train_adapter(adapter_name)
 model.set_active_adapters(adapter_name)
-print_trainable_parameters(model)'''
+print_trainable_parameters(model)
 
 tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 print ('Tokenizer loaded!')
@@ -116,9 +116,6 @@ ds_tokenized = ds.shuffle(seed=seed).map(
 ds_tokenized = ds_tokenized.train_test_split(test_size=val_prop)
 ds_train_tokenized = ds_tokenized['train']
 ds_val_tokenized = ds_tokenized['test']
-
-print(tokenizer.decode(ds_train_tokenized[0]['input_ids']))
-quit()
 
 data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=tokenizer_source)
 
