@@ -22,7 +22,7 @@ output_key = 'output'
 seed = 0
 val_prop = 0.2
 
-save_path = 'summ_adapter/0008'
+save_path = 'summ_adapter/0009'
 
 def scrub_all(text):
     '''
@@ -85,7 +85,7 @@ model = AutoModelForSeq2SeqLM.from_pretrained(
 config = ParallelConfig(
     mh_adapter=True,
     output_adapter=False,
-    reduction_factor=8,
+    reduction_factor=4,
     non_linearity="relu"
 )
 model.add_adapter(adapter_name, config=config)
