@@ -36,7 +36,7 @@ def scrub_all(text):
     text = text.replace('?', '')
     text = text.replace('!', '')
     text = text.replace(':', '')
-    return 
+    return text
 
 def tokenize_summary_subsection(tokenizer, dialogue, summary):
     '''
