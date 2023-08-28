@@ -142,8 +142,8 @@ def compute_metrics(eval_pred):
 training_args =  Seq2SeqTrainingArguments(
     learning_rate=1e-4,  # apparently this works well
     num_train_epochs=200,
-    per_device_train_batch_size=4,  # whatever can fit
-    per_device_eval_batch_size=4,  # whatever can fit
+    per_device_train_batch_size=16,  # whatever can fit
+    per_device_eval_batch_size=16,  # whatever can fit
     logging_strategy='epoch',
     save_strategy='epoch',
     evaluation_strategy='epoch',
