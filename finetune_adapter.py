@@ -14,7 +14,7 @@ base_model_source = "knkarthick/meeting-summary-samsum"
 adapter_name = "bottleneck_adapter"
 
 data_source = "dummy_75_overlap_20.csv"
-scrub_transcripts = False
+scrub_transcripts = True
 
 input_key = 'transcript'
 output_key = 'output'
@@ -28,7 +28,7 @@ def scrub_all(text):
     '''
     remove newlines, speaker indicators, punctuation (periods, commas, question marks)
     '''
-    text = repr(text).replace('\\n', ' ')
+    text = text.replace('\\n', '')
     text = text.replace('D:', '')
     text = text.replace('P:', '')
     text = text.replace(',', '')
