@@ -11,13 +11,28 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, DataCollatorForSe
 
 tokenizer_source = "knkarthick/meeting-summary-samsum"
 base_model_source = "knkarthick/meeting-summary-samsum"
-adapter_path = "summ_adapter/0007/"
+adapter_path = "summ_adapter/0009/"
 adapter_type = "parallel"
 
-data_source = "half_page_summ_dummy.csv"
+data_source = "dummy_75_overlap_20.csv"
+scrub_transcripts = True
 
 input_key = 'transcript'
 output_key = 'output'
+
+def scrub_all(text):
+    '''
+    remove newlines, speaker indicators, punctuation (periods, commas, question marks)
+    '''
+    text = repr(text).replace('\\n', '')
+    text = text.replace('D:', '')
+    text = text.replace('P:', '')
+    text = text.replace(',', '')
+    text = text.replace('.', '')
+    text = text.replace('?', '')
+    text = text.replace('!', '')
+    text = text.replace(':', '')
+    return text
 
 def tokenize_summary_subsection(tokenizer, dialogue, summary):
     '''
@@ -26,6 +41,7 @@ def tokenize_summary_subsection(tokenizer, dialogue, summary):
         labels: tokenized summary (token IDs)
     '''
 
+    dialogue = scrub_all(dialogue) if scrub_transcripts else dialogue
     dialogue = "summarize: \n\n" + dialogue
     res = tokenizer(dialogue, return_tensors='pt', padding='max_length', max_length=512, truncation=True)
 
