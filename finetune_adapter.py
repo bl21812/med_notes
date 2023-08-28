@@ -14,7 +14,7 @@ base_model_source = "knkarthick/meeting-summary-samsum"
 adapter_name = "bottleneck_adapter"
 
 data_source = "dummy_75_overlap_20.csv"
-scrub_transcripts = True
+scrub_transcripts = False
 
 input_key = 'transcript'
 output_key = 'output'
@@ -22,7 +22,7 @@ output_key = 'output'
 seed = 0
 val_prop = 0.2
 
-save_path = 'summ_adapter/0009'
+save_path = 'summ_adapter/0010'
 
 def scrub_all(text):
     '''
@@ -141,7 +141,7 @@ def compute_metrics(eval_pred):
 # HPARAMS !!!
 training_args =  Seq2SeqTrainingArguments(
     learning_rate=1e-4,  # apparently this works well
-    num_train_epochs=200,
+    num_train_epochs=100,
     per_device_train_batch_size=8,  # whatever can fit
     per_device_eval_batch_size=8,  # whatever can fit
     logging_strategy='epoch',
