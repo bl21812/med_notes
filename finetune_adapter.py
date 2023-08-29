@@ -14,15 +14,15 @@ base_model_source = "knkarthick/meeting-summary-samsum"
 adapter_name = "bottleneck_adapter"
 
 data_source = "dummy_75_overlap_20.csv"
-scrub_transcripts = False
+scrub_transcripts = True
 
 input_key = 'transcript'
 output_key = 'output'
 
 seed = 0
-val_prop = 0.2
+val_prop = 0.1
 
-save_path = 'summ_adapter/0010'
+save_path = 'summ_adapter/0011'
 
 def scrub_all(text):
     '''
@@ -84,8 +84,8 @@ model = AutoModelForSeq2SeqLM.from_pretrained(
 # idk if parallel adapter is good for few shot
 config = ParallelConfig(
     mh_adapter=True,
-    output_adapter=False,
-    reduction_factor=4,
+    output_adapter=True,
+    reduction_factor=8,
     non_linearity="relu"
 )
 model.add_adapter(adapter_name, config=config)
@@ -141,7 +141,7 @@ def compute_metrics(eval_pred):
 # HPARAMS !!!
 training_args =  Seq2SeqTrainingArguments(
     learning_rate=1e-4,  # apparently this works well
-    num_train_epochs=100,
+    num_train_epochs=200,
     per_device_train_batch_size=8,  # whatever can fit
     per_device_eval_batch_size=8,  # whatever can fit
     logging_strategy='epoch',
