@@ -61,9 +61,7 @@ def apply_preprocessing_row(row):
     return row
 
 def apply_preprocessing_batch(rows):
-    print(rows)
-    quit()
-    rows = [apply_preprocessing_row(row) for row in rows]
+    rows[input_key] = [embed_from_text(text) for text in rows[input_key]]
     return rows
 
 # tokenize and embed
@@ -74,6 +72,8 @@ ds_embeddings = ds_embeddings.train_test_split(test_size=val_prop)
 ds_train = ds_embeddings['train']
 ds_val = ds_embeddings['test']
 
+print(ds_train[0])
+print('\n\n')
 print(np.array(ds_train[0][input_key]).shape)
 quit()
 
