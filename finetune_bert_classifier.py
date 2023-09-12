@@ -46,8 +46,7 @@ def preprocess_str(text):
 # get embeddings from text input (basically apply all preprocessing needed)
 def embed_from_text(text):
     text = preprocess_str(text)
-    tokens = tokenizer(text)
-    print(tokens)
+    tokens = tokenizer(text, return_tensors='pt')
     return feature_extractor(**tokens)
 
 def apply_preprocessing_row(row):
