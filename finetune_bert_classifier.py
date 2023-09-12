@@ -19,6 +19,13 @@ input_key = 'note'
 label_key = 'class'
 num_classes = 4
 
+label_mapping = {
+    'S': 0, 
+    'O': 1,
+    'A': 2,
+    'P': 3
+}
+
 seed = 0
 val_prop = 0.1
 
@@ -56,26 +63,20 @@ def embed_from_text(text):
     features = feature_extractor(**tokens)
     return features['last_hidden_state']
 
-def apply_preprocessing_row(row):
-    row[input_key] = embed_from_text(row[input_key])
-    return row
-
 def apply_preprocessing_batch(rows):
     rows[input_key] = [embed_from_text(text) for text in rows[input_key]]
+    rows[label_key] = [label_mapping[c] for c in rows[label_key]]
     return rows
 
-# tokenize and embed
-ds_embeddings = ds.shuffle(seed=seed).map(apply_preprocessing_batch, batched=True, batch_size=8)
+# tokenize and embed and 
+ds_embeddings = ds.shuffle(seed=seed).map(
+    apply_preprocessing_batch, batched=True, batch_size=8
+)
 
 # train test split
 ds_embeddings = ds_embeddings.train_test_split(test_size=val_prop)
 ds_train = ds_embeddings['train']
 ds_val = ds_embeddings['test']
-
-print(ds_train[0])
-print('\n\n')
-print(np.array(ds_train[0][input_key]).shape)
-quit()
 
 # ----- CLASSIFICATION HEAD -----
 class_head = torch.nn.Sequential([torch.nn.Flatten()])
