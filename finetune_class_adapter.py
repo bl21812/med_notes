@@ -1,3 +1,8 @@
+'''
+THIS IS JUST COPIED OVER RN
+DOESNT DO WHAT ITS SUPPOSED TO
+'''
+
 import os
 import torch
 import numpy as np
