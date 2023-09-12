@@ -47,6 +47,7 @@ def preprocess_str(text):
 def embed_from_text(text):
     text = preprocess_str(text)
     tokens = tokenizer(text)
+    print(tokens)
     return feature_extractor(**tokens)
 
 def apply_preprocessing_row(row):
