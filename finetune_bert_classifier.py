@@ -5,6 +5,8 @@ import pandas as pd
 from datasets import Dataset
 from transformers import DistilBertTokenizer, DistilBertModel
 
+import numpy as np
+
 tokenizer_source = "distilbert-base-uncased"
 feature_extractor_source = "distilbert-base-uncased"
 num_hidden_layers = 3
@@ -61,8 +63,8 @@ ds_embeddings = ds_embeddings.train_test_split(test_size=val_prop)
 ds_train = ds_embeddings['train']
 ds_val = ds_embeddings['test']
 
-print(ds_train[0])
-print('\n\n')
+print(ds_train[0][input_key].keys())
+print(np.array(ds_train[0][input_key]['last_hidden_state']).shape)
 quit()
 
 '''text = "Replace me by any text you'd like."
