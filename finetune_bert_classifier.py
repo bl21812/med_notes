@@ -61,6 +61,8 @@ def apply_preprocessing_row(row):
     return row
 
 def apply_preprocessing_batch(rows):
+    print(rows)
+    quit()
     rows = [apply_preprocessing_row(row) for row in rows]
     return rows
 
