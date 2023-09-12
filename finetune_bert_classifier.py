@@ -10,7 +10,7 @@ feature_extractor_source = "distilbert-base-uncased"
 num_hidden_layers = 3
 hidden_dim = 256
 
-data_source = ".csv"  # UPDATE WITH CLASS DATASET
+data_source = "placeholder_soap_ds.csv"  # UPDATE WITH CLASS DATASET
 
 input_key = 'note'
 label_key = 'class'
