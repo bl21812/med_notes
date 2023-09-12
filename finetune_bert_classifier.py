@@ -53,15 +53,16 @@ def preprocess_str(text):
 def embed_from_text(text):
     text = preprocess_str(text)
     tokens = tokenizer(text, return_tensors='pt')
-    return feature_extractor(**tokens)
+    features = feature_extractor(**tokens)
+    return features['last_hidden_state']
 
 def apply_preprocessing_row(row):
     row[input_key] = embed_from_text(row[input_key])
     return row
 
 def apply_preprocessing_batch(rows):
-    print(rows)
-    quit()
+    rows = [apply_preprocessing_row(row) for row in rows]
+    return rows
 
 # tokenize and embed
 ds_embeddings = ds.shuffle(seed=seed).map(apply_preprocessing_batch, batched=True, batch_size=8)
@@ -71,7 +72,8 @@ ds_embeddings = ds_embeddings.train_test_split(test_size=val_prop)
 ds_train = ds_embeddings['train']
 ds_val = ds_embeddings['test']
 
-# print(np.array(ds_train[0][input_key]['last_hidden_state']).shape)
+print(np.array(ds_train[0][input_key]).shape)
+quit()
 
 # ----- CLASSIFICATION HEAD -----
 class_head = torch.nn.Sequential([torch.nn.Flatten()])
