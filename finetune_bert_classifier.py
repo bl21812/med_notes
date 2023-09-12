@@ -11,16 +11,20 @@ tokenizer_source = "distilbert-base-uncased"
 feature_extractor_source = "distilbert-base-uncased"
 num_hidden_layers = 3
 hidden_dim = 256
+feature_extractor_output_dim = 6 * 768
 
 data_source = "placeholder_soap_ds.csv"  # UPDATE WITH CLASS DATASET
 
 input_key = 'note'
 label_key = 'class'
+num_classes = 4
 
 seed = 0
 val_prop = 0.1
 
 save_path = 'soap_class/C0001'
+
+batch_size = 64
 
 # ----- MODEL LOADING -----
 tokenizer = DistilBertTokenizer.from_pretrained(tokenizer_source)
@@ -55,17 +59,35 @@ def apply_preprocessing_row(row):
     row[input_key] = embed_from_text(row[input_key])
     return row
 
+def apply_preprocessing_batch(rows):
+    print(rows)
+    quit()
+
 # tokenize and embed
-ds_embeddings = ds.shuffle(seed=seed).map(apply_preprocessing_row)
+ds_embeddings = ds.shuffle(seed=seed).map(apply_preprocessing_batch, batched=True, batch_size=8)
 
 # train test split
 ds_embeddings = ds_embeddings.train_test_split(test_size=val_prop)
 ds_train = ds_embeddings['train']
 ds_val = ds_embeddings['test']
 
-print(ds_train[0][input_key].keys())
-print(np.array(ds_train[0][input_key]['last_hidden_state']).shape)
-quit()
+# print(np.array(ds_train[0][input_key]['last_hidden_state']).shape)
+
+# ----- CLASSIFICATION HEAD -----
+class_head = torch.nn.Sequential([torch.nn.Flatten()])
+
+# hidden layers
+for i in range(num_hidden_layers):
+    in_features = feature_extractor_output_dim if (i == 0) else hidden_dim
+    class_head.append(torch.nn.Linear(in_features=in_features, out_features=hidden_dim, bias=True))
+    class_head.append(torch.nn.ReLU())
+
+# head
+in_features = feature_extractor_output_dim if (num_hidden_layers == 0) else hidden_dim
+class_head.append(torch.nn.Linear(in_features=in_features, out_features=num_classes, bias=True))
+class_head.append(torch.nn.Softmax())
+
+# ----- TRAIN LOOP -----
 
 '''text = "Replace me by any text you'd like."
 encoded_input = tokenizer(text, return_tensors='pt')
