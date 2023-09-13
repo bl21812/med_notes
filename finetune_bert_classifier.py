@@ -31,7 +31,7 @@ val_prop = 0.1
 
 save_path = 'soap_class/C0001'
 
-batch_size = 64
+batch_size = 4
 epochs = 10
 lr = 0.001
 
@@ -127,7 +127,15 @@ for epoch in epochs:
             optimizer.zero_grad()
 
             outputs = class_head(inputs)
+            print(outputs)
             l = loss(outputs, labels)
+            print('\n\n')
+            print(labels)
+            print('\n\n')
+            print(l)
+            inp = input()
+            if not (inp == ''):
+                quit()
             loss.backward()
             optimizer.step()
 
