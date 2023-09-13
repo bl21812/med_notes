@@ -103,7 +103,7 @@ optimizer = torch.optim.SGD(class_head.parameters(), lr=lr, momentum=0.9)
 epoch_val_correct = []
 epoch_val_total = []
 
-for epoch in epochs:
+for epoch in range(epochs):
 
     inputs = []
     labels = []
