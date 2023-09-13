@@ -9,15 +9,15 @@ import numpy as np
 
 tokenizer_source = "distilbert-base-uncased"
 feature_extractor_source = "distilbert-base-uncased"
+pad_seq_length = 32
 num_hidden_layers = 3
 hidden_dim = 256
-feature_extractor_output_dim = 6 * 768
+feature_extractor_output_dim = pad_seq_length * 768
 
 data_source = "placeholder_soap_ds.csv"  # UPDATE WITH CLASS DATASET
 
 input_key = 'note'
 label_key = 'class'
-pad_seq_length = 32
 num_classes = 4
 
 label_mapping = {
