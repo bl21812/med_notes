@@ -17,6 +17,7 @@ data_source = "placeholder_soap_ds.csv"  # UPDATE WITH CLASS DATASET
 
 input_key = 'note'
 label_key = 'class'
+pad_seq_length = 32
 num_classes = 4
 
 label_mapping = {
@@ -61,7 +62,7 @@ def preprocess_str(text):
 # get embeddings from text input (basically apply all preprocessing needed)
 def embed_from_text(text):
     text = preprocess_str(text)
-    tokens = tokenizer(text, return_tensors='pt')
+    tokens = tokenizer(text, return_tensors='pt', padding='max_length', max_length=pad_seq_length)
     features = feature_extractor(**tokens)
     return features['last_hidden_state']
 
