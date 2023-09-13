@@ -81,7 +81,7 @@ ds_train = ds_embeddings['train']
 ds_val = ds_embeddings['test']
 
 # ----- CLASSIFICATION HEAD -----
-class_head = torch.nn.Sequential([torch.nn.Flatten()])
+class_head = torch.nn.Sequential(torch.nn.Flatten())
 
 # hidden layers
 for i in range(num_hidden_layers):
