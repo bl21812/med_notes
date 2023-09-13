@@ -137,7 +137,7 @@ for epoch in range(epochs):
             inp = input()
             if not (inp == ''):
                 quit()
-            loss.backward()
+            l.backward()
             optimizer.step()
 
             # TODO: TRACK RUNNING LOSS
