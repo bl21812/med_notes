@@ -20,10 +20,10 @@ label_key = 'class'
 num_classes = 4
 
 label_mapping = {
-    'S': 0, 
-    'O': 1,
-    'A': 2,
-    'P': 3
+    'S': [1, 0, 0, 0], 
+    'O': [0, 1, 0, 0],
+    'A': [0, 0, 1, 0],
+    'P': [0, 0, 0, 1]
 }
 
 seed = 0
@@ -32,6 +32,8 @@ val_prop = 0.1
 save_path = 'soap_class/C0001'
 
 batch_size = 64
+epochs = 10
+lr = 0.001
 
 # ----- MODEL LOADING -----
 tokenizer = DistilBertTokenizer.from_pretrained(tokenizer_source)
@@ -92,7 +94,61 @@ in_features = feature_extractor_output_dim if (num_hidden_layers == 0) else hidd
 class_head.append(torch.nn.Linear(in_features=in_features, out_features=num_classes, bias=True))
 class_head.append(torch.nn.Softmax())
 
+# loss and optimizer
+loss = torch.nn.CrossEntropyLoss()
+optimizer = torch.optim.SGD(class_head.parameters(), lr=lr, momentum=0.9)
+
 # ----- TRAIN LOOP -----
+
+epoch_val_correct = []
+epoch_val_total = []
+
+for epoch in epochs:
+
+    inputs = []
+    labels = []
+
+    val_correct = 0
+    val_total = 0
+
+    # train
+    for row in ds_train:
+
+        # add to batch
+        inputs.append(row[input_key])
+        labels.append(row[label_key])
+
+        # if batch = batch size, take train step
+        if len(inputs) == batch_size:
+
+            inputs = torch.tensor(inputs)
+            labels = torch.tensor(labels)
+
+            optimizer.zero_grad()
+
+            outputs = class_head(inputs)
+            l = loss(outputs, labels)
+            loss.backward()
+            optimizer.step()
+
+            # TODO: TRACK RUNNING LOSS
+
+            # reset batch
+            inputs = []
+            labels = []
+
+    # eval
+    for row in ds_val:
+        input = torch.tensor([row[input_key]])
+        label = torch.tensor([row[label_key]])
+        with torch.no_grad():
+            output = class_head()
+            _, pred_class = torch.max(output.data, 1)
+            val_total += label.size(0)
+            val_correct += (pred_class == label).sum().item()
+
+    epoch_val_correct.append(val_correct)
+    epoch_val_total.append(val_total)
 
 '''text = "Replace me by any text you'd like."
 encoded_input = tokenizer(text, return_tensors='pt')
