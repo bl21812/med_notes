@@ -151,7 +151,7 @@ for epoch in range(epochs):
         input = torch.tensor([row[input_key]])
         label = torch.tensor([row[label_key]])
         with torch.no_grad():
-            output = class_head()
+            output = class_head(input)
             _, pred_class = torch.max(output.data, 1)
             val_total += label.size(0)
             val_correct += (pred_class == label).sum().item()
