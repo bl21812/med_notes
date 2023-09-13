@@ -1,3 +1,5 @@
+# TODO: CLASS WEIGHTING !!
+
 import os
 import torch
 import pandas as pd
@@ -153,8 +155,8 @@ for epoch in range(epochs):
         with torch.no_grad():
             output = class_head(inputs)
             _, pred_class = torch.max(output.data, 1)
-            val_total += labels.size(0)
-            val_correct += (pred_class == labels).sum().item()
+            val_total += 1
+            val_correct += int(torch.flatten(pred_class) == torch.argmax(labels))  # NOTE: only works for single input rn
             print(f'EPOCH {epoch} EVAL:')
             print(labels)
             print(output)
