@@ -148,13 +148,18 @@ for epoch in range(epochs):
 
     # eval
     for row in ds_val:
-        input = torch.tensor([row[input_key]])
-        label = torch.tensor([row[label_key]])
+        inputs = torch.tensor([row[input_key]])
+        labels = torch.tensor([row[label_key]])
         with torch.no_grad():
-            output = class_head(input)
+            output = class_head(inputs)
             _, pred_class = torch.max(output.data, 1)
-            val_total += label.size(0)
-            val_correct += (pred_class == label).sum().item()
+            val_total += labels.size(0)
+            val_correct += (pred_class == labels).sum().item()
+            print(f'EPOCH {epoch} EVAL:')
+            print(labels)
+            print(output)
+            print(pred_class)
+            print(f'{val_correct} / {val_total} correct')
 
     epoch_val_correct.append(val_correct)
     epoch_val_total.append(val_total)
