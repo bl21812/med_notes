@@ -1,4 +1,4 @@
-# TODO: CLASS WEIGHTING !!
+# TODO: L2 reg
 
 import os
 import copy
@@ -102,8 +102,14 @@ in_features = feature_extractor_output_dim if (num_hidden_layers == 0) else hidd
 class_head.append(torch.nn.Linear(in_features=in_features, out_features=num_classes, bias=True))
 class_head.append(torch.nn.Softmax())
 
+# get class counts for weighting
+class_counts = [0 for _ in range(num_classes)]
+for row in ds_train:
+    class_counts[np.argmax(row[label_key])] += 1
+class_weights = [len(ds) / (num_classes * count) for count in class_counts]
+
 # loss and optimizer
-loss = torch.nn.CrossEntropyLoss()
+loss = torch.nn.CrossEntropyLoss(weight=torch.tensor(class_weights))
 optimizer = torch.optim.SGD(class_head.parameters(), lr=lr, momentum=0.9)
 
 # ----- TRAIN LOOP -----
