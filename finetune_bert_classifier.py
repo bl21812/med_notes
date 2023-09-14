@@ -1,9 +1,13 @@
 # TODO: CLASS WEIGHTING !!
 
 import os
+import copy
 import torch
+import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
+from sklearn.metrics import f1_score
 from datasets import Dataset
 from transformers import DistilBertTokenizer, DistilBertModel
 
@@ -33,6 +37,7 @@ seed = 0
 val_prop = 0.1
 
 save_path = 'soap_class/C0001'
+save_best_only = True
 
 batch_size = 4
 epochs = 10
@@ -105,14 +110,21 @@ optimizer = torch.optim.SGD(class_head.parameters(), lr=lr, momentum=0.9)
 
 epoch_val_correct = []
 epoch_val_total = []
+epoch_val_f1 = []
+epoch_losses = []
+best_model = None
 
 for epoch in range(epochs):
 
     inputs = []
     labels = []
 
+    epoch_loss = 0
+
     val_correct = 0
     val_total = 0
+
+    num_train_batches = 0
 
     # train
     for row in ds_train:
@@ -124,47 +136,93 @@ for epoch in range(epochs):
         # if batch = batch size, take train step
         if len(inputs) == batch_size:
 
+            num_train_batches += 1
+
             inputs = torch.tensor(inputs)
             labels = torch.tensor(labels)
 
             optimizer.zero_grad()
 
             outputs = class_head(inputs)
-            print(outputs)
             l = loss(outputs, labels)
+            '''print(outputs)
             print('\n\n')
             print(labels)
             print('\n\n')
             print(l)
             inp = input()
             if not (inp == ''):
-                quit()
+                quit()'''
             l.backward()
             optimizer.step()
 
-            # TODO: TRACK RUNNING LOSS
+            epoch_loss += l.item()
 
             # reset batch
             inputs = []
             labels = []
 
+    # track loss
+    epoch_losses.append(epoch_loss / num_train_batches)
+
     # eval
+    epoch_labels = []
+    epoch_preds = []
+
     for row in ds_val:
+
         inputs = torch.tensor([row[input_key]])
         labels = torch.tensor([row[label_key]])
+
         with torch.no_grad():
+
             output = class_head(inputs)
             _, pred_class = torch.max(output.data, 1)
+            
+            label_class = torch.argmax(labels)
+            pred_class = torch.flatten(pred_class)
+
+            epoch_labels.append(label_class)
+            epoch_preds.append(pred_class)
+
             val_total += 1
-            val_correct += int(torch.flatten(pred_class) == torch.argmax(labels))  # NOTE: only works for single input rn
-            print(f'EPOCH {epoch} EVAL:')
+            val_correct += int(pred_class == label_class)  # NOTE: only works for single input rn
+
+            '''print(f'EPOCH {epoch} EVAL:')
             print(labels)
             print(output)
             print(pred_class)
-            print(f'{val_correct} / {val_total} correct')
+            print(f'{val_correct} / {val_total} correct')'''
+
+        # f1 score
+        epoch_val_f1.append(f1_score(label_class, pred_class, average='macro'))
+
+        # save model if applicable
+        if save_best_only:
+            if len(epoch_val_f1) == 1:
+                best_model = copy.deepcopy(class_head)
+            elif epoch_val_f1[-1] > max(epoch_val_f1[:-1]):
+                best_model = copy.deepcopy(class_head)
 
     epoch_val_correct.append(val_correct)
     epoch_val_total.append(val_total)
+
+if best_model:
+    torch.save(class_head, f'{save_path}.pt')
+
+# plots
+xs = [i for i in range(1, epochs+1)]
+
+plt.plot(xs, epoch_losses)
+plt.savefig(f'{save_path}_train_loss.png')
+
+plt.clf()
+plt.plot(xs, np.divide(epoch_val_correct, epoch_val_total))
+plt.savefig(f'{save_path}_val_acc.png')
+
+plt.clf()
+plt.plot(xs, epoch_val_f1)
+plt.savefig(f'{save_path}_val_f1.png')
 
 '''text = "Replace me by any text you'd like."
 encoded_input = tokenizer(text, return_tensors='pt')
