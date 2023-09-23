@@ -93,7 +93,7 @@ for row, orig_row in zip(ds_embeddings, ds_orig):
     print(pred_class)
     label_onehot = row[label_key]
     print(label_onehot)
-    label = torch.argmax(label_onehot)
+    label = np.argmax(label_onehot)
     print(label)
 
     inp = input()
