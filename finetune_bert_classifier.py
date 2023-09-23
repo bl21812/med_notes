@@ -205,7 +205,9 @@ for epoch in range(epochs):
             print(f'{val_correct} / {val_total} correct')'''
 
     # f1 score
+    epoch_labels = torch.tensor(epoch_labels)
     print(epoch_labels)
+    epoch_preds = torch.tensor(epoch_preds)
     print(epoch_preds)
     quit()
     epoch_val_f1.append(f1_score(epoch_labels, epoch_preds, average='macro'))
