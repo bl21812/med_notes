@@ -206,10 +206,7 @@ for epoch in range(epochs):
 
     # f1 score
     epoch_labels = torch.tensor(epoch_labels)
-    print(epoch_labels)
     epoch_preds = torch.tensor(epoch_preds)
-    print(epoch_preds)
-    quit()
     epoch_val_f1.append(f1_score(epoch_labels, epoch_preds, average='macro'))
 
     # save model if applicable
