@@ -205,9 +205,10 @@ for epoch in range(epochs):
             print(f'{val_correct} / {val_total} correct')'''
 
         # f1 score
-        print(label_class)
-        print(pred_class)
-        epoch_val_f1.append(f1_score(label_class, pred_class, average='macro'))
+        print(epoch_labels)
+        print(epoch_preds)
+        quit()
+        epoch_val_f1.append(f1_score(epoch_labels, epoch_preds, average='macro'))
 
         # save model if applicable
         if save_best_only:
