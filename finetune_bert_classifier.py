@@ -16,8 +16,8 @@ import numpy as np
 tokenizer_source = "distilbert-base-uncased"
 feature_extractor_source = "distilbert-base-uncased"
 pad_seq_length = 32
-num_hidden_layers = 3
-hidden_dim = 256
+num_hidden_layers = 1
+hidden_dim = 32
 feature_extractor_output_dim = pad_seq_length * 768
 
 data_source = "soap_class_ds.csv"
@@ -36,8 +36,8 @@ label_mapping = {
 seed = 0
 val_prop = 0.1
 
-save_path = 'soap_class/C0001/'
-model_name = 'C0001'
+model_name = 'C0002'
+save_path = f'soap_class/{model_name}/'
 save_best_only = True
 
 batch_size = 4
