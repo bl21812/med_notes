@@ -124,6 +124,8 @@ best_model = None
 
 for epoch in range(epochs):
 
+    print(f'Starting epoch {epoch}')
+
     inputs = []
     labels = []
 
@@ -203,6 +205,8 @@ for epoch in range(epochs):
             print(f'{val_correct} / {val_total} correct')'''
 
         # f1 score
+        print(label_class)
+        print(pred_class)
         epoch_val_f1.append(f1_score(label_class, pred_class, average='macro'))
 
         # save model if applicable
