@@ -36,12 +36,12 @@ label_mapping = {
 seed = 0
 val_prop = 0.1
 
-model_name = 'C0002'
+model_name = 'C0003'
 save_path = f'soap_class/{model_name}/'
 save_best_only = True
 
 batch_size = 4
-epochs = 10
+epochs = 30
 lr = 0.001
 weight_decay_lambda = 0.1
 
