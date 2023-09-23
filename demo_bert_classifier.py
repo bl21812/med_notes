@@ -28,9 +28,7 @@ label_mapping = {
     'P': [0., 0., 0., 1.]
 }
 
-seed = 0
-
-model_name = 'C0003'
+model_name = 'C0002'
 save_path = f'soap_class/{model_name}/'
 model_path = f'{save_path}{model_name}.pt'
 
@@ -70,8 +68,10 @@ def apply_preprocessing_batch(rows):
     rows[label_key] = [label_mapping[c] for c in rows[label_key]]
     return rows
 
+ds_orig = copy.deepcopy(ds)
+
 # tokenize and embed
-ds_embeddings = ds.shuffle(seed=seed).map(
+ds_embeddings = ds.map(
     apply_preprocessing_batch, batched=True, batch_size=8
 )
 
@@ -80,3 +80,22 @@ class_head = torch.load(model_path)
 class_head.eval()
 
 # ----- INFERENCE -----
+inp = ''
+
+for row, orig_row in zip(ds_embeddings, ds_orig):
+
+    print(orig_row[input_key])
+
+    input = torch.tensor([row[input_key]])
+    output = class_head(input)
+    print(output)
+    pred_class = torch.argmax(output)
+    print(pred_class)
+    label_onehot = row[label_key]
+    print(label_onehot)
+    label = torch.argmax(label_onehot)
+    print(label)
+
+    inp = input()
+    if not (input == ''):
+        quit()
