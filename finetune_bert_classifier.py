@@ -1,3 +1,5 @@
+# TODO: filter out duplicate points ??
+
 import os
 import copy
 import torch
@@ -18,7 +20,7 @@ num_hidden_layers = 3
 hidden_dim = 256
 feature_extractor_output_dim = pad_seq_length * 768
 
-data_source = "placeholder_soap_ds.csv"  # UPDATE WITH CLASS DATASET
+data_source = "soap_class_ds.csv"
 
 input_key = 'note'
 label_key = 'class'
@@ -58,6 +60,7 @@ if os.path.exists(data_source):
 # preprocess (as per how feature extractor was trained)
 # lowercase and remove punctuation - i think thats it
 def preprocess_str(text):
+    text = text.replace('- ', '')
     text = text.replace(',', '')
     text = text.replace('.', '')
     text = text.replace('?', '')
