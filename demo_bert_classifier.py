@@ -79,22 +79,30 @@ ds_embeddings = ds.map(
 class_head = torch.load(model_path)
 class_head.eval()
 
+label_map = {
+    0: 'S',
+    1: 'O',
+    2: 'A', 
+    3: 'P'
+}
+
 # ----- INFERENCE -----
 inp = ''
 
 for row, orig_row in zip(ds_embeddings, ds_orig):
 
-    print(orig_row[input_key])
+    print(f'Input: {orig_row[input_key]}')
 
-    input = torch.tensor([row[input_key]])
-    output = class_head(input)
-    print(output)
-    pred_class = torch.argmax(output)
-    print(pred_class)
+    inputs = torch.tensor([row[input_key]])
+    output = class_head(inputs)
+    # print(output)
+    pred_class = torch.argmax(output).item()
+    print(f'Predicted class: {label_map[pred_class]}')
     label_onehot = row[label_key]
-    print(label_onehot)
+    # print(label_onehot)
     label = np.argmax(label_onehot)
-    print(label)
+    print(f'True class: {label_map[label]}')
+    print('\n\n')
 
     inp = input()
     if not (input == ''):
