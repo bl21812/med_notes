@@ -224,6 +224,8 @@ if not os.path.exists(save_path):
     os.makedirs(save_path)
 
 if best_model:
+    torch.save(best_model, f'{save_path}{model_name}.pt')
+else:
     torch.save(class_head, f'{save_path}{model_name}.pt')
 
 # plots
