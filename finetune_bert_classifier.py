@@ -204,18 +204,18 @@ for epoch in range(epochs):
             print(pred_class)
             print(f'{val_correct} / {val_total} correct')'''
 
-        # f1 score
-        print(epoch_labels)
-        print(epoch_preds)
-        quit()
-        epoch_val_f1.append(f1_score(epoch_labels, epoch_preds, average='macro'))
+    # f1 score
+    print(epoch_labels)
+    print(epoch_preds)
+    quit()
+    epoch_val_f1.append(f1_score(epoch_labels, epoch_preds, average='macro'))
 
-        # save model if applicable
-        if save_best_only:
-            if len(epoch_val_f1) == 1:
-                best_model = copy.deepcopy(class_head)
-            elif epoch_val_f1[-1] > max(epoch_val_f1[:-1]):
-                best_model = copy.deepcopy(class_head)
+    # save model if applicable
+    if save_best_only:
+        if len(epoch_val_f1) == 1:
+            best_model = copy.deepcopy(class_head)
+        elif epoch_val_f1[-1] > max(epoch_val_f1[:-1]):
+            best_model = copy.deepcopy(class_head)
 
     epoch_val_correct.append(val_correct)
     epoch_val_total.append(val_total)
