@@ -36,7 +36,8 @@ label_mapping = {
 seed = 0
 val_prop = 0.1
 
-save_path = 'soap_class/C0001'
+save_path = 'soap_class/C0001/'
+model_name = 'C0001'
 save_best_only = True
 
 batch_size = 4
@@ -219,22 +220,25 @@ for epoch in range(epochs):
     epoch_val_correct.append(val_correct)
     epoch_val_total.append(val_total)
 
+if not os.path.exists(save_path):
+    os.makedirs(save_path)
+
 if best_model:
-    torch.save(class_head, f'{save_path}.pt')
+    torch.save(class_head, f'{save_path}{model_name}.pt')
 
 # plots
 xs = [i for i in range(1, epochs+1)]
 
 plt.plot(xs, epoch_losses)
-plt.savefig(f'{save_path}_train_loss.png')
+plt.savefig(f'{save_path}train_loss.png')
 
 plt.clf()
 plt.plot(xs, np.divide(epoch_val_correct, epoch_val_total))
-plt.savefig(f'{save_path}_val_acc.png')
+plt.savefig(f'{save_path}val_acc.png')
 
 plt.clf()
 plt.plot(xs, epoch_val_f1)
-plt.savefig(f'{save_path}_val_f1.png')
+plt.savefig(f'{save_path}val_f1.png')
 
 '''text = "Replace me by any text you'd like."
 encoded_input = tokenizer(text, return_tensors='pt')
