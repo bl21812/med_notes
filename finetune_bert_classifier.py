@@ -36,7 +36,7 @@ label_mapping = {
 seed = 0
 val_prop = 0.1
 
-model_name = 'C0003'
+model_name = 'C0004'
 save_path = f'soap_class/{model_name}/'
 save_best_only = True
 

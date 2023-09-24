@@ -102,7 +102,7 @@ for row, orig_row in zip(ds_embeddings, ds_orig):
     # print(label_onehot)
     label = np.argmax(label_onehot)
     print(f'True class: {label_map[label]}')
-    print('\n')
+    print('')
 
     inp = input()
     if not (inp == ''):
