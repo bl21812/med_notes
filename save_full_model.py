@@ -47,4 +47,4 @@ class EndpointHandler():
     
 handler = EndpointHandler(path='summ_adapter/0011/')
 
-handler.model.base_model.save_pretrained('full_summ_model/')
+handler.model.save_pretrained('full_summ_model/')
