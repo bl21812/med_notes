@@ -11,6 +11,7 @@ class EndpointHandler():
 
         adapter_name = model.load_adapter(path, config=adapter_type)
         model.set_active_adapters(adapter_name)
+        model.adapter_name = adapter_name
 
         model.eval()
         self.model = model
@@ -47,4 +48,10 @@ class EndpointHandler():
     
 handler = EndpointHandler(path='summ_adapter/0011/')
 
-handler.model.save_pretrained('full_summ_model/')
+handler.model.push_adapter_to_hub(
+    handler.model.adapter_name,
+    handler.model.adapter_name,
+    adapterhub_tag="summ_beta0"
+)
+
+# handler.model.save_pretrained('full_summ_model/')
