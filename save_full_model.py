@@ -49,7 +49,7 @@ class EndpointHandler():
 handler = EndpointHandler(path='summ_adapter/0011/')
 
 handler.model.push_adapter_to_hub(
-    handler.model.adapter_name,
+    "summ_beta0_adapter",
     handler.model.adapter_name,
     adapterhub_tag="summ_beta0"
 )
