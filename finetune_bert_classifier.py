@@ -1,5 +1,3 @@
-# TODO: filter out duplicate points ??
-
 import os
 import copy
 import torch
@@ -86,8 +84,13 @@ ds_embeddings = ds.shuffle(seed=seed).map(
     apply_preprocessing_batch, batched=True, batch_size=8
 )
 
+# remove duplicates
+df = ds_embeddings.to_pandas()
+df.drop_duplicates(subset=[input_key], inplace=True)
+ds_embeddings = Dataset.from_pandas(df)
+
 # train test split
-ds_embeddings = ds_embeddings.train_test_split(test_size=val_prop)
+ds_embeddings = ds_embeddings.train_test_split(test_size=val_prop, stratify_by_column=label_key)
 ds_train = ds_embeddings['train']
 ds_val = ds_embeddings['test']
 
@@ -106,7 +109,7 @@ class_head.append(torch.nn.Linear(in_features=in_features, out_features=num_clas
 
 # get class counts for weighting (as per sklearn class weighting)
 class_counts = [0 for _ in range(num_classes)]
-for row in ds_train:
+for row in ds_embeddings:
     class_counts[np.argmax(row[label_key])] += 1
 class_weights = [len(ds) / (num_classes * count) for count in class_counts]
 
