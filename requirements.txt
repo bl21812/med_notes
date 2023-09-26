@@ -1,4 +1,4 @@
-transformers[sentencepiece]
+transformers[sentencepiece]==4.30.2
 datasets
 accelerate
 torch
@@ -8,5 +8,5 @@ peft
 tokenizers
 scipy
 evaluate
-adapter-transformers
+adapter-transformers==3.2.1
 rouge-score
