@@ -55,6 +55,7 @@ if os.path.exists(data_source):
     if '.csv' in data_source:
         df = pd.read_csv(data_source)
     df.drop_duplicates(subset=[input_key], inplace=True)
+    df.dropna(subset=[input_key, label_key], inplace=True)
     ds = Dataset.from_pandas(df)
 
 # convert to label col (for stratification)
