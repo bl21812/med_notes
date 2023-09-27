@@ -65,6 +65,10 @@ ds = ds.shuffle(seed=seed).train_test_split(test_size=val_prop, stratify_by_colu
 ds_train = ds['train']
 ds_val = ds['test']
 
+# convert back to string labels
+ds_train[label_key] = ds_train[label_key].int2str(ds_train[label_key])
+ds_val[label_key] = ds_val[label_key].int2str(ds_val[label_key])
+
 # preprocess (as per how feature extractor was trained)
 # lowercase and remove punctuation - i think thats itk
 def preprocess_str(text):
