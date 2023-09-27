@@ -66,8 +66,14 @@ ds_train = ds['train']
 ds_val = ds['test']
 
 # convert back to string labels
-ds_train[label_key] = ds_train.features[label_key].int2str(ds_train[label_key])
-ds_val[label_key] = ds_val.features[label_key].int2str(ds_val[label_key])
+def label_to_str(row):
+    return {
+        row[input_key], 
+        ds.features[label_key].int2str(row[label_key])
+    }
+
+ds_train = ds_train.map(label_to_str)
+ds_val = ds_val.map(label_to_str)
 
 # preprocess (as per how feature extractor was trained)
 # lowercase and remove punctuation - i think thats itk
@@ -99,6 +105,10 @@ ds_train = ds_train.map(
 ds_val = ds_val.map(
     apply_preprocessing_batch, batched=True, batch_size=8
 )
+
+print(ds_train.features)
+print(ds_train[0])
+quit()
 
 # ----- CLASSIFICATION HEAD -----
 class_head = torch.nn.Sequential(torch.nn.Flatten())
