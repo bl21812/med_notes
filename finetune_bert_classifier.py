@@ -74,7 +74,9 @@ def label_to_str(row):
 ds_train = ds_train.map(label_to_str)
 ds_val = ds_val.map(label_to_str)
 
-ds_train = ds_train.cast_column(label_key, str)
+temp = ds_train.to_pandas()
+print(temp)
+quit()
 
 # preprocess (as per how feature extractor was trained)
 # lowercase and remove punctuation - i think thats itk
