@@ -106,10 +106,6 @@ ds_val = ds_val.map(
     apply_preprocessing_batch, batched=True, batch_size=8
 )
 
-print(ds_train.features)
-print(ds_train[0])
-quit()
-
 # ----- CLASSIFICATION HEAD -----
 class_head = torch.nn.Sequential(torch.nn.Flatten())
 
