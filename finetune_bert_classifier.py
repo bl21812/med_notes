@@ -34,7 +34,7 @@ label_mapping = {
 seed = 0
 val_prop = 0.1
 
-model_name = 'C0005'
+model_name = 'C0006'
 save_path = f'soap_class/{model_name}/'
 save_best_only = True
 
@@ -189,6 +189,7 @@ for epoch in range(epochs):
 
     # track loss
     epoch_losses.append(epoch_loss / num_train_batches)
+    print(f'Epoch {epoch} loss: {epoch_losses[-1]}')
 
     # eval
     epoch_labels = []
@@ -223,6 +224,8 @@ for epoch in range(epochs):
     epoch_labels = torch.tensor(epoch_labels)
     epoch_preds = torch.tensor(epoch_preds)
     epoch_val_f1.append(f1_score(epoch_labels, epoch_preds, average='macro'))
+
+    print(f'Epoch {epoch} F1: {epoch_val_f1[-1]}')
 
     # save model if applicable
     if save_best_only:
