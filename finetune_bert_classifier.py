@@ -34,7 +34,7 @@ label_mapping = {
 seed = 0
 val_prop = 0.1
 
-model_name = 'C0006'
+model_name = 'C0007'
 save_path = f'soap_class/{model_name}/'
 save_best_only = True
 
@@ -59,21 +59,21 @@ if os.path.exists(data_source):
     ds = Dataset.from_pandas(df)
 
 # convert to label col (for stratification)
-ds = ds.class_encode_column(label_key)
+#ds = ds.class_encode_column(label_key)
 
 # train test split
-ds = ds.shuffle(seed=seed).train_test_split(test_size=val_prop, stratify_by_column=label_key)
+ds = ds.shuffle(seed=seed).train_test_split(test_size=val_prop)#, stratify_by_column=label_key)
 ds_train = ds['train']
 ds_val = ds['test']
 
 # convert back to string labels
-temp = ds_train.to_pandas()
+'''temp = ds_train.to_pandas()
 temp[label_key] = ds_train.features[label_key].int2str(temp[label_key])
 ds_train = Dataset.from_pandas(temp)
 
 temp = ds_val.to_pandas()
 temp[label_key] = ds_val.features[label_key].int2str(temp[label_key])
-ds_val = Dataset.from_pandas(temp)
+ds_val = Dataset.from_pandas(temp)'''
 
 # preprocess (as per how feature extractor was trained)
 # lowercase and remove punctuation - i think thats itk
