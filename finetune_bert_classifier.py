@@ -54,29 +54,10 @@ feature_extractor = DistilBertModel.from_pretrained(feature_extractor_source)
 if os.path.exists(data_source):
     if '.csv' in data_source:
         df = pd.read_csv(data_source)
-    df.drop_duplicates(subset=[input_key], inplace=True)
-    df.dropna(subset=[input_key, label_key], inplace=True)
     ds = Dataset.from_pandas(df)
 
-# convert to label col (for stratification)
-#ds = ds.class_encode_column(label_key)
-
-# train test split
-ds = ds.shuffle(seed=seed).train_test_split(test_size=val_prop)#, stratify_by_column=label_key)
-ds_train = ds['train']
-ds_val = ds['test']
-
-# convert back to string labels
-'''temp = ds_train.to_pandas()
-temp[label_key] = ds_train.features[label_key].int2str(temp[label_key])
-ds_train = Dataset.from_pandas(temp)
-
-temp = ds_val.to_pandas()
-temp[label_key] = ds_val.features[label_key].int2str(temp[label_key])
-ds_val = Dataset.from_pandas(temp)'''
-
 # preprocess (as per how feature extractor was trained)
-# lowercase and remove punctuation - i think thats itk
+# lowercase and remove punctuation - i think thats it
 def preprocess_str(text):
     text = text.replace('- ', '')
     text = text.replace(',', '')
@@ -98,13 +79,15 @@ def apply_preprocessing_batch(rows):
     rows[label_key] = [label_mapping[c] for c in rows[label_key]]
     return rows
 
-# tokenize and embed
-ds_train = ds_train.map(
+# tokenize and embed and 
+ds_embeddings = ds.shuffle(seed=seed).map(
     apply_preprocessing_batch, batched=True, batch_size=8
 )
-ds_val = ds_val.map(
-    apply_preprocessing_batch, batched=True, batch_size=8
-)
+
+# train test split
+ds_embeddings = ds_embeddings.train_test_split(test_size=val_prop)
+ds_train = ds_embeddings['train']
+ds_val = ds_embeddings['test']
 
 # ----- CLASSIFICATION HEAD -----
 class_head = torch.nn.Sequential(torch.nn.Flatten())
@@ -190,7 +173,6 @@ for epoch in range(epochs):
 
     # track loss
     epoch_losses.append(epoch_loss / num_train_batches)
-    print(f'Epoch {epoch} loss: {epoch_losses[-1]}')
 
     # eval
     epoch_labels = []
@@ -225,8 +207,6 @@ for epoch in range(epochs):
     epoch_labels = torch.tensor(epoch_labels)
     epoch_preds = torch.tensor(epoch_preds)
     epoch_val_f1.append(f1_score(epoch_labels, epoch_preds, average='macro'))
-
-    print(f'Epoch {epoch} F1: {epoch_val_f1[-1]}')
 
     # save model if applicable
     if save_best_only:
