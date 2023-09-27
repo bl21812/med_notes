@@ -118,6 +118,7 @@ for i in range(num_hidden_layers):
 # head
 in_features = feature_extractor_output_dim if (num_hidden_layers == 0) else hidden_dim
 class_head.append(torch.nn.Linear(in_features=in_features, out_features=num_classes, bias=True))
+class_head.append(torch.nn.Softmax())
 
 # get class counts for weighting (as per sklearn class weighting)
 class_counts = [0 for _ in range(num_classes)]
