@@ -71,10 +71,11 @@ def label_to_str(row):
     row[label_key] = ds_train.features[label_key].int2str(row[label_key])
     return row
 
-ds_train = ds_train.map(label_to_str, remove_columns=label_key)
-ds_val = ds_val.map(label_to_str, remove_columns=label_key)
+ds_train = ds_train.map(label_to_str)
+ds_val = ds_val.map(label_to_str)
 
 temp = ds_train.to_pandas()
+temp[label_key] = ds_train.features[label_key].int2str(temp[label_key])
 print(temp)
 quit()
 
