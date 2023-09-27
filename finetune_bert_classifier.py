@@ -67,17 +67,13 @@ ds_train = ds['train']
 ds_val = ds['test']
 
 # convert back to string labels
-def label_to_str(row):
-    row[label_key] = ds_train.features[label_key].int2str(row[label_key])
-    return row
-
-ds_train = ds_train.map(label_to_str)
-ds_val = ds_val.map(label_to_str)
-
 temp = ds_train.to_pandas()
 temp[label_key] = ds_train.features[label_key].int2str(temp[label_key])
-print(temp)
-quit()
+ds_train = Dataset.from_pandas(temp)
+
+temp = ds_val.to_pandas()
+temp[label_key] = ds_val.features[label_key].int2str(temp[label_key])
+ds_val = Dataset.from_pandas(temp)
 
 # preprocess (as per how feature extractor was trained)
 # lowercase and remove punctuation - i think thats itk
