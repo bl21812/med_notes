@@ -69,7 +69,7 @@ ds_val = ds['test']
 def label_to_str(row):
     return {
         row[input_key], 
-        ds.features[label_key].int2str(row[label_key])
+        ds_train.features[label_key].int2str(row[label_key])
     }
 
 ds_train = ds_train.map(label_to_str)
