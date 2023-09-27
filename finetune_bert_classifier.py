@@ -96,6 +96,10 @@ def apply_preprocessing_batch(rows):
     rows[label_key] = [label_mapping[c] for c in rows[label_key]]
     return rows
 
+print(ds_train.features)
+print(ds_train[0])
+quit()
+
 # tokenize and embed
 ds_train = ds_train.map(
     apply_preprocessing_batch, batched=True, batch_size=8
