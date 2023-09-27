@@ -54,10 +54,19 @@ feature_extractor = DistilBertModel.from_pretrained(feature_extractor_source)
 if os.path.exists(data_source):
     if '.csv' in data_source:
         df = pd.read_csv(data_source)
+    df.drop_duplicates(subset=[input_key], inplace=True)
     ds = Dataset.from_pandas(df)
 
+# convert to label col (for stratification)
+ds = ds.class_encode_column(label_key)
+
+# train test split
+ds = ds.shuffle(seed=seed).train_test_split(test_size=val_prop, stratify_by_column=label_key)
+ds_train = ds['train']
+ds_val = ds['test']
+
 # preprocess (as per how feature extractor was trained)
-# lowercase and remove punctuation - i think thats it
+# lowercase and remove punctuation - i think thats itk
 def preprocess_str(text):
     text = text.replace('- ', '')
     text = text.replace(',', '')
@@ -79,20 +88,13 @@ def apply_preprocessing_batch(rows):
     rows[label_key] = [label_mapping[c] for c in rows[label_key]]
     return rows
 
-# tokenize and embed and 
-ds_embeddings = ds.shuffle(seed=seed).map(
+# tokenize and embed
+ds_train = ds_train.map(
     apply_preprocessing_batch, batched=True, batch_size=8
 )
-
-# remove duplicates
-df = ds_embeddings.to_pandas()
-df.drop_duplicates(subset=[input_key], inplace=True)
-ds_embeddings = Dataset.from_pandas(df)
-
-# train test split
-ds_embeddings = ds_embeddings.train_test_split(test_size=val_prop, stratify_by_column=label_key)
-ds_train = ds_embeddings['train']
-ds_val = ds_embeddings['test']
+ds_val = ds_val.map(
+    apply_preprocessing_batch, batched=True, batch_size=8
+)
 
 # ----- CLASSIFICATION HEAD -----
 class_head = torch.nn.Sequential(torch.nn.Flatten())
@@ -109,7 +111,7 @@ class_head.append(torch.nn.Linear(in_features=in_features, out_features=num_clas
 
 # get class counts for weighting (as per sklearn class weighting)
 class_counts = [0 for _ in range(num_classes)]
-for row in ds_embeddings:
+for row in ds_train:
     class_counts[np.argmax(row[label_key])] += 1
 class_weights = [len(ds) / (num_classes * count) for count in class_counts]
 
