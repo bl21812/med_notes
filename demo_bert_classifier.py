@@ -28,7 +28,9 @@ label_mapping = {
     'P': [0., 0., 0., 1.]
 }
 
-model_name = 'C0009'
+print('Enter model name: ')
+model_name = input()
+
 save_path = f'soap_class/{model_name}/'
 model_path = f'{save_path}{model_name}.pt'
 
