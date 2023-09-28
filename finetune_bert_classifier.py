@@ -109,15 +109,15 @@ class_head.append(torch.nn.Linear(in_features=in_features, out_features=num_clas
 class_counts = [0 for _ in range(num_classes)]
 for row in ds_train:
     class_counts[np.argmax(row[label_key])] += 1
+print('Class counts, train set: ')
 print(class_counts)
 class_weights = [len(ds) / (num_classes * count) for count in class_counts]
 
-# FOR TESTING
 class_counts = [0 for _ in range(num_classes)]
 for row in ds_val:
     class_counts[np.argmax(row[label_key])] += 1
+print('Class counts, val set: ')
 print(class_counts)
-quit()
 
 # loss and optimizer
 loss = torch.nn.CrossEntropyLoss(weight=torch.tensor(class_weights))
