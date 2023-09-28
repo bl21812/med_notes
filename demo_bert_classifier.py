@@ -45,6 +45,7 @@ feature_extractor = DistilBertModel.from_pretrained(feature_extractor_source)
 if os.path.exists(data_source):
     if '.csv' in data_source:
         df = pd.read_csv(data_source)
+    df.drop_duplicates(subset=[input_key], inplace=True)
     ds = Dataset.from_pandas(df)
 
 # preprocess (as per how feature extractor was trained)
