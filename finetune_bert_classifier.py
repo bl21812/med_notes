@@ -39,7 +39,7 @@ save_path = f'soap_class/{model_name}/'
 save_best_only = True
 
 batch_size = 4
-epochs = 30
+epochs = 20
 lr = 0.001
 weight_decay_lambda = 0.1
 
