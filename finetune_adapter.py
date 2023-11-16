@@ -13,7 +13,7 @@ tokenizer_source = "knkarthick/meeting-summary-samsum"
 base_model_source = "knkarthick/meeting-summary-samsum"
 adapter_name = "bottleneck_adapter"
 
-data_source = "dummy_75_overlap_20.csv"
+data_source = "abbrev_75_20_both_nov_16.csv"
 scrub_transcripts = True
 
 input_key = 'transcript'
@@ -22,7 +22,7 @@ output_key = 'output'
 seed = 0
 val_prop = 0.1
 
-save_path = 'summ_adapter/0011'
+save_path = 'summ_adapter/0012'
 
 def scrub_all(text):
     '''
@@ -75,7 +75,6 @@ def print_trainable_parameters(model):
 
 # ----- MODEL LOADING -----
 
-# believe i can use this instead of AutoAdapterModel ?
 model = AutoModelForSeq2SeqLM.from_pretrained(
     base_model_source,
     device_map='auto'
