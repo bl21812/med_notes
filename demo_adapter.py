@@ -89,7 +89,7 @@ ds_tokenized = ds.map(
     remove_columns=ds.column_names
 )
 
-ds_tokenized = ds_tokenized[(len(ds_tokenized) * (1 - val_prop)):]
+ds_tokenized = ds_tokenized[int(len(ds_tokenized) * (1 - val_prop)):]
 
 # ----- INFERENCE -----
 
