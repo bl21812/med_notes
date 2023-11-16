@@ -31,6 +31,8 @@ def scrub_all(text):
     text = repr(text).replace('\\n', '')
     text = text.replace('D:', '')
     text = text.replace('P:', '')
+    text = text.replace('Doctor:', '')
+    text = text.replace('Patient:', '')
     text = text.replace(',', '')
     text = text.replace('.', '')
     text = text.replace('?', '')

@@ -20,6 +20,10 @@ scrub_transcripts = True
 input_key = 'transcript'
 output_key = 'output'
 
+# just indicates how much of the ds was used for train
+# this demo only uses the latter (val_prop) proportion of the ds
+val_prop = 0.1
+
 def scrub_all(text):
     '''
     remove newlines, speaker indicators, punctuation (periods, commas, question marks)
@@ -84,6 +88,8 @@ ds_tokenized = ds.map(
     ),
     remove_columns=ds.column_names
 )
+
+ds_tokenized = ds_tokenized[(len(ds_tokenized) * (1 - val_prop)):]
 
 # ----- INFERENCE -----
 
