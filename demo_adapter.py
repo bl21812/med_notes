@@ -89,20 +89,12 @@ ds_tokenized = ds.map(
     remove_columns=ds.column_names
 )
 
-end_ind = len(ds_tokenized)
-start_ind = int(len(ds_tokenized) * (1 - val_prop))
-# ds_tokenized = ds_tokenized[start_ind:]
-
-# print(start_ind, end_ind)
-print(ds_tokenized)
-quit()
-
 # ----- INFERENCE -----
 
-idx = start_ind
+idx = int(len(ds_tokenized) * (1 - val_prop))
 inp = ''
 
-while idx < end_ind:
+while idx < len(ds_tokenized):
 
     data = ds_tokenized[idx]['input_ids']
     label = ds_tokenized[idx]['labels']
