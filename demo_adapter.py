@@ -11,10 +11,10 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, DataCollatorForSe
 
 tokenizer_source = "knkarthick/meeting-summary-samsum"
 base_model_source = "knkarthick/meeting-summary-samsum"
-adapter_path = "summ_adapter/0011/"
+adapter_path = "summ_adapter/0012/"
 adapter_type = "parallel"
 
-data_source = "dummy_75_overlap_20.csv"
+data_source = "abbrev_75_20_both_nov_16.csv"
 scrub_transcripts = True
 
 input_key = 'transcript'
