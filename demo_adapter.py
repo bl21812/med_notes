@@ -89,11 +89,12 @@ ds_tokenized = ds.map(
     remove_columns=ds.column_names
 )
 
-ds_tokenized = ds_tokenized[int(len(ds_tokenized) * (1 - val_prop)):]
+start_ind = int(len(ds_tokenized) * (1 - val_prop))
+ds_tokenized = ds_tokenized[start_ind:]
 
 # ----- INFERENCE -----
 
-idx = 0
+idx = start_ind
 inp = ''
 
 while idx < len(ds_tokenized):
