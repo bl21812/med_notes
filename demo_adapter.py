@@ -91,9 +91,9 @@ ds_tokenized = ds.map(
 
 end_ind = len(ds_tokenized)
 start_ind = int(len(ds_tokenized) * (1 - val_prop))
-ds_tokenized = ds_tokenized[start_ind:]
+# ds_tokenized = ds_tokenized[start_ind:]
 
-print(start_ind, end_ind)
+# print(start_ind, end_ind)
 print(ds_tokenized)
 quit()
 
