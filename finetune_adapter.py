@@ -22,7 +22,7 @@ output_key = 'output'
 seed = 0
 val_prop = 0.1
 
-save_path = 'summ_adapter/0012'
+save_path = 'summ_adapter/0013'
 
 def scrub_all(text):
     '''
@@ -104,7 +104,7 @@ if os.path.exists(data_source):
     if '.csv' in data_source:
         df = pd.read_csv(data_source)
     # Remove empty rows
-    df = df.drop(df[df[input_key].isna()])
+    df.drop(df.index[df[input_key].isna()], inplace=True)
     ds = Dataset.from_pandas(df)
 
 ds_tokenized = ds.shuffle(seed=seed).map(
@@ -144,7 +144,7 @@ def compute_metrics(eval_pred):
 # HPARAMS !!!
 training_args =  Seq2SeqTrainingArguments(
     learning_rate=1e-4,  # apparently this works well
-    num_train_epochs=200,
+    num_train_epochs=100,
     per_device_train_batch_size=8,  # whatever can fit
     per_device_eval_batch_size=8,  # whatever can fit
     logging_strategy='epoch',
