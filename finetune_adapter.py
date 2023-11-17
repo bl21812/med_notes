@@ -22,7 +22,7 @@ output_key = 'output'
 seed = 0
 val_prop = 0.1
 
-save_path = 'summ_adapter/0013'
+save_path = 'summ_adapter/0014'
 
 def scrub_all(text):
     '''
