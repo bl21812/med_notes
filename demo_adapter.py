@@ -31,6 +31,8 @@ def scrub_all(text):
     text = repr(text).replace('\\n', '')
     text = text.replace('D:', '')
     text = text.replace('P:', '')
+    text = text.replace('Doctor:', '')
+    text = text.replace('Patient:', '')
     text = text.replace(',', '')
     text = text.replace('.', '')
     text = text.replace('?', '')
@@ -78,6 +80,8 @@ tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, device_map="auto")
 if os.path.exists(data_source):
     if '.csv' in data_source:
         df = pd.read_csv(data_source)
+    # Remove empty rows
+    df = df.drop(df[df[input_key].isna()])
     ds = Dataset.from_pandas(df)
 
 ds_tokenized = ds.map(

@@ -103,6 +103,8 @@ print ('Tokenizer loaded!')
 if os.path.exists(data_source):
     if '.csv' in data_source:
         df = pd.read_csv(data_source)
+    # Remove empty rows
+    df = df.drop(df[df[input_key].isna()])
     ds = Dataset.from_pandas(df)
 
 ds_tokenized = ds.shuffle(seed=seed).map(
