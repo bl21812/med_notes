@@ -86,8 +86,8 @@ model = AutoModelForSeq2SeqLM.from_pretrained(
 config = ParallelConfig(
     mh_adapter=True,
     output_adapter=True,
-    reduction_factor=8,
-    non_linearity="relu"
+    reduction_factor=16,
+    non_linearity="gelu"
 )
 model.add_adapter(adapter_name, config=config)
 
