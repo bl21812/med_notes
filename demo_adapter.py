@@ -81,6 +81,7 @@ if os.path.exists(data_source):
     if '.csv' in data_source:
         df = pd.read_csv(data_source)
     # Remove empty rows
+    print(df[input_key].isna())
     df = df.drop(df[df[input_key].isna()])
     ds = Dataset.from_pandas(df)
 
