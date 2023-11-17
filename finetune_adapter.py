@@ -143,7 +143,7 @@ def compute_metrics(eval_pred):
 
 # HPARAMS !!!
 training_args =  Seq2SeqTrainingArguments(
-    learning_rate=1e-4,  # apparently this works well
+    learning_rate=5e-5,  # apparently this works well
     num_train_epochs=100,
     per_device_train_batch_size=8,  # whatever can fit
     per_device_eval_batch_size=8,  # whatever can fit
