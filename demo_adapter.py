@@ -81,8 +81,7 @@ if os.path.exists(data_source):
     if '.csv' in data_source:
         df = pd.read_csv(data_source)
     # Remove empty rows
-    print(df[input_key].isna())
-    df = df.drop(df[df[input_key].isna()])
+    df.drop(df.index[df[input_key].isna()], inplace=True)
     ds = Dataset.from_pandas(df)
 
 ds_tokenized = ds.map(
