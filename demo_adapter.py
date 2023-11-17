@@ -24,6 +24,9 @@ output_key = 'output'
 # this demo only uses the latter (val_prop) proportion of the ds
 val_prop = 0.1
 
+# seed used for ds shuffle in train
+seed = 0
+
 def scrub_all(text):
     '''
     remove newlines, speaker indicators, punctuation (periods, commas, question marks)
@@ -84,7 +87,7 @@ if os.path.exists(data_source):
     df.drop(df.index[df[input_key].isna()], inplace=True)
     ds = Dataset.from_pandas(df)
 
-ds_tokenized = ds.map(
+ds_tokenized = ds.shuffle(seed=seed).map(
     lambda row: tokenize_summary_subsection(
         tokenizer=tokenizer,
         dialogue=row[input_key],
